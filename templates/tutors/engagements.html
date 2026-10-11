@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Active Tuition Engagements — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Active Tuition Engagements ({{ engagements.count }})</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Manage ongoing tuition agreements, record lesson dates, homework, and student attendance</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    {% for eng in engagements %}
+      <div class="card" style="padding: 2rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-primary">{{ eng.engagement_id }}</span>
+            <span class="badge badge-success">{{ eng.get_status_display }}</span>
+            <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text);">{{ eng.agreed_subjects }}</h3>
+          </div>
+          <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">
+            {{ company.currency_symbol }}{{ eng.agreed_fee }} / {{ eng.get_billing_cycle_display }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+          <div>
+            <div><strong>Student / Parent:</strong> {{ eng.student.student_name|default:eng.parent.display_name }} ({{ eng.parent.display_name }})</div>
+            <div><strong>Location:</strong> {{ eng.requirement.locality }}, {{ eng.requirement.city }}</div>
+          </div>
+          <div>
+            <div><strong>Schedule:</strong> {{ eng.schedule_summary }}</div>
+            <div><strong>Started:</strong> {{ eng.start_date }}</div>
+          </div>
+          <div>
+            <div><strong>Total Lessons Conducted:</strong> {{ eng.total_classes_conducted }} Classes</div>
+            <div><strong>Lead ID:</strong> {{ eng.requirement.lead_id }}</div>
+          </div>
+        </div>
+
+        <!-- Log a New Lesson Session Accordion / Form -->
+        <div style="background: rgba(79, 70, 229, 0.04); border: 1px solid rgba(79, 70, 229, 0.15); border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem;">
+            <i data-lucide="plus-circle" style="width: 16px; height: 16px; display: inline;"></i> Log Conducted Lesson Session
+          </h4>
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_lesson">
+            <input type="hidden" name="engagement_id" value="{{ eng.id }}">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.8rem;">Lesson Title</label>
+                <input type="text" name="title" class="form-control" placeholder="e.g. Class 4: Trigonometry Ratios Practice" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.8rem;">Date & Time</label>
+                <input type="datetime-local" name="scheduled_datetime" class="form-control" required>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.8rem;">Topics Covered</label>
+                <input type="text" name="topics_covered" class="form-control" placeholder="Concepts taught during class..." required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.8rem;">Homework Assigned</label>
+                <input type="text" name="homework_assigned" class="form-control" placeholder="Exercise 3.2 problems 1-10...">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i data-lucide="check" style="width: 14px; height: 14px;"></i> Save Lesson Record
+            </button>
+          </form>
+        </div>
+
+        <!-- Recent Lesson History -->
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem;">Conducted Lesson History</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for lesson in eng.lessons.all|slice:":5" %}
+            <div style="border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.85rem 1rem; display: flex; justify-content: space-between; align-items: center; background: #ffffff; font-size: 0.85rem;">
+              <div>
+                <div style="font-weight: 700; color: var(--text);">{{ lesson.title }}</div>
+                <div style="color: var(--text-muted); font-size: 0.775rem;">
+                  {{ lesson.scheduled_datetime|date:"M d, Y - h:i A" }} • Topics: {{ lesson.record.topics_covered|default:"General revision" }}
+                </div>
+              </div>
+              <span class="badge badge-success">{{ lesson.record.attendance|default:"Present" }}</span>
+            </div>
+          {% empty %}
+            <p style="font-size: 0.85rem; color: var(--text-muted);">No lessons recorded yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="book-x" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No confirmed active tuitions</h3>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          Once a parent confirms your demo and agrees on terms, the ongoing engagement will appear here.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

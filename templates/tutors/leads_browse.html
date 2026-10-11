@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Tuition Leads — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Tuition Opportunities Feed</h2>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">
+        Browse verified parent leads. Unlock parent contact details with your wallet credits (1 Credit per unlock).
+      </p>
+    </div>
+
+    <!-- Quick filter inputs -->
+    <form method="get" class="flex gap-2">
+      <input type="text" name="subject" value="{{ sub_q }}" class="form-control" placeholder="Filter subject..." style="width: 180px;">
+      <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="Filter city/locality..." style="width: 180px;">
+      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for lead in leads %}
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="card-body">
+          <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+            <div class="flex items-center gap-2">
+              <span class="badge badge-primary">{{ lead.lead_id }}</span>
+              <span class="badge badge-secondary">{{ lead.get_tuition_type_display }}</span>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.created_at|timesince }} ago</span>
+          </div>
+
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
+            {{ lead.title }}
+          </h3>
+
+          <div style="font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
+            <div><strong>Subjects:</strong> {{ lead.subjects }}</div>
+            <div><strong>Class & Board:</strong> {{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+            <div><strong>Locality:</strong> {{ lead.locality }}, {{ lead.city }} {% if lead.landmark %}(Near {{ lead.landmark }}){% endif %}</div>
+            <div><strong>Schedule:</strong> {{ lead.days_per_week }} days/week • {{ lead.preferred_timing }}</div>
+            {% if lead.learning_goals %}
+              <div style="color: #64748b; font-style: italic; margin-top: 0.25rem;">"{{ lead.learning_goals|truncatewords:20 }}"</div>
+            {% endif %}
+          </div>
+
+          <!-- Confidentiality box -->
+          {% if lead.lead_id in unlocked_lead_ids %}
+            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 0.5rem; padding: 0.75rem; font-size: 0.85rem; color: #065f46; margin-bottom: 1rem;">
+              <div class="flex items-center gap-1" style="font-weight: 700; margin-bottom: 0.25rem;">
+                <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> Unlocked Contact Details
+              </div>
+              <div>Parent: <strong>{{ lead.parent_contact_name }}</strong></div>
+              <div>Phone: <strong>{{ lead.contact_phone }}</strong></div>
+              {% if lead.contact_email %}<div>Email: {{ lead.contact_email }}</div>{% endif %}
+              <div>Address: {{ lead.full_address }}</div>
+            </div>
+          {% else %}
+            <div style="background: rgba(79, 70, 229, 0.04); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.8rem; color: #334155; margin-bottom: 1rem;">
+              <i data-lucide="lock" style="width: 13px; height: 13px; display: inline;"></i> Parent Contact Details are masked. Spend 1 credit to reveal phone, address & call parent directly.
+            </div>
+          {% endif %}
+        </div>
+
+        <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Offered Budget</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
+          </div>
+
+          <div class="flex gap-2">
+            {% if lead.lead_id in unlocked_lead_ids %}
+              <a href="tel:{{ lead.contact_phone }}" class="btn btn-success btn-sm">
+                <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Call Parent
+              </a>
+            {% else %}
+              <form method="post" onsubmit="return confirm('Spend 1 contact credit to unlock parent phone and address for lead {{ lead.lead_id }}?');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="unlock">
+                <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i data-lucide="unlock" style="width: 14px; height: 14px;"></i> Unlock Contact (1 Credit)
+                </button>
+              </form>
+            {% endif %}
+
+            <!-- Apply proposal button / modal trigger -->
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('apply-modal-{{ lead.lead_id }}').style.display='flex'">
+              Apply Proposal
+            </button>
+          </div>
+        </div>
+
+        <!-- Apply Proposal Modal Dialog -->
+        <div id="apply-modal-{{ lead.lead_id }}" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem;">
+          <div class="card" style="max-width: 500px; width: 100%;">
+            <div class="card-body">
+              <div class="flex justify-between items-center" style="margin-bottom: 1rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 700;">Submit Proposal for {{ lead.lead_id }}</h3>
+                <button type="button" onclick="document.getElementById('apply-modal-{{ lead.lead_id }}').style.display='none'" style="border: none; background: none; cursor: pointer; font-size: 1.25rem;">&times;</button>
+              </div>
+
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="apply">
+                <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+
+                <div class="form-group">
+                  <label class="form-label">Proposed Monthly Fee ({{ company.currency_symbol }})</label>
+                  <input type="number" name="proposed_fee" class="form-control" value="{{ lead.budget_amount }}" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Cover Note / Message to Parent</label>
+                  <textarea name="cover_note" class="form-control" rows="4" placeholder="Highlight your qualifications, experience with this board/syllabus, and how you will help the student..." required></textarea>
+                </div>
+
+                <div class="flex justify-between gap-2" style="margin-top: 1rem;">
+                  <button type="button" class="btn btn-secondary" onclick="document.getElementById('apply-modal-{{ lead.lead_id }}').style.display='none'">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    {% empty %}
+      <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center;">
+        <i data-lucide="clipboard-x" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No leads matching filters</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+          Clear search parameters or check back later.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if leads.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem;">
+      {% if leads.has_previous %}
+        <a href="?page={{ leads.previous_page_number }}&subject={{ sub_q }}&city={{ city_q }}" class="btn btn-secondary btn-sm">&larr; Previous</a>
+      {% endif %}
+      <span style="padding: 0.4rem 0.8rem; font-size: 0.875rem; font-weight: 600;">
+        Page {{ leads.number }} of {{ leads.paginator.num_pages }}
+      </span>
+      {% if leads.has_next %}
+        <a href="?page={{ leads.next_page_number }}&subject={{ sub_q }}&city={{ city_q }}" class="btn btn-secondary btn-sm">Next &rarr;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

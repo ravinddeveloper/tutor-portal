@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 900px;">
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Step-by-Step Guide</span>
+    <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text);">How Tuition Discovery Works</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.5rem;">
+      Whether you are a parent seeking excellence or a dedicated educator, our platform makes pairing seamless.
+    </p>
+  </div>
+
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-body" style="padding: 2.5rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="users"></i> For Parents & Guardians
+      </h2>
+
+      <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Submit Your Learning Goals</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Specify your student's board (CBSE, ICSE, IB, State), class, weak topics, budget, and preferred days.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Smart Tutor Recommendations</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Our weighted matching engine calculates location proximity, verified qualification scores, and subject expertise to suggest top candidates.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Book a Free Demo Class</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Meet the educator in person at your residence or over a live video demo. Evaluate their teaching approach firsthand.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">4</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Confirm & Track Academic Milestones</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Confirm tuition schedules, review regular class notes and attendance, and access monthly student progress reports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" style="padding: 2.5rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="award"></i> For Tutors & Subject Teachers
+      </h2>
+
+      <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Create & Verify Your Profile</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Upload degrees, ID proof, set your service radius (in km), fee expectations, and weekly availability slots.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Browse Real-Time Tuition Jobs</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">View verified student requirements matching your subjects and geographic localities.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Unlock Contact or Apply Directly</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Use contact credits to access genuine parent phone numbers or submit structured tuition proposals.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">4</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Schedule Demos & Grow Your Teaching Business</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">Demonstrate your teaching talent, confirm high-paying monthly engagements, and collect 5-star verified reviews.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

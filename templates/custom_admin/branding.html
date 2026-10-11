@@ -1,0 +1,110 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Dynamic Company Branding & Business Settings — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Dynamic Company Branding & Settings</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Customize company profile, currency, taxes, contact information, and platform legal policies without touching code
+  </p>
+</div>
+
+<div class="card" style="padding: 2.25rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 1.25rem;">
+      1. Platform Identity & Contact Details
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="form-group">
+        <label class="form-label">Company Name</label>
+        <input type="text" name="company_name" class="form-control" value="{{ company.company_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tagline / Mission</label>
+        <input type="text" name="tagline" class="form-control" value="{{ company.tagline }}" required>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="form-group">
+        <label class="form-label">Support Email Address</label>
+        <input type="email" name="support_email" class="form-control" value="{{ company.support_email }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Support Phone Number</label>
+        <input type="text" name="support_phone" class="form-control" value="{{ company.support_phone }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">WhatsApp Helpline Number</label>
+        <input type="text" name="whatsapp_number" class="form-control" value="{{ company.whatsapp_number }}" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Official Office Address</label>
+      <input type="text" name="office_address" class="form-control" value="{{ company.office_address }}" required>
+    </div>
+
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 2rem 0 1.25rem;">
+      2. Currency, Taxation & Invoicing
+    </h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div class="form-group">
+        <label class="form-label">Currency Symbol</label>
+        <input type="text" name="currency_symbol" class="form-control" value="{{ company.currency_symbol }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Currency Code</label>
+        <input type="text" name="currency_code" class="form-control" value="{{ company.currency_code }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tax Name</label>
+        <input type="text" name="tax_name" class="form-control" value="{{ company.tax_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Tax Rate (%)</label>
+        <input type="number" name="tax_percentage" class="form-control" value="{{ company.tax_percentage }}" step="0.1" required>
+      </div>
+    </div>
+
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 2rem 0 1.25rem;">
+      3. Disclosures & Legal Statements
+    </h3>
+
+    <div class="form-group">
+      <label class="form-label">Terms & Conditions Statement</label>
+      <textarea name="terms_and_conditions" class="form-control" rows="3">{{ company.terms_and_conditions }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Privacy Policy Statement</label>
+      <textarea name="privacy_policy" class="form-control" rows="3">{{ company.privacy_policy }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Refund Policy Statement</label>
+      <textarea name="refund_policy" class="form-control" rows="3">{{ company.refund_policy }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Commission Policy Statement</label>
+      <textarea name="commission_policy" class="form-control" rows="3">{{ company.commission_policy }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+      <i data-lucide="check" style="width: 18px; height: 18px;"></i> Save Dynamic Branding Settings
+    </button>
+  </form>
+</div>
+{% endblock %}

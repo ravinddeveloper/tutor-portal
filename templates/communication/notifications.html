@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 800px;">
+  
+  <div class="flex items-center justify-between" style="margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--text);">Notifications</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Lead alerts, demo updates, and platform notices</p>
+    </div>
+
+    {% if notifications %}
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="mark_all_read">
+        <button type="submit" class="btn btn-secondary btn-sm">
+          <i data-lucide="check-check" style="width: 14px; height: 14px;"></i> Mark All as Read
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div style="display: flex; flex-direction: column;">
+      {% for notif in notifications %}
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; {% if not notif.is_read %}background: var(--primary-light);{% endif %}">
+          <div class="flex items-start gap-3">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; color: var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: var(--card-shadow); flex-shrink: 0; margin-top: 2px;">
+              <i data-lucide="bell" style="width: 18px; height: 18px;"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text);">{{ notif.title }}</h4>
+                {% if not notif.is_read %}<span class="badge badge-primary" style="font-size: 0.65rem;">New</span>{% endif %}
+              </div>
+              <p style="font-size: 0.85rem; color: #475569; margin-top: 0.25rem; line-height: 1.4;">{{ notif.message }}</p>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+                {{ notif.created_at|timesince }} ago
+              </div>
+            </div>
+          </div>
+
+          {% if notif.action_url %}
+            <a href="{{ notif.action_url }}" class="btn btn-secondary btn-sm" style="flex-shrink: 0; font-size: 0.775rem;">
+              View &rarr;
+            </a>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+          <i data-lucide="bell-off" style="width: 44px; height: 44px; margin: 0 auto 0.5rem;"></i>
+          <p>You have no notifications at this time.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

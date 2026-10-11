@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Weekly Availability — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div class="card">
+    <div class="card-body" style="padding: 2.25rem;">
+      <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text);">Weekly Availability Schedule</h2>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Select the slots when you are available for home visits or online sessions. The matching engine matches you with parents seeking these exact slots.
+        </p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div style="overflow-x: auto; margin-bottom: 2rem;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+            <thead>
+              <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: center;">
+                <th style="padding: 1rem; text-align: left;">Day of Week</th>
+                {% for slot_val, slot_label in slots %}
+                  <th style="padding: 1rem;">
+                    <div>{{ slot_label }}</div>
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for day_val, day_label in days %}
+                <tr style="border-bottom: 1px solid var(--border); text-align: center;">
+                  <td style="padding: 1rem; text-align: left; font-weight: 700; color: var(--text);">
+                    {{ day_label }}
+                  </td>
+                  {% for slot_val, slot_label in slots %}
+                    <td style="padding: 1rem;">
+                      <label style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                        <input type="checkbox" name="slots" value="{{ day_val }}-{{ slot_val }}" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;"
+                          {% for s in existing_slots %}{% if s == day_val|stringformat:"i"|add:"-"|add:slot_val %}checked{% endif %}{% endfor %}>
+                      </label>
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Save Weekly Timetable
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

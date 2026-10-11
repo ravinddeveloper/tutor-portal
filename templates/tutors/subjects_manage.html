@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Teaching Subjects — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 900px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Add Subject Form -->
+    <div style="grid-column: span 1;">
+      <div class="card" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">Add Teaching Subject</h3>
+        
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="add">
+          
+          <div class="form-group">
+            <label class="form-label">Subject Name</label>
+            <input type="text" name="subject_name" class="form-control" placeholder="e.g. Mathematics, Chemistry" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Target Classes</label>
+            <input type="text" name="classes_offered" class="form-control" placeholder="e.g. Class 9-10, Class 11-12" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Curriculum / Boards</label>
+            <input type="text" name="curriculum" class="form-control" value="CBSE, ICSE, State Board" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Monthly Expected Fee ({{ company.currency_symbol }})</label>
+            <input type="number" name="fee_per_month" class="form-control" value="5000" step="100" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Subject
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Existing Subjects Table -->
+    <div style="grid-column: span 2;">
+      <div class="card" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">Configured Subjects ({{ subjects.count }})</h3>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+            <thead>
+              <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+                <th style="padding: 0.75rem 1rem;">Subject</th>
+                <th style="padding: 0.75rem 1rem;">Classes</th>
+                <th style="padding: 0.75rem 1rem;">Fee</th>
+                <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in subjects %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ sub.subject_name }}</td>
+                  <td style="padding: 0.75rem 1rem; color: #475569;">{{ sub.classes_offered }}</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--primary);">{{ company.currency_symbol }}{{ sub.fee_per_month }}</td>
+                  <td style="padding: 0.75rem 1rem; text-align: right;">
+                    <form method="post" style="display: inline;" onsubmit="return confirm('Remove this subject?');">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="subject_id" value="{{ sub.id }}">
+                      <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">
+                        Remove
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    No subjects added yet. Add your teaching subjects on the left.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

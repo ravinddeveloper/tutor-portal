@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Tuition Opportunities & Leads — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+  
+  <div class="flex items-center justify-between" style="margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span class="badge badge-primary">Tuition Opportunities</span>
+      <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--text); margin-top: 0.35rem;">Live Tuition Requirements Board</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Home and online tuition requirements posted by students & parents across major locations
+      </p>
+    </div>
+
+    <div>
+      <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary">
+        <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i> Post a Requirement
+      </a>
+    </div>
+  </div>
+
+  <!-- Search Filter Bar -->
+  <div class="card" style="padding: 1.25rem; margin-bottom: 2rem;">
+    <form method="get" action="{% url 'leads:board' %}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+      <div>
+        <label class="form-label" style="font-size: 0.8rem;">Subject</label>
+        <input type="text" name="subject" value="{{ sub_q }}" class="form-control" placeholder="e.g. Mathematics, Physics">
+      </div>
+      <div>
+        <label class="form-label" style="font-size: 0.8rem;">City / Locality</label>
+        <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="e.g. Bengaluru, Indiranagar">
+      </div>
+      <div>
+        <label class="form-label" style="font-size: 0.8rem;">Tuition Type</label>
+        <select name="tuition_type" class="form-select">
+          <option value="">All Types</option>
+          <option value="HOME_TUITION" {% if type_q == 'HOME_TUITION' %}selected{% endif %}>Home Tuition</option>
+          <option value="ONLINE_TUITION" {% if type_q == 'ONLINE_TUITION' %}selected{% endif %}>Online Tuition</option>
+          <option value="TUTOR_LOCATION" {% if type_q == 'TUTOR_LOCATION' %}selected{% endif %}>At Tutor's Location</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: flex-end;">
+        <button type="submit" class="btn btn-secondary" style="width: 100%; height: 42px;">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i> Filter Leads
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Leads Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for lead in leads %}
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="card-body">
+          <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+            <span class="badge badge-primary">{{ lead.lead_id }}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.created_at|timesince }} ago</span>
+          </div>
+
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
+            {{ lead.title }}
+          </h3>
+
+          <div style="font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+            <div><strong>Subjects:</strong> {{ lead.subjects }}</div>
+            <div><strong>Class & Board:</strong> {{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+            <div><strong>Location:</strong> {{ lead.locality }}, {{ lead.city }}</div>
+            <div><strong>Mode:</strong> {{ lead.get_tuition_type_display }}</div>
+            <div><strong>Days / Schedule:</strong> {{ lead.days_per_week }} days/wk • {{ lead.preferred_timing }}</div>
+          </div>
+
+          <div style="background: rgba(79, 70, 229, 0.04); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.8rem; color: #334155;">
+            <i data-lucide="lock" style="width: 12px; height: 12px; display: inline;"></i> Parent Phone: <em>Masked until unlocked</em>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Budget</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
+          </div>
+          <a href="{% url 'leads:detail' lead.lead_id %}" class="btn btn-outline-primary btn-sm">
+            View & Unlock &rarr;
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="grid-column: span 3; padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="clipboard-x" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No open leads found</h3>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          Try adjusting your search criteria or check back soon.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if leads.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem;">
+      {% if leads.has_previous %}
+        <a href="?page={{ leads.previous_page_number }}&subject={{ sub_q }}&city={{ city_q }}&tuition_type={{ type_q }}" class="btn btn-secondary btn-sm">&larr; Previous</a>
+      {% endif %}
+      <span style="padding: 0.4rem 0.8rem; font-size: 0.875rem; font-weight: 600;">
+        Page {{ leads.number }} of {{ leads.paginator.num_pages }}
+      </span>
+      {% if leads.has_next %}
+        <a href="?page={{ leads.next_page_number }}&subject={{ sub_q }}&city={{ city_q }}&tuition_type={{ type_q }}" class="btn btn-secondary btn-sm">Next &rarr;</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

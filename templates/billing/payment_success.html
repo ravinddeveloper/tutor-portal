@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful — {{ company.company_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .success-wrapper {
+    max-width: 760px;
+    margin: 3rem auto 6rem;
+    padding: 0 1.25rem;
+  }
+  .receipt-card {
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .success-badge-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    border: 4px solid #a7f3d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: #10b981;
+    animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+  }
+  .receipt-row:last-child {
+    border-bottom: none;
+  }
+  .receipt-label {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .receipt-value {
+    color: var(--text);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  @media print {
+    header, nav, footer, .no-print {
+      display: none !important;
+    }
+    .receipt-card {
+      box-shadow: none;
+      border: 1px solid #000000;
+      padding: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-wrapper">
+
+  <div class="receipt-card">
+
+    <!-- Success Icon & Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div class="success-badge-circle">
+        <i data-lucide="check" style="width: 44px; height: 44px; stroke-width: 3;"></i>
+      </div>
+      
+      <span class="badge badge-success" style="font-size: 0.85rem; padding: 0.3rem 0.8rem; margin-bottom: 0.5rem;">
+        Payment Verified & Cleared
+      </span>
+      <h1 style="font-size: 2rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">
+        {{ company.currency_symbol }}{{ payment.amount }} Paid Successfully
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+        Thank you, {{ user.display_name }}! A receipt copy has been sent to <strong>{{ user.email }}</strong>.
+      </p>
+    </div>
+
+    <!-- Active Privileges / Wallet Callout -->
+    {% if wallet %}
+      <div style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border: 1px solid #c7d2fe; border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <div class="flex items-center gap-3">
+          <div style="width: 42px; height: 42px; border-radius: 0.5rem; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="wallet" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.8rem; color: #4338ca; font-weight: 700; text-transform: uppercase;">Updated Wallet Balance</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: #1e1b4b;">
+              {{ wallet.total_balance }} <span style="font-size: 0.85rem; font-weight: 600;">Contact Unlock Credits</span>
+            </div>
+          </div>
+        </div>
+        <a href="{% url 'tutors:leads_browse' %}" class="btn btn-primary btn-sm no-print" style="box-shadow: none;">
+          Browse Leads &rarr;
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- Formal Receipt Details -->
+    <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
+      <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+        Official Transaction Receipt
+      </h3>
+
+      <div class="receipt-row">
+        <span class="receipt-label">Payment ID:</span>
+        <span class="receipt-value" style="font-family: monospace;">{{ payment.payment_id }}</span>
+      </div>
+
+      {% if invoice %}
+        <div class="receipt-row">
+          <span class="receipt-label">Tax Invoice Number:</span>
+          <span class="receipt-value" style="font-family: monospace;">{{ invoice.invoice_number }}</span>
+        </div>
+      {% endif %}
+
+      <div class="receipt-row">
+        <span class="receipt-label">Gateway Reference:</span>
+        <span class="receipt-value" style="font-family: monospace;">{{ payment.gateway_reference }}</span>
+      </div>
+
+      <div class="receipt-row">
+        <span class="receipt-label">Payment Method:</span>
+        <span class="receipt-value">{{ payment.get_method_display }}</span>
+      </div>
+
+      <div class="receipt-row">
+        <span class="receipt-label">Date & Time:</span>
+        <span class="receipt-value">{{ payment.created_at|date:"M d, Y, h:i A" }}</span>
+      </div>
+
+      <div class="receipt-row">
+        <span class="receipt-label">Billed To:</span>
+        <span class="receipt-value">{{ user.display_name }} ({{ user.email }})</span>
+      </div>
+
+      {% if invoice %}
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Purchased Items:</div>
+          {% for item in invoice.line_items.all %}
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.25rem 0;">
+              <span style="color: #334155; font-weight: 600;">{{ item.description }}</span>
+              <span style="font-weight: 700; color: var(--text);">{{ company.currency_symbol }}{{ item.total_price }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="no-print" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <button onclick="window.print()" class="btn btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <i data-lucide="printer" style="width: 16px; height: 16px;"></i>
+        <span>Print Receipt</span>
+      </button>
+
+      {% if invoice %}
+        <a href="{% url 'billing:invoice_detail' invoice.invoice_number %}" class="btn btn-secondary" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+          <span>View Tax Invoice</span>
+        </a>
+      {% endif %}
+
+      {% if user.is_tutor %}
+        <a href="{% url 'tutors:dashboard' %}" class="btn btn-primary" style="flex: 1.5; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+          <span>Go to Tutor Dashboard</span>
+        </a>
+      {% else %}
+        <a href="{% url 'parents:dashboard' %}" class="btn btn-primary" style="flex: 1.5; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+          <span>Go to Dashboard</span>
+        </a>
+      {% endif %}
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted);">
+      {{ company.company_name }} &bull; {{ company.office_address }} &bull; Phone: {{ company.support_phone }}
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

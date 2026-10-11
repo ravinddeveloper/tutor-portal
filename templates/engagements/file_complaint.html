@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Report an Issue / File Complaint — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 640px;">
+  <div class="card">
+    <div class="card-body" style="padding: 2.5rem;">
+      <div style="margin-bottom: 1.5rem;">
+        <span class="badge badge-warning" style="margin-bottom: 0.5rem;">Grievance & Support</span>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text);">Report an Issue or Dispute</h1>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Our dispute resolution desk investigates complaints regarding invalid contact details, no-shows, or payment disputes.
+        </p>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Issue Category</label>
+          <select name="category" class="form-select" required>
+            <option value="INVALID_CONTACT">Fake or Invalid Phone Number (Request Credit Refund)</option>
+            <option value="TUTOR_NO_SHOW">Tutor Did Not Attend Demo or Class</option>
+            <option value="PARENT_NO_RESPONSE">Parent Not Responding / Switched Off</option>
+            <option value="PAYMENT_DISPUTE">Tuition Fee or Payment Dispute</option>
+            <option value="UNPROFESSIONAL">Unprofessional Conduct</option>
+            <option value="OTHER">Other Inquiry / Assistance</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Associated Tuition Lead ID (Optional)</label>
+          <input type="text" name="lead_id" class="form-control" placeholder="e.g. TUT-874167">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Subject Headline</label>
+          <input type="text" name="subject" class="form-control" placeholder="e.g. Unreachable phone number for Indiranagar lead" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Detailed Description</label>
+          <textarea name="description" class="form-control" rows="5" placeholder="Provide full details of dates, calls attempted, or incident..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i data-lucide="send" style="width: 18px; height: 18px;"></i> Submit Grievance for Review
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

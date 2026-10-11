@@ -1,0 +1,91 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Reports & Analytics — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Reports & Marketplace Intelligence</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Geographical demand metrics, tuition formats distribution, and downloadable CSV records
+      </p>
+    </div>
+
+    <!-- One-click CSV Export Buttons -->
+    <div class="flex gap-2 flex-wrap">
+      <a href="?export=leads" class="btn btn-secondary btn-sm">
+        <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px;"></i> Export Leads CSV
+      </a>
+      <a href="?export=tutors" class="btn btn-secondary btn-sm">
+        <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px;"></i> Export Tutors CSV
+      </a>
+      <a href="?export=financials" class="btn btn-primary btn-sm">
+        <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px;"></i> Export Commissions CSV
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="margin-bottom: 2rem;">
+  <!-- City Leads Distribution -->
+  <div class="card" style="padding: 1.75rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">
+      <i data-lucide="map-pin" style="width: 16px; height: 16px; display: inline;"></i> Demand by City / Region
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for item in city_leads %}
+        <div>
+          <div class="flex justify-between" style="font-size: 0.85rem; margin-bottom: 0.25rem;">
+            <span style="font-weight: 600;">{{ item.city|default:"Bengaluru" }}</span>
+            <span style="font-weight: 800; color: var(--primary);">{{ item.count }} Leads</span>
+          </div>
+          <div style="background: #e2e8f0; height: 6px; border-radius: 9999px;">
+            <div style="background: var(--primary); height: 6px; width: {% widthratio item.count 10 100 %}%; border-radius: 9999px;"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Tuition Type Distribution -->
+  <div class="card" style="padding: 1.75rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">
+      <i data-lucide="home" style="width: 16px; height: 16px; display: inline;"></i> Tuition Format Breakdown
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for item in mode_leads %}
+        <div>
+          <div class="flex justify-between" style="font-size: 0.85rem; margin-bottom: 0.25rem;">
+            <span style="font-weight: 600;">{{ item.tuition_type|default:"Home Tuition" }}</span>
+            <span style="font-weight: 800; color: var(--secondary);">{{ item.count }}</span>
+          </div>
+          <div style="background: #e2e8f0; height: 6px; border-radius: 9999px;">
+            <div style="background: var(--secondary); height: 6px; width: {% widthratio item.count 10 100 %}%; border-radius: 9999px;"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Tutor Teaching Preferences -->
+  <div class="card" style="padding: 1.75rem;">
+    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">
+      <i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> Educator Supply Preferences
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {% for item in tutor_modes %}
+        <div>
+          <div class="flex justify-between" style="font-size: 0.85rem; margin-bottom: 0.25rem;">
+            <span style="font-weight: 600;">{{ item.teaching_mode|default:"Both Home & Online" }}</span>
+            <span style="font-weight: 800; color: #10b981;">{{ item.count }} Tutors</span>
+          </div>
+          <div style="background: #e2e8f0; height: 6px; border-radius: 9999px;">
+            <div style="background: #10b981; height: 6px; width: {% widthratio item.count 10 100 %}%; border-radius: 9999px;"></div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

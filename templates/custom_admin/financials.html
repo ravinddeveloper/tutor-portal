@@ -1,0 +1,131 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Financial Operations & Invoices — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Financial Operations & Billing</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Review generated invoices, verified payment webhooks/transactions, and process refunds
+  </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8" style="margin-bottom: 2rem;">
+  
+  <!-- Invoices Card -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Generated Invoices</h3>
+    </div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">Invoice #</th>
+            <th style="padding: 0.75rem 1rem;">User</th>
+            <th style="padding: 0.75rem 1rem;">Type</th>
+            <th style="padding: 0.75rem 1rem;">Amount</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+            <th style="padding: 0.75rem 1rem; text-align: right;">View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invoices %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ inv.invoice_number }}</td>
+              <td style="padding: 0.75rem 1rem;">{{ inv.user.display_name }}</td>
+              <td style="padding: 0.75rem 1rem; font-size: 0.75rem;">{{ inv.get_invoice_type_display }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--primary);">{{ company.currency_symbol }}{{ inv.total_amount }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge {% if inv.status == 'PAID' %}badge-success{% else %}badge-warning{% endif %}" style="font-size: 0.65rem;">
+                  {{ inv.get_status_display }}
+                </span>
+              </td>
+              <td style="padding: 0.75rem 1rem; text-align: right;">
+                <a href="{% url 'billing:invoice_detail' inv.invoice_number %}" target="_blank" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+                  Receipt
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">No invoices generated.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payments Card -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Verified Payment Transactions</h3>
+    </div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">Payment ID</th>
+            <th style="padding: 0.75rem 1rem;">User</th>
+            <th style="padding: 0.75rem 1rem;">Method</th>
+            <th style="padding: 0.75rem 1rem;">Amount</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+            <th style="padding: 0.75rem 1rem; text-align: right;">Refund</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pay in payments %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ pay.payment_id }}</td>
+              <td style="padding: 0.75rem 1rem;">{{ pay.user.display_name }}</td>
+              <td style="padding: 0.75rem 1rem; font-size: 0.75rem;">{{ pay.get_method_display }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #10b981;">{{ company.currency_symbol }}{{ pay.amount }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge {% if pay.status == 'SUCCESSFUL' %}badge-success{% elif pay.status == 'REFUNDED' %}badge-secondary{% else %}badge-danger{% endif %}" style="font-size: 0.65rem;">
+                  {{ pay.get_status_display }}
+                </span>
+              </td>
+              <td style="padding: 0.75rem 1rem; text-align: right;">
+                {% if pay.status == 'SUCCESSFUL' %}
+                  <button type="button" class="btn btn-danger btn-sm" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;" onclick="document.getElementById('refund-modal-{{ pay.id }}').style.display='flex'">
+                    Refund
+                  </button>
+
+                  <div id="refund-modal-{{ pay.id }}" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem; text-align: left;">
+                    <div class="card" style="max-width: 420px; width: 100%;">
+                      <div class="card-body">
+                        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Process Refund for {{ pay.payment_id }}</h4>
+                        <form method="post">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="process_refund">
+                          <input type="hidden" name="payment_id" value="{{ pay.id }}">
+                          <div class="form-group">
+                            <label class="form-label">Refund Amount ({{ company.currency_symbol }})</label>
+                            <input type="number" name="amount" class="form-control" value="{{ pay.amount }}" required>
+                          </div>
+                          <div class="form-group">
+                            <label class="form-label">Reason</label>
+                            <input type="text" name="reason" class="form-control" placeholder="Audit refund note..." required>
+                          </div>
+                          <div class="flex justify-between gap-2">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('refund-modal-{{ pay.id }}').style.display='none'">Cancel</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Authorize Refund</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">N/A</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">No payments recorded.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

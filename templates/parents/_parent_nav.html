@@ -1,0 +1,58 @@
+<div class="card" style="margin-bottom: 1.5rem; background: var(--surface); border: 1px solid var(--border);">
+  <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    
+    <!-- Parent Profile Info -->
+    <div class="flex items-center gap-3">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);">
+        {{ request.user.first_name|slice:":1"|default:"P" }}
+      </div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em;">{{ request.user.display_name }}</h2>
+          <span class="badge badge-primary">
+            <i data-lucide="user-check" style="width: 12px; height: 12px;"></i> Parent Portal
+          </span>
+        </div>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.15rem;">{{ request.user.locality }}, {{ request.user.city }}</p>
+      </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div>
+      <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="border-radius: 9999px;">
+        <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Post New Requirement
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Modern Horizontal Segmented Navigation Pills -->
+<div style="margin-bottom: 2rem;">
+  <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+    
+    <a href="{% url 'parents:dashboard' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'dashboard' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="layout-dashboard" style="width: 15px; height: 15px;"></i> Overview
+    </a>
+
+    <a href="{% url 'parents:requirements' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'requirements' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="list" style="width: 15px; height: 15px;"></i> My Requirements
+    </a>
+
+    <a href="{% url 'parents:demos' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'demos' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="calendar" style="width: 15px; height: 15px;"></i> Demo Classes
+    </a>
+
+    <a href="{% url 'parents:tuitions' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'tuitions' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="book-open" style="width: 15px; height: 15px;"></i> Ongoing Tuitions
+    </a>
+
+    <a href="{% url 'parents:students' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'students' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="users" style="width: 15px; height: 15px;"></i> Student Profiles
+    </a>
+
+    <a href="{% url 'tutors:directory' %}" class="btn btn-sm btn-secondary" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="search" style="width: 15px; height: 15px;"></i> Find More Tutors
+    </a>
+
+  </div>
+</div>

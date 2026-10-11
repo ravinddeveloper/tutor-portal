@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Verified Parent & Student Reviews — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 900px;">
+  <div style="text-align: center; margin-bottom: 3.5rem;">
+    <span class="badge badge-warning" style="margin-bottom: 0.5rem;">Verified Feedback</span>
+    <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text);">Parent & Student Reviews</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.5rem;">
+      Genuine feedback from parents and students after verified demo classes and completed tuitions
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for rev in reviews %}
+      <div class="card" style="padding: 1.75rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+          <div class="flex items-center gap-1" style="color: var(--accent);">
+            {% for i in "12345" %}
+              <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
+            {% endfor %}
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">{{ rev.created_at|date:"M d, Y" }}</span>
+        </div>
+
+        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">"{{ rev.title }}"</h4>
+        <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.25rem;">{{ rev.comment }}</p>
+
+        <div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 0.75rem; font-size: 0.825rem;">
+          <span style="font-weight: 700;">{{ rev.parent.display_name }}</span>
+          <a href="{% url 'tutors:detail' rev.tutor.pk %}" style="color: var(--primary); font-weight: 600;">
+            Tutor: {{ rev.tutor.display_name }} &rarr;
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center; color: var(--text-muted);">
+        <p>No verified reviews recorded yet.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Search Verified Home & Online Tutors — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+  
+  <!-- Header Banner -->
+  <div style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--text);">Verified Tutor Directory</h1>
+    <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
+      Browse background-checked private teachers, home tutors, and online specialists
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    
+    <!-- Filter Sidebar -->
+    <div style="grid-column: span 1;">
+      <div class="card" style="padding: 1.5rem; position: sticky; top: 90px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+          <span>Filter Tutors</span>
+          <a href="{% url 'tutors:directory' %}" style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Reset All</a>
+        </h3>
+
+        <form method="get" action="{% url 'tutors:directory' %}">
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" value="{{ subject_q }}" class="form-control" placeholder="e.g. Mathematics, Physics">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">City / Locality</label>
+            <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="e.g. Bengaluru, Indiranagar">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Teaching Mode</label>
+            <select name="teaching_mode" class="form-select">
+              <option value="">All Modes</option>
+              <option value="HOME_ONLY" {% if mode_q == 'HOME_ONLY' %}selected{% endif %}>Home Tuition</option>
+              <option value="ONLINE_ONLY" {% if mode_q == 'ONLINE_ONLY' %}selected{% endif %}>Online Tuition</option>
+              <option value="BOTH_HOME_ONLINE" {% if mode_q == 'BOTH_HOME_ONLINE' %}selected{% endif %}>Both Home & Online</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Gender Preference</label>
+            <select name="gender" class="form-select">
+              <option value="">Any Gender</option>
+              <option value="MALE" {% if gender_q == 'MALE' %}selected{% endif %}>Male Tutor</option>
+              <option value="FEMALE" {% if gender_q == 'FEMALE' %}selected{% endif %}>Female Tutor</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sort By</label>
+            <select name="sort" class="form-select">
+              <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Highest Rating</option>
+              <option value="experience" {% if sort_by == 'experience' %}selected{% endif %}>Most Experienced</option>
+              <option value="fee_asc" {% if sort_by == 'fee_asc' %}selected{% endif %}>Fee: Low to High</option>
+              <option value="fee_desc" {% if sort_by == 'fee_desc' %}selected{% endif %}>Fee: High to Low</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+            <i data-lucide="filter" style="width: 16px; height: 16px;"></i> Apply Filters
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tutors Listing Grid -->
+    <div style="grid-column: span 3;">
+      <div style="margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+        <span>Showing <strong>{{ tutors|length }}</strong> of {{ total_results }} verified tutors</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        {% for tutor in tutors %}
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="card-body">
+              <div class="flex items-center gap-3" style="margin-bottom: 1rem;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;">
+                  {{ tutor.display_name|slice:":1" }}
+                </div>
+                <div>
+                  <div class="flex items-center gap-1">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">{{ tutor.display_name }}</h3>
+                    <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #10b981;" title="Verified Profile"></i>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">{{ tutor.highest_qualification }}</div>
+                </div>
+              </div>
+
+              <p style="font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.75rem; line-height: 1.4;">
+                {{ tutor.headline }}
+              </p>
+
+              <div class="flex flex-wrap gap-1" style="margin-bottom: 1rem;">
+                {% for sub in tutor.subjects.all %}
+                  <span class="badge badge-secondary" style="font-size: 0.7rem;">{{ sub.subject_name }}</span>
+                {% endfor %}
+              </div>
+
+              <div style="font-size: 0.825rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
+                <div><i data-lucide="map-pin" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.primary_locality }}, {{ tutor.primary_city }} ({{ tutor.service_radius_km }} km radius)</div>
+                <div><i data-lucide="monitor" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.get_teaching_mode_display }}</div>
+                <div><i data-lucide="clock" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.experience_years }} Years Teaching Experience</div>
+                <div><i data-lucide="star" style="width: 14px; height: 14px; display: inline; color: var(--accent);"></i> {{ tutor.average_rating }} ★ ({{ tutor.total_reviews }} reviews)</div>
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Estimate</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">{{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo</div>
+              </div>
+              <a href="{% url 'tutors:detail' tutor.pk %}" class="btn btn-primary btn-sm">
+                View Full Profile &rarr;
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center;">
+            <i data-lucide="search-x" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1rem;"></i>
+            <h3 style="font-size: 1.25rem; font-weight: 700;">No tutors found matching your search</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+              Try clearing specific filters or search for another subject or city.
+            </p>
+            <div style="margin-top: 1.5rem;">
+              <a href="{% url 'tutors:directory' %}" class="btn btn-secondary">Clear Filters</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if tutors.has_other_pages %}
+        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem;">
+          {% if tutors.has_previous %}
+            <a href="?page={{ tutors.previous_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">&larr; Previous</a>
+          {% endif %}
+          <span style="padding: 0.4rem 0.8rem; font-size: 0.875rem; font-weight: 600; color: var(--text);">
+            Page {{ tutors.number }} of {{ tutors.paginator.num_pages }}
+          </span>
+          {% if tutors.has_next %}
+            <a href="?page={{ tutors.next_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">Next &rarr;</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

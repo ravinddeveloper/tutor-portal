@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Tutor Profile — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 900px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div class="card">
+    <div class="card-body" style="padding: 2.25rem;">
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem;">Edit Profile Information</h2>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">Phone Number (Private)</label>
+            <input type="text" name="phone_number" class="form-control" value="{{ user.phone_number }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select name="gender" class="form-select">
+              <option value="MALE" {% if tutor.gender == 'MALE' %}selected{% endif %}>Male</option>
+              <option value="FEMALE" {% if tutor.gender == 'FEMALE' %}selected{% endif %}>Female</option>
+              <option value="OTHER" {% if tutor.gender == 'OTHER' %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Professional Headline</label>
+          <input type="text" name="headline" class="form-control" value="{{ tutor.headline }}" required placeholder="e.g. Senior CBSE & ICSE Mathematics Faculty with 8+ Yrs Exp">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Teaching Philosophy & Bio</label>
+          <textarea name="bio" class="form-control" rows="5" required placeholder="Describe your methodology, exam preparation track record, and strengths...">{{ tutor.bio }}</textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label class="form-label">Highest Qualification</label>
+            <input type="text" name="highest_qualification" class="form-control" value="{{ tutor.highest_qualification }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">College / Institution</label>
+            <input type="text" name="institution_name" class="form-control" value="{{ tutor.institution_name }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Years of Experience</label>
+            <input type="number" name="experience_years" class="form-control" value="{{ tutor.experience_years }}" min="0" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label class="form-label">Teaching Mode</label>
+            <select name="teaching_mode" class="form-select">
+              <option value="BOTH_HOME_ONLINE" {% if tutor.teaching_mode == 'BOTH_HOME_ONLINE' %}selected{% endif %}>Both Home & Online Tuition</option>
+              <option value="HOME_ONLY" {% if tutor.teaching_mode == 'HOME_ONLY' %}selected{% endif %}>Home Tuition Only</option>
+              <option value="ONLINE_ONLY" {% if tutor.teaching_mode == 'ONLINE_ONLY' %}selected{% endif %}>Online Tuition Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hourly Rate ({{ company.currency_symbol }})</label>
+            <input type="number" name="hourly_rate" class="form-control" value="{{ tutor.hourly_rate }}" step="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Monthly Estimate ({{ company.currency_symbol }})</label>
+            <input type="number" name="monthly_rate_estimate" class="form-control" value="{{ tutor.monthly_rate_estimate }}" step="100">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label class="form-label">Primary City</label>
+            <input type="text" name="primary_city" class="form-control" value="{{ tutor.primary_city }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary Locality</label>
+            <input type="text" name="primary_locality" class="form-control" value="{{ tutor.primary_locality }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service Radius (KM)</label>
+            <input type="number" name="service_radius_km" class="form-control" value="{{ tutor.service_radius_km }}" min="1">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">Languages Spoken</label>
+            <input type="text" name="languages_spoken" class="form-control" value="{{ tutor.languages_spoken }}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Online Equipment / Tools</label>
+            <input type="text" name="online_tools" class="form-control" value="{{ tutor.online_tools }}" placeholder="e.g. Zoom, Pen Tablet, Whiteboard">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
+          <i data-lucide="save" style="width: 18px; height: 18px;"></i> Save Changes
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

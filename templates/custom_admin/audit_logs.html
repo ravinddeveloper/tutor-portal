@@ -1,0 +1,51 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}System Audit Logs — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">System Audit Trail</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Immutable chronological record of administrative actions, commission adjustments, and verification updates
+  </p>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 0.75rem 1rem;">Timestamp</th>
+          <th style="padding: 0.75rem 1rem;">Administrator</th>
+          <th style="padding: 0.75rem 1rem;">Action</th>
+          <th style="padding: 0.75rem 1rem;">Target Resource</th>
+          <th style="padding: 0.75rem 1rem;">Details & Log Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.8rem;">
+              {{ log.created_at|date:"M d, Y - h:i A" }}
+            </td>
+            <td style="padding: 0.75rem 1rem; font-weight: 700;">
+              {{ log.user.display_name|default:"System Engine" }}
+            </td>
+            <td style="padding: 0.75rem 1rem;">
+              <span class="badge badge-primary" style="font-size: 0.7rem;">{{ log.action }}</span>
+            </td>
+            <td style="padding: 0.75rem 1rem; font-weight: 600;">
+              {{ log.resource_type }}{% if log.resource_id %} #{{ log.resource_id }}{% endif %}
+            </td>
+            <td style="padding: 0.75rem 1rem; color: #475569;">
+              {{ log.details|default:"Administrative state transition completed." }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No audit events logged yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

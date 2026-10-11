@@ -1,0 +1,225 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Executive Administration Dashboard — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Executive Business Dashboard</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Real-time platform performance metrics, revenue ledger, and operational status
+      </p>
+    </div>
+
+    <div class="flex gap-2">
+      <a href="{% url 'custom_admin:reports' %}" class="btn btn-secondary btn-sm">
+        <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Reports
+      </a>
+      <a href="{% url 'custom_admin:branding' %}" class="btn btn-primary btn-sm">
+        <i data-lucide="settings" style="width: 14px; height: 14px;"></i> Platform Settings
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Primary Financial & Revenue KPIs -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
+  
+  <div class="card" style="padding: 1.5rem; border-left: 4px solid #10b981;">
+    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Collected Revenue</div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: #10b981; margin: 0.35rem 0;">
+      {{ company.currency_symbol }}{{ total_revenue }}
+    </div>
+    <div style="font-size: 0.775rem; color: var(--text-muted);">
+      Subs: {{ company.currency_symbol }}{{ subscription_revenue }} • Commission: {{ company.currency_symbol }}{{ commission_revenue }}
+    </div>
+  </div>
+
+  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary);">
+    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Tuition Leads</div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--primary); margin: 0.35rem 0;">
+      {{ total_leads }}
+    </div>
+    <div style="font-size: 0.775rem; color: var(--text-muted);">
+      {{ open_leads }} Open • {{ confirmed_leads }} Confirmed
+    </div>
+  </div>
+
+  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--secondary);">
+    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Verified Educators</div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--secondary); margin: 0.35rem 0;">
+      {{ verified_tutors }} / {{ total_tutors }}
+    </div>
+    <div style="font-size: 0.775rem; color: #d97706; font-weight: 600;">
+      {{ pending_verifications }} Awaiting Document Verification
+    </div>
+  </div>
+
+  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--accent);">
+    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Confirmed Tuitions</div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--accent); margin: 0.35rem 0;">
+      {{ active_engagements }}
+    </div>
+    <div style="font-size: 0.775rem; color: var(--text-muted);">
+      {{ scheduled_demos }} Demos in Pipeline
+    </div>
+  </div>
+
+</div>
+
+<!-- Operational Quick Warnings -->
+{% if pending_verifications > 0 or open_complaints > 0 %}
+  <div class="flex gap-4 flex-wrap" style="margin-bottom: 2rem;">
+    {% if pending_verifications > 0 %}
+      <div class="alert alert-warning flex-1" style="margin-bottom: 0;">
+        <div class="flex items-center gap-2">
+          <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
+          <span><strong>{{ pending_verifications }}</strong> tutor qualification documents pending review in verification queue.</span>
+        </div>
+        <a href="{% url 'custom_admin:tutors' %}?status=SUBMITTED" class="btn btn-secondary btn-sm" style="background: white;">Review Queue</a>
+      </div>
+    {% endif %}
+
+    {% if open_complaints > 0 %}
+      <div class="alert alert-error flex-1" style="margin-bottom: 0;">
+        <div class="flex items-center gap-2">
+          <i data-lucide="alert-octagon" style="width: 18px; height: 18px;"></i>
+          <span><strong>{{ open_complaints }}</strong> open complaints / refund requests from tutors or parents.</span>
+        </div>
+        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="background: white;">Resolve</a>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+<!-- Main Admin Grid: Recent Leads & Recent Tutors -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8" style="margin-bottom: 2rem;">
+  
+  <!-- Recent Tuition Leads -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Recent Tuition Requirements</h3>
+      <a href="{% url 'custom_admin:leads' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 600;">View All Leads &rarr;</a>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">ID</th>
+            <th style="padding: 0.75rem 1rem;">Subjects</th>
+            <th style="padding: 0.75rem 1rem;">City</th>
+            <th style="padding: 0.75rem 1rem;">Budget</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in recent_leads %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ lead.lead_id }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <div style="font-weight: 600;">{{ lead.subjects }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+              </td>
+              <td style="padding: 0.75rem 1rem;">{{ lead.locality }}, {{ lead.city }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge {% if lead.status == 'CONFIRMED' %}badge-success{% elif lead.status == 'OPEN' %}badge-primary{% else %}badge-secondary{% endif %}" style="font-size: 0.65rem;">
+                  {{ lead.get_status_display }}
+                </span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No leads recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Tutors -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Recently Registered Tutors</h3>
+      <a href="{% url 'custom_admin:tutors' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 600;">Manage Tutors &rarr;</a>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">Name</th>
+            <th style="padding: 0.75rem 1rem;">City</th>
+            <th style="padding: 0.75rem 1rem;">Qualification</th>
+            <th style="padding: 0.75rem 1rem;">Verification</th>
+            <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in recent_tutors %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ t.display_name }}</td>
+              <td style="padding: 0.75rem 1rem;">{{ t.primary_locality }}, {{ t.primary_city }}</td>
+              <td style="padding: 0.75rem 1rem; color: #475569;">{{ t.highest_qualification }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge {% if t.is_verified %}badge-success{% elif t.verification_status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}" style="font-size: 0.65rem;">
+                  {{ t.get_verification_status_display }}
+                </span>
+              </td>
+              <td style="padding: 0.75rem 1rem; text-align: right;">
+                <a href="{% url 'custom_admin:tutor_detail' t.pk %}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Inspect</a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No tutors registered yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Commission Ledger Snapshot -->
+<div class="card">
+  <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Pending Commission Receivables</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Outstanding platform commission on confirmed engagements</p>
+    </div>
+    <a href="{% url 'custom_admin:commissions' %}" class="btn btn-secondary btn-sm">Full Commission Ledger &rarr;</a>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 0.75rem 1rem;">ID</th>
+          <th style="padding: 0.75rem 1rem;">Tutor</th>
+          <th style="padding: 0.75rem 1rem;">Agreed Tuition Fee</th>
+          <th style="padding: 0.75rem 1rem;">Commission Rate</th>
+          <th style="padding: 0.75rem 1rem;">Total Due</th>
+          <th style="padding: 0.75rem 1rem;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in pending_commissions %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ c.record_id }}</td>
+            <td style="padding: 0.75rem 1rem; font-weight: 600;">{{ c.tutor.display_name }}</td>
+            <td style="padding: 0.75rem 1rem;">{{ company.currency_symbol }}{{ c.base_tuition_fee }}</td>
+            <td style="padding: 0.75rem 1rem;">{{ c.rate_applied }}%</td>
+            <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--primary);">{{ company.currency_symbol }}{{ c.total_amount }}</td>
+            <td style="padding: 0.75rem 1rem;">
+              <span class="badge badge-warning" style="font-size: 0.65rem;">{{ c.get_status_display }}</span>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No pending commission receivables. All settled!</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

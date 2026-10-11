@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}My Tuition Requirements — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "parents/_parent_nav.html" %}
+
+  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem;">
+    <div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">My Tuition Requirements ({{ requirements.count }})</h2>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">Manage your posted requirements, review tutor applications, and confirm tuitions</p>
+    </div>
+    <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm">+ Post New Requirement</a>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+    {% for req in requirements %}
+      <div class="card" style="padding: 1.75rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-primary">{{ req.lead_id }}</span>
+            <span class="badge {% if req.status == 'CONFIRMED' %}badge-success{% elif req.status == 'CLOSED' %}badge-secondary{% else %}badge-warning{% endif %}">
+              {{ req.get_status_display }}
+            </span>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">{{ req.title }}</h3>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Posted {{ req.created_at|date:"M d, Y" }}</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+          <div>
+            <div><strong>Subjects:</strong> {{ req.subjects }}</div>
+            <div><strong>Class:</strong> {{ req.student_class }} ({{ req.board_curriculum }})</div>
+          </div>
+          <div>
+            <div><strong>Location:</strong> {{ req.locality }}, {{ req.city }}</div>
+            <div><strong>Mode:</strong> {{ req.get_tuition_type_display }}</div>
+          </div>
+          <div>
+            <div><strong>Monthly Budget:</strong> {{ company.currency_symbol }}{{ req.budget_amount }}/mo</div>
+            <div><strong>Timing:</strong> {{ req.preferred_timing }}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div style="font-size: 0.85rem; color: #475569;">
+            <strong>{{ req.applications.count }}</strong> applications received • <strong>{{ req.total_unlocks }}</strong> tutors viewed contact details
+          </div>
+
+          <div class="flex gap-2">
+            <a href="{% url 'parents:matches' req.lead_id %}" class="btn btn-primary btn-sm">
+              <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> View Matched Tutors & Proposals
+            </a>
+
+            {% if req.status != 'CONFIRMED' %}
+              <a href="{% url 'parents:confirm_tuition' req.lead_id %}" class="btn btn-success btn-sm">
+                Confirm Tutor & Start
+              </a>
+            {% endif %}
+
+            <!-- Close/Open toggle -->
+            <form method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="requirement_id" value="{{ req.id }}">
+              {% if req.status == 'OPEN' %}
+                <input type="hidden" name="status" value="CLOSED">
+                <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Close this requirement from receiving further applications?');">Close Lead</button>
+              {% else %}
+                <input type="hidden" name="status" value="OPEN">
+                <button type="submit" class="btn btn-secondary btn-sm">Reopen Lead</button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="clipboard-list" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No requirements posted yet</h3>
+        <div style="margin-top: 1rem;">
+          <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary">Post Your Tuition Requirement</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

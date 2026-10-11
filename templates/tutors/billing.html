@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Wallet & Billing Management — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="margin-bottom: 2rem;">
+    <!-- Wallet Card -->
+    <div class="card" style="padding: 1.5rem; background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%); color: white;">
+      <div style="font-size: 0.85rem; opacity: 0.85; font-weight: 600;">Contact Credit Balance</div>
+      <div style="font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0;">
+        {{ wallet.total_balance }} <span style="font-size: 1rem; font-weight: 500;">Credits</span>
+      </div>
+      <div style="font-size: 0.8rem; opacity: 0.85; display: flex; gap: 1rem;">
+        <span>Free: {{ wallet.free_credits }}</span>
+        <span>Purchased: {{ wallet.purchased_credits }}</span>
+        <span>Bonus: {{ wallet.bonus_credits }}</span>
+      </div>
+    </div>
+
+    <!-- Active Subscription -->
+    <div class="card" style="padding: 1.5rem;">
+      <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Current Membership Plan</div>
+      <div style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0.5rem 0;">
+        {{ active_sub.plan.name|default:"Free Starter Plan" }}
+      </div>
+      <div style="font-size: 0.8rem; color: #10b981; font-weight: 600;">
+        {% if active_sub %}
+          Active until {{ active_sub.end_date }}
+        {% else %}
+          Standard Pay-As-You-Go Mode
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Recharge Trigger -->
+    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: center; text-align: center;">
+      <h4 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">Quick Recharge</h4>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.85rem;">1 Credit = 1 Parent Contact Unlock</p>
+      <a href="{% url 'billing:checkout' %}?type=credits&credits=15&amount=699" class="btn btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+        <i data-lucide="zap" style="width: 14px; height: 14px;"></i>
+        <span>Buy 15 Credits ({{ company.currency_symbol }}699) &rarr;</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Credit Packs Row -->
+  <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Recharge Contact Credits</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">Purchase credits on-demand with instant wallet top-up & replacement guarantee</p>
+      </div>
+      <a href="{% url 'core:pricing' %}" style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">View Membership Plans &rarr;</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div style="border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; text-align: center; background: var(--surface-hover);">
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Pack of 5 Credits</div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 0.35rem 0;">{{ company.currency_symbol }}299</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.85rem;">₹59 per unlock</p>
+        <a href="{% url 'billing:checkout' %}?type=credits&credits=5&amount=299" class="btn btn-secondary btn-sm" style="width: 100%;">Recharge &rarr;</a>
+      </div>
+
+      <div style="border: 2px solid var(--primary); border-radius: 0.75rem; padding: 1.25rem; text-align: center; background: var(--surface); position: relative;">
+        <span class="badge badge-primary" style="position: absolute; top: -10px; right: 12px; font-size: 0.7rem;">Popular</span>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">Pack of 15 Credits</div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 0.35rem 0;">{{ company.currency_symbol }}699</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.85rem;">₹46 per unlock</p>
+        <a href="{% url 'billing:checkout' %}?type=credits&credits=15&amount=699" class="btn btn-primary btn-sm" style="width: 100%;">Recharge &rarr;</a>
+      </div>
+
+      <div style="border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; text-align: center; background: var(--surface-hover);">
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">Pack of 35 Credits</div>
+        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin: 0.35rem 0;">{{ company.currency_symbol }}1299</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.85rem;">₹37 per unlock</p>
+        <a href="{% url 'billing:checkout' %}?type=credits&credits=35&amount=1299" class="btn btn-secondary btn-sm" style="width: 100%;">Recharge &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Commission Settlements (Important business rule!) -->
+  {% if commissions %}
+    <div class="card" style="margin-bottom: 2rem;">
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Commission Ledger & Settlements</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">
+          Platform service fee on confirmed tuition engagements (transparently calculated based on effective rules)
+        </p>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+          <thead>
+            <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+              <th style="padding: 1rem;">Record ID</th>
+              <th style="padding: 1rem;">Engagement</th>
+              <th style="padding: 1rem;">Agreed Fee</th>
+              <th style="padding: 1rem;">Rate</th>
+              <th style="padding: 1rem;">Tax</th>
+              <th style="padding: 1rem;">Total Due</th>
+              <th style="padding: 1rem;">Status</th>
+              <th style="padding: 1rem; text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for comm in commissions %}
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 1rem; font-weight: 700;">{{ comm.record_id }}</td>
+                <td style="padding: 1rem;">{{ comm.engagement.engagement_id }} ({{ comm.billing_period }})</td>
+                <td style="padding: 1rem;">{{ company.currency_symbol }}{{ comm.base_tuition_fee }}</td>
+                <td style="padding: 1rem;">{{ comm.rate_applied }}%</td>
+                <td style="padding: 1rem;">{{ company.currency_symbol }}{{ comm.tax_amount }}</td>
+                <td style="padding: 1rem; font-weight: 800; color: var(--primary);">{{ company.currency_symbol }}{{ comm.total_amount }}</td>
+                <td style="padding: 1rem;">
+                  <span class="badge {% if comm.status == 'PAID' %}badge-success{% elif comm.status == 'WAIVED' %}badge-secondary{% else %}badge-warning{% endif %}">
+                    {{ comm.get_status_display }}
+                  </span>
+                </td>
+                <td style="padding: 1rem; text-align: right;">
+                  {% if comm.status == 'PENDING' %}
+                    <a href="{% url 'billing:checkout' %}?type=commission&id={{ comm.id }}" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <i data-lucide="credit-card" style="width: 13px; height: 13px;"></i>
+                      <span>Pay ({{ company.currency_symbol }}{{ comm.total_amount }}) &rarr;</span>
+                    </a>
+                  {% else %}
+                    <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">✓ Settled</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Credit Transactions History -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Credit Usage & Recharge History</h3>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">Date</th>
+            <th style="padding: 0.75rem 1rem;">Transaction Type</th>
+            <th style="padding: 0.75rem 1rem;">Credits</th>
+            <th style="padding: 0.75rem 1rem;">Balance After</th>
+            <th style="padding: 0.75rem 1rem;">Reference Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in transactions %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.8rem;">
+                {{ tx.created_at|date:"M d, Y - h:i A" }}
+              </td>
+              <td style="padding: 0.75rem 1rem; font-weight: 600;">
+                {{ tx.get_transaction_type_display }}
+              </td>
+              <td style="padding: 0.75rem 1rem; font-weight: 800; {% if tx.amount > 0 %}color: #10b981;{% else %}color: #ef4444;{% endif %}">
+                {% if tx.amount > 0 %}+{{ tx.amount }}{% else %}{{ tx.amount }}{% endif %}
+              </td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">
+                {{ tx.balance_after }}
+              </td>
+              <td style="padding: 0.75rem 1rem; color: #475569;">
+                {{ tx.reference_note }}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                No wallet transactions recorded yet.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tax Invoices & Payment History -->
+  <div class="card" style="margin-top: 2rem;">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Tax Invoices & Payment Receipts</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Official computer-generated invoices and payment receipts for your records</p>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">Invoice Number</th>
+            <th style="padding: 0.75rem 1rem;">Date</th>
+            <th style="padding: 0.75rem 1rem;">Type</th>
+            <th style="padding: 0.75rem 1rem;">Amount</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+            <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invoices %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 700; font-family: monospace;">
+                <a href="{% url 'billing:invoice_detail' inv.invoice_number %}" style="color: var(--primary);">
+                  {{ inv.invoice_number }}
+                </a>
+              </td>
+              <td style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.8rem;">
+                {{ inv.created_at|date:"M d, Y" }}
+              </td>
+              <td style="padding: 0.75rem 1rem;">
+                {{ inv.get_invoice_type_display }}
+              </td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">
+                {{ company.currency_symbol }}{{ inv.total_amount }}
+              </td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge {% if inv.status == 'PAID' %}badge-success{% elif inv.status == 'ISSUED' %}badge-warning{% else %}badge-secondary{% endif %}">
+                  {{ inv.get_status_display }}
+                </span>
+              </td>
+              <td style="padding: 0.75rem 1rem; text-align: right;">
+                <a href="{% url 'billing:invoice_detail' inv.invoice_number %}" class="btn btn-secondary btn-sm">
+                  View Receipt
+                </a>
+                {% if inv.status != 'PAID' %}
+                  <a href="{% url 'billing:checkout' %}?type=invoice&number={{ inv.invoice_number }}" class="btn btn-primary btn-sm" style="margin-left: 0.25rem;">
+                    Pay Now
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                No invoices generated yet.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

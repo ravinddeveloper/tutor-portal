@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Student Profiles — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 900px;">
+  {% include "parents/_parent_nav.html" %}
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Add Student Form -->
+    <div style="grid-column: span 1;">
+      <div class="card" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">Add Student Profile</h3>
+        
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label">Student Name *</label>
+            <input type="text" name="student_name" class="form-control" placeholder="e.g. Aditya Iyer" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Class / Grade Level *</label>
+            <input type="text" name="grade_level" class="form-control" placeholder="e.g. Class 10" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">School / College</label>
+            <input type="text" name="school_or_college" class="form-control" placeholder="e.g. National Public School">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Board / Curriculum</label>
+            <input type="text" name="board_curriculum" class="form-control" value="CBSE" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Academic Goals & Focus Areas</label>
+            <textarea name="academic_goals" class="form-control" rows="3" placeholder="Target score 90%+, weak in math..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Student Profile
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Existing Students List -->
+    <div style="grid-column: span 2;">
+      <div class="card" style="padding: 1.75rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">Children / Students ({{ students.count }})</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          {% for student in students %}
+            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: #ffffff;">
+              <div class="flex items-center justify-between" style="margin-bottom: 0.35rem;">
+                <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">{{ student.student_name }}</h4>
+                <span class="badge badge-primary">{{ student.grade_level }}</span>
+              </div>
+              <div style="font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem;">
+                School: {{ student.school_or_college|default:"Not specified" }} • Board: {{ student.board_curriculum }}
+              </div>
+              {% if student.academic_goals %}
+                <p style="font-size: 0.825rem; color: var(--text-muted); font-style: italic;">
+                  Goals: "{{ student.academic_goals }}"
+                </p>
+              {% endif %}
+            </div>
+          {% empty %}
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+              <p>No student profiles created yet. Add your children using the form on the left.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

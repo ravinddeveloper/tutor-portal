@@ -1,0 +1,114 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Inspect Tutor: {{ tutor.display_name }} — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 1.5rem;">
+  <a href="{% url 'custom_admin:tutors' %}" style="color: var(--primary); font-weight: 600; font-size: 0.875rem;">
+    &larr; Back to Tutors List
+  </a>
+</div>
+
+<div class="card" style="padding: 2.25rem; margin-bottom: 2rem;">
+  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div class="flex items-center gap-3">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800;">
+        {{ tutor.display_name|slice:":1" }}
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">{{ tutor.display_name }}</h2>
+          <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}">
+            {{ tutor.get_verification_status_display }}
+          </span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">{{ tutor.user.email }} • Phone: {{ tutor.user.phone_number }}</p>
+      </div>
+    </div>
+
+    <!-- Admin Status Controls -->
+    <div class="flex gap-2">
+      <form method="post" action="{% url 'custom_admin:tutors' %}">
+        {% csrf_token %}
+        <input type="hidden" name="tutor_id" value="{{ tutor.id }}">
+        <input type="hidden" name="action" value="verify">
+        <button type="submit" class="btn btn-success btn-sm">Grant Verified Status</button>
+      </form>
+
+      <form method="post" action="{% url 'custom_admin:tutors' %}">
+        {% csrf_token %}
+        <input type="hidden" name="tutor_id" value="{{ tutor.id }}">
+        <input type="hidden" name="action" value="reject">
+        <button type="submit" class="btn btn-danger btn-sm">Reject Profile</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+    <div>
+      <div><strong>Confidential Residence:</strong> {{ tutor.private_address|default:"Not recorded" }}</div>
+      <div><strong>City:</strong> {{ tutor.primary_city }} ({{ tutor.primary_locality }})</div>
+    </div>
+    <div>
+      <div><strong>Highest Qualification:</strong> {{ tutor.highest_qualification }}</div>
+      <div><strong>Institution:</strong> {{ tutor.institution_name }}</div>
+    </div>
+    <div>
+      <div><strong>Expected Fee:</strong> {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo</div>
+      <div><strong>Service Radius:</strong> {{ tutor.service_radius_km }} km</div>
+    </div>
+  </div>
+
+  <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">Professional Bio</h3>
+  <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 2rem;">
+    {{ tutor.bio }}
+  </p>
+
+  <!-- Uploaded Verification Documents Queue -->
+  <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">
+    Uploaded Verification Documents ({{ tutor.documents.count }})
+  </h3>
+
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for doc in tutor.documents.all %}
+      <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: #ffffff;">
+        <div>
+          <div class="flex items-center gap-2">
+            <span style="font-weight: 700; color: var(--text);">{{ doc.document_name }}</span>
+            <span class="badge {% if doc.status == 'VERIFIED' %}badge-success{% elif doc.status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ doc.get_status_display }}
+            </span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Type: {{ doc.get_document_type_display }} • Uploaded: {{ doc.uploaded_at|date:"M d, Y" }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          {% if doc.document_file %}
+            <a href="{{ doc.document_file.url }}" target="_blank" class="btn btn-secondary btn-sm">View File</a>
+          {% elif doc.document_url %}
+            <a href="{{ doc.document_url }}" target="_blank" class="btn btn-secondary btn-sm">Preview Link</a>
+          {% endif %}
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="doc_id" value="{{ doc.id }}">
+            <input type="hidden" name="doc_status" value="VERIFIED">
+            <button type="submit" class="btn btn-success btn-sm">Approve Document</button>
+          </form>
+
+          <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <input type="hidden" name="doc_id" value="{{ doc.id }}">
+            <input type="hidden" name="doc_status" value="REJECTED">
+            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <p style="font-size: 0.85rem; color: var(--text-muted);">No documents uploaded yet by this educator.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

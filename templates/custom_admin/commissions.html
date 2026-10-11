@@ -1,0 +1,200 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Commission Engine & Financial Ledger — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Commission Business Rules Engine</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Configure revenue models, percentage rates, bounds, exemptions, and manage the platform commission ledger
+      </p>
+    </div>
+
+    <div>
+      <span class="badge {% if company.commission_enabled %}badge-success{% else %}badge-danger{% endif %}" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;">
+        {% if company.commission_enabled %}● Global Commission Engine Active{% else %}○ Commission Engine Disabled (Model A){% endif %}
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Business Rules Engine Configuration Card -->
+<div class="card" style="padding: 2.25rem; margin-bottom: 2.5rem; border-top: 4px solid var(--primary);">
+  <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+    <i data-lucide="sliders" style="width: 20px; height: 20px; display: inline;"></i> Revenue Policy Settings
+  </h2>
+  <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.75rem;">
+    Changes take effect immediately for new confirmed tuition engagements without altering past historical records.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_rule">
+
+    <div class="form-group" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+      <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-weight: 700; color: var(--text); font-size: 1rem;">
+        <input type="checkbox" name="commission_enabled" style="width: 20px; height: 20px; accent-color: var(--primary);" {% if company.commission_enabled %}checked{% endif %}>
+        <span>Enable Platform Commission on Confirmed Tuition Engagements</span>
+      </label>
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; margin-left: 2rem;">
+        When toggled OFF (Model A), the platform charges 0% commission and relies exclusively on membership plans and contact credit packs. Existing commission records remain safely preserved in the ledger.
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="form-group">
+        <label class="form-label">Supported Revenue Model</label>
+        <select name="model_type" class="form-select">
+          {% for val, label in models %}
+            <option value="{{ val }}" {% if rule.model_type == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Calculation Basis</label>
+        <select name="calculation_type" class="form-select">
+          <option value="PERCENTAGE" {% if rule.calculation_type == 'PERCENTAGE' %}selected{% endif %}>Percentage of First Month Tuition</option>
+          <option value="FIXED" {% if rule.calculation_type == 'FIXED' %}selected{% endif %}>Fixed Flat Fee</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Commission Rate (%)</label>
+        <input type="number" name="rate_percentage" class="form-control" value="{{ rule.rate_percentage|default:'40.00' }}" step="0.5" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Minimum Commission ({{ company.currency_symbol }})</label>
+        <input type="number" name="minimum_commission" class="form-control" value="{{ rule.minimum_commission|default:'500.00' }}" step="100" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Maximum Commission Cap ({{ company.currency_symbol }})</label>
+        <input type="number" name="maximum_commission" class="form-control" value="{{ rule.maximum_commission|default:'8000.00' }}" step="500" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Applicable Tax / {{ company.tax_name }} (%)</label>
+        <input type="number" name="tax_percentage" class="form-control" value="{{ company.tax_percentage }}" step="0.5" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">
+      <i data-lucide="save" style="width: 18px; height: 18px;"></i> Update Business Rules
+    </button>
+  </form>
+</div>
+
+<!-- Commission Ledger Table -->
+<div class="card">
+  <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Platform Commission Ledger ({{ records.count }})</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Audited transaction records for all confirmed tuition pairings</p>
+    </div>
+
+    <a href="{% url 'custom_admin:reports' %}?export=financials" class="btn btn-secondary btn-sm">
+      <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Ledger CSV
+    </a>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 1rem;">Record ID</th>
+          <th style="padding: 1rem;">Engagement & Lead</th>
+          <th style="padding: 1rem;">Tutor</th>
+          <th style="padding: 1rem;">Agreed Fee</th>
+          <th style="padding: 1rem;">Rate</th>
+          <th style="padding: 1rem;">Tax</th>
+          <th style="padding: 1rem;">Total Commission</th>
+          <th style="padding: 1rem;">Status</th>
+          <th style="padding: 1rem; text-align: right;">Administrative Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rec in records %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem; font-weight: 700;">{{ rec.record_id }}</td>
+            <td style="padding: 1rem;">
+              <div style="font-weight: 600;">{{ rec.engagement.engagement_id }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ rec.requirement.title|truncatechars:35 }}</div>
+            </td>
+            <td style="padding: 1rem; font-weight: 600;">
+              {{ rec.tutor.display_name }}
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ rec.tutor.user.phone_number }}</div>
+            </td>
+            <td style="padding: 1rem;">{{ company.currency_symbol }}{{ rec.base_tuition_fee }}</td>
+            <td style="padding: 1rem;">{{ rec.rate_applied }}%</td>
+            <td style="padding: 1rem;">{{ company.currency_symbol }}{{ rec.tax_amount }}</td>
+            <td style="padding: 1rem; font-weight: 800; color: var(--primary);">
+              {{ company.currency_symbol }}{{ rec.total_amount }}
+            </td>
+            <td style="padding: 1rem;">
+              <span class="badge {% if rec.status == 'PAID' %}badge-success{% elif rec.status == 'WAIVED' %}badge-secondary{% elif rec.status == 'OVERDUE' %}badge-danger{% else %}badge-warning{% endif %}">
+                {{ rec.get_status_display }}
+              </span>
+              {% if rec.waiver_reason %}
+                <div style="font-size: 0.7rem; color: #475569; margin-top: 0.2rem;">"{{ rec.waiver_reason }}"</div>
+              {% endif %}
+            </td>
+            <td style="padding: 1rem; text-align: right;">
+              <div class="flex gap-1 justify-end flex-wrap">
+                {% if rec.status != 'PAID' %}
+                  <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="record_action">
+                    <input type="hidden" name="record_id" value="{{ rec.id }}">
+                    <input type="hidden" name="status" value="PAID">
+                    <button type="submit" class="btn btn-success btn-sm" style="font-size: 0.75rem;">Mark Paid</button>
+                  </form>
+
+                  <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;" onclick="document.getElementById('waiver-modal-{{ rec.id }}').style.display='flex'">
+                    Waive Fee
+                  </button>
+                {% else %}
+                  <span style="font-size: 0.75rem; color: #10b981; font-weight: 700;">Paid {{ rec.paid_at|date:"M d" }}</span>
+                {% endif %}
+              </div>
+
+              <!-- Waiver Modal -->
+              <div id="waiver-modal-{{ rec.id }}" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem; text-align: left;">
+                <div class="card" style="max-width: 440px; width: 100%;">
+                  <div class="card-body">
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Grant Commission Waiver</h4>
+                    <form method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="record_action">
+                      <input type="hidden" name="record_id" value="{{ rec.id }}">
+                      <input type="hidden" name="status" value="WAIVED">
+                      <div class="form-group">
+                        <label class="form-label">Mandatory Audit Waiver Reason</label>
+                        <textarea name="waiver_reason" class="form-control" rows="3" placeholder="e.g. Discontinued after 2 days, promotional educator waiver..." required></textarea>
+                      </div>
+                      <div class="flex justify-between gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('waiver-modal-{{ rec.id }}').style.display='none'">Cancel</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Confirm Waiver</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+              No commission records generated yet. Confirmed tuition engagements will trigger commission entries here.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

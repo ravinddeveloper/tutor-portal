@@ -1,0 +1,88 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Membership Plans & Credit Settings — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Subscription Plans & Credit Packages</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Configure tutor pricing tiers, validity windows, and contact credit quotas
+  </p>
+</div>
+
+<!-- Plan Pricing Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="margin-bottom: 2.5rem;">
+  {% for plan in plans %}
+    <div class="card" style="padding: 1.75rem;">
+      <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text);">{{ plan.name }}</h3>
+        <span class="badge {% if plan.is_active %}badge-success{% else %}badge-secondary{% endif %}">
+          {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+        </span>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); min-height: 40px;">{{ plan.tagline }}</p>
+
+      <form method="post" style="margin-top: 1.25rem;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_plan">
+        <input type="hidden" name="plan_id" value="{{ plan.id }}">
+
+        <div class="form-group">
+          <label class="form-label" style="font-size: 0.8rem;">Price ({{ company.currency_symbol }})</label>
+          <input type="number" name="price" class="form-control" value="{{ plan.price }}" step="50" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="font-size: 0.8rem;">Included Lead Credits</label>
+          <input type="number" name="credits" class="form-control" value="{{ plan.lead_credits_included }}" required>
+        </div>
+
+        <div style="font-size: 0.8rem; color: #475569; margin-bottom: 1rem; line-height: 1.5;">
+          <div>• Validity: <strong>{{ plan.duration_days }} days</strong></div>
+          <div>• Featured Profile: <strong>{% if plan.is_featured_badge %}Yes{% else %}No{% endif %}</strong></div>
+          <div>• Priority Matching: <strong>{% if plan.priority_matching %}Yes{% else %}No{% endif %}</strong></div>
+        </div>
+
+        <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Update Plan Pricing</button>
+      </form>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Active Subscriptions History -->
+<div class="card">
+  <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
+    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Active Tutor Subscriptions ({{ subscriptions.count }})</h3>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 0.75rem 1rem;">Tutor</th>
+          <th style="padding: 0.75rem 1rem;">Subscribed Plan</th>
+          <th style="padding: 0.75rem 1rem;">Amount Paid</th>
+          <th style="padding: 0.75rem 1rem;">Active Period</th>
+          <th style="padding: 0.75rem 1rem;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in subscriptions %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ s.tutor.display_name }}</td>
+            <td style="padding: 0.75rem 1rem; font-weight: 600;">{{ s.plan.name }}</td>
+            <td style="padding: 0.75rem 1rem; font-weight: 700; color: #10b981;">{{ company.currency_symbol }}{{ s.amount_paid }}</td>
+            <td style="padding: 0.75rem 1rem; font-size: 0.8rem; color: #475569;">{{ s.start_date }} to {{ s.end_date }}</td>
+            <td style="padding: 0.75rem 1rem;">
+              <span class="badge badge-success">{{ s.get_status_display }}</span>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No subscriptions recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

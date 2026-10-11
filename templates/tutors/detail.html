@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tutor.display_name }} — Verified Tutor Profile — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Left Column: Tutor Profile Header & Highlights -->
+    <div style="grid-column: span 2;">
+      <div class="card" style="padding: 2.25rem; margin-bottom: 2rem;">
+        <div class="flex items-center gap-4" style="margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800;">
+            {{ tutor.display_name|slice:":1" }}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text);">{{ tutor.display_name }}</h1>
+              <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}">
+                <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> {{ tutor.get_verification_status_display }}
+              </span>
+            </div>
+            <p style="font-size: 1.05rem; font-weight: 600; color: #475569; margin-top: 0.25rem;">
+              {{ tutor.headline }}
+            </p>
+            <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">
+              {{ tutor.highest_qualification }} • {{ tutor.institution_name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Summary Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.75rem;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Experience</div>
+            <div style="font-weight: 700; color: var(--text);">{{ tutor.experience_years }} Years</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Teaching Mode</div>
+            <div style="font-weight: 700; color: var(--text);">{{ tutor.get_teaching_mode_display }}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Service Area</div>
+            <div style="font-weight: 700; color: var(--text);">{{ tutor.primary_locality }} ({{ tutor.service_radius_km }}km)</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Rating</div>
+            <div style="font-weight: 700; color: var(--accent);">{{ tutor.average_rating }} ★ ({{ tutor.total_reviews }})</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Teaching Philosophy & Bio</h3>
+        <p style="font-size: 0.95rem; color: #334155; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-line;">
+          {{ tutor.bio|default:"Dedicated educator committed to fostering conceptual clarity and academic self-confidence in every student." }}
+        </p>
+
+        <!-- Subjects & Fee Table -->
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Subjects & Classes Offered</h3>
+        <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+            <thead>
+              <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+                <th style="padding: 0.75rem 1rem;">Subject</th>
+                <th style="padding: 0.75rem 1rem;">Target Classes</th>
+                <th style="padding: 0.75rem 1rem;">Curriculum</th>
+                <th style="padding: 0.75rem 1rem;">Monthly Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in tutor.subjects.all %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ sub.subject_name }}</td>
+                  <td style="padding: 0.75rem 1rem; color: var(--text-muted);">{{ sub.classes_offered }}</td>
+                  <td style="padding: 0.75rem 1rem; color: var(--text-muted);">{{ sub.curriculum }}</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--primary);">{{ company.currency_symbol }}{{ sub.fee_per_month }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" style="padding: 1rem; text-align: center; color: var(--text-muted);">No specific subjects listed yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Weekly Availability Slot Summary -->
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Weekly Availability Schedule</h3>
+        <div class="flex flex-wrap gap-2" style="margin-bottom: 1.5rem;">
+          {% for slot in tutor.availabilities.all %}
+            <span class="badge badge-secondary" style="padding: 0.45rem 0.75rem; font-size: 0.8rem;">
+              <i data-lucide="check" style="width: 14px; height: 14px; color: #10b981;"></i>
+              {{ slot.get_day_of_week_display }}: {{ slot.get_slot_display }}
+            </span>
+          {% empty %}
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Schedule coordinated directly during demo booking.</span>
+          {% endfor %}
+        </div>
+
+        <!-- Verified Reviews Section -->
+        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">Verified Parent Reviews ({{ tutor.reviews.count }})</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          {% for rev in tutor.reviews.all %}
+            <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+              <div class="flex items-center justify-between" style="margin-bottom: 0.35rem;">
+                <div class="flex items-center gap-1" style="color: var(--accent);">
+                  {% for i in "12345" %}
+                    <i data-lucide="star" style="width: 14px; height: 14px; fill: currentColor;"></i>
+                  {% endfor %}
+                  <span style="font-weight: 700; color: var(--text); margin-left: 0.35rem;">{{ rev.title }}</span>
+                </div>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ rev.created_at|date:"M Y" }}</span>
+              </div>
+              <p style="font-size: 0.9rem; color: #475569; line-height: 1.5;">{{ rev.comment }}</p>
+              <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-top: 0.35rem;">
+                By {{ rev.parent.display_name }} (Verified Booking)
+              </div>
+            </div>
+          {% empty %}
+            <p style="font-size: 0.875rem; color: var(--text-muted);">No reviews posted yet. Be the first to book a trial demo class!</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Demo Booking & Enquiry Card -->
+    <div style="grid-column: span 1;">
+      <div class="card" style="padding: 2rem; position: sticky; top: 90px;">
+        <div style="margin-bottom: 1.5rem; text-align: center;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Monthly Fee Estimate</div>
+          <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">
+            {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo
+          </div>
+          <div style="font-size: 0.85rem; color: #10b981; font-weight: 600; margin-top: 0.25rem;">
+            ✓ Free 1-on-1 Trial Demo Class Available
+          </div>
+        </div>
+
+        {% if user.is_authenticated and user.is_parent %}
+          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Request Demo Class</h3>
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label class="form-label">Preferred Demo Date & Time</label>
+              <input type="datetime-local" name="scheduled_datetime" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Demo Mode</label>
+              <select name="mode" class="form-select">
+                <option value="ONLINE">Live Online Demo</option>
+                <option value="HOME">At Student Residence (Home Demo)</option>
+              </select>
+            </div>
+
+            {% if user_requirements %}
+              <div class="form-group">
+                <label class="form-label">Select Tuition Requirement</label>
+                <select name="requirement_id" class="form-select">
+                  {% for req in user_requirements %}
+                    <option value="{{ req.pk }}">{{ req.lead_id }}: {{ req.student_class }} - {{ req.subjects }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endif %}
+
+            <div class="form-group">
+              <label class="form-label">Notes for Tutor</label>
+              <textarea name="notes" class="form-control" rows="2" placeholder="Mention specific topics or questions..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <i data-lucide="calendar-plus" style="width: 18px; height: 18px;"></i> Book Trial Demo Class
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <a href="{% url 'communication:inbox' %}" class="btn btn-secondary" style="width: 100%;">
+              <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Send Direct Message
+            </a>
+          </div>
+
+        {% elif user.is_authenticated and user.is_tutor %}
+          <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            You are viewing this profile as an Educator.
+          </div>
+        {% else %}
+          <div style="text-align: center;">
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Sign in as a parent or post a tuition requirement to schedule a demo class with {{ tutor.display_name }}.
+            </p>
+            <a href="{% url 'accounts:register_parent' %}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.75rem;">
+              Register as Parent to Book Demo
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="width: 100%;">
+              Log In to Existing Account
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

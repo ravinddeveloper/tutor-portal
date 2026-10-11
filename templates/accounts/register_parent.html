@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Parent Registration — Find Top Tutors — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 540px; padding-top: 3.5rem; padding-bottom: 4rem;">
+  <div class="card">
+    <div class="card-body" style="padding: 2.25rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="badge badge-primary" style="margin-bottom: 0.75rem;">100% Free For Parents</span>
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Parent / Student Registration</h1>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Connect directly with verified home tutors & online teachers in your neighborhood
+        </p>
+      </div>
+
+      <form method="post" action="{% url 'accounts:register_parent' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label" for="full_name">Parent / Guardian Full Name</label>
+          <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Meena Iyer" required>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="meena@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone / WhatsApp Number</label>
+            <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98860 11998" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="form-group">
+            <label class="form-label" for="city">City</label>
+            <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="locality">Locality / Neighborhood</label>
+            <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Whitefield" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Create Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Create Parent Account
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+        Already registered? <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 600;">Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Announcements & Campaigns — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Platform Announcements & Campaigns</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Broadcast tutor recruitment drives, promotional alerts, or system maintenance notices
+  </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  <!-- Publish Announcement Form -->
+  <div style="grid-column: span 1;">
+    <div class="card" style="padding: 1.75rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">New Announcement</h3>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Headline / Title *</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g. Urgent Need for Class 10 CBSE Math Tutors in Indiranagar" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Badge Text</label>
+          <input type="text" name="badge_text" class="form-control" value="Tutor Opportunity">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target Audience</label>
+          <select name="target_role" class="form-select">
+            <option value="ALL">All Marketplace Users</option>
+            <option value="TUTOR" selected>Tutors Only</option>
+            <option value="PARENT">Parents Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Target City (Optional)</label>
+          <input type="text" name="target_city" class="form-control" placeholder="e.g. Bengaluru (leave blank for all)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Detailed Content *</label>
+          <textarea name="content" class="form-control" rows="4" placeholder="Announcement details..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i data-lucide="megaphone" style="width: 16px; height: 16px;"></i> Publish Announcement
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Announcements Stream -->
+  <div style="grid-column: span 2;">
+    <div class="card" style="padding: 1.75rem;">
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem;">Active Announcements ({{ announcements.count }})</h3>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {% for a in announcements %}
+          <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: #ffffff;">
+            <div class="flex items-center justify-between" style="margin-bottom: 0.35rem;">
+              <div class="flex items-center gap-2">
+                <span class="badge badge-primary">{{ a.badge_text|default:"Notice" }}</span>
+                <span class="badge badge-secondary">Target: {{ a.get_target_role_display }}</span>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">{{ a.created_at|date:"M d, Y" }}</span>
+            </div>
+
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text); margin-top: 0.25rem; margin-bottom: 0.35rem;">
+              {{ a.title }}
+            </h4>
+            <p style="font-size: 0.875rem; color: #475569; line-height: 1.5;">{{ a.content }}</p>
+            {% if a.target_city %}
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+                City: <strong>{{ a.target_city }}</strong>
+              </div>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 2rem;">No announcements active.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

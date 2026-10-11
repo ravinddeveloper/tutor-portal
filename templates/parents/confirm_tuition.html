@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Tuition Engagement — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 760px;">
+  {% include "parents/_parent_nav.html" %}
+
+  <div class="card">
+    <div class="card-body" style="padding: 2.5rem;">
+      <div style="margin-bottom: 1.5rem;">
+        <span class="badge badge-success" style="margin-bottom: 0.5rem;">Confirm & Start Tuition</span>
+        <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Confirm Tutor for {{ requirement.lead_id }}</h2>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Finalize tuition terms with your chosen educator. Zero platform fees for parents.
+        </p>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.75rem; font-size: 0.875rem;">
+        <div><strong>Requirement:</strong> {{ requirement.title }}</div>
+        <div><strong>Subjects:</strong> {{ requirement.subjects }} ({{ requirement.student_class }})</div>
+        <div><strong>Location:</strong> {{ requirement.locality }}, {{ requirement.city }}</div>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Select Verified Educator *</label>
+          <select name="tutor_id" class="form-select" required>
+            {% for t in unlocked_tutors %}
+              <option value="{{ t.pk }}">{{ t.display_name }} ({{ t.highest_qualification }}) - Fee Est: {{ company.currency_symbol }}{{ t.monthly_rate_estimate }}/mo</option>
+            {% empty %}
+              <option value="" disabled selected>No educators have unlocked this requirement yet. Please review matched tutors first.</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">Agreed Monthly Fee ({{ company.currency_symbol }}) *</label>
+            <input type="number" name="agreed_fee" class="form-control" value="{{ requirement.budget_amount }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Starting Date *</label>
+            <input type="date" name="start_date" class="form-control" required value="{% now 'Y-m-d' %}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Agreed Weekly Schedule *</label>
+          <input type="text" name="schedule_summary" class="form-control" value="{{ requirement.preferred_timing }} ({{ requirement.days_per_week }} days/week)" required>
+        </div>
+
+        <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #065f46;">
+          <i data-lucide="shield-check" style="width: 16px; height: 16px; display: inline;"></i>
+          <strong>Platform Guarantee:</strong> Once confirmed, you can track lesson logs, review attendance, and obtain monthly student progress reports directly in your portal.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Confirm Tuition Engagement
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Demo Class Scheduling — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Demo Class Schedule ({{ demos.count }})</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Manage trial demo requests, propose times, attach online meeting links, and update completion status</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+    {% for demo in demos %}
+      <div class="card" style="padding: 1.75rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="flex items-center gap-2">
+            <span class="badge {% if demo.status == 'COMPLETED' %}badge-success{% elif demo.status == 'CANCELLED' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ demo.get_status_display }}
+            </span>
+            <span style="font-weight: 700; color: var(--text);">Demo for {{ demo.requirement.lead_id }}: {{ demo.requirement.subjects }}</span>
+          </div>
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">
+            <i data-lucide="clock" style="width: 14px; height: 14px; display: inline;"></i> {{ demo.scheduled_datetime|date:"l, M d, Y - h:i A" }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.875rem;">
+          <div>
+            <div><strong>Parent:</strong> {{ demo.parent.display_name }}</div>
+            <div><strong>Phone:</strong> {{ demo.parent.user.phone_number|default:"Shared upon unlock" }}</div>
+            <div><strong>Mode:</strong> {{ demo.get_mode_display }}</div>
+          </div>
+          <div>
+            {% if demo.mode == 'ONLINE' %}
+              <div><strong>Meeting Link:</strong> {% if demo.meeting_link %}<a href="{{ demo.meeting_link }}" target="_blank" style="color: var(--primary); text-decoration: underline;">Open Online Class</a>{% else %}<em>Not attached yet</em>{% endif %}</div>
+            {% else %}
+              <div><strong>Home Address:</strong> {{ demo.address|default:demo.requirement.full_address }}</div>
+            {% endif %}
+            {% if demo.parent_feedback %}
+              <div style="margin-top: 0.25rem; color: #065f46;"><strong>Parent Feedback:</strong> "{{ demo.parent_feedback }}"</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Manage Demo Form -->
+        <form method="post" class="flex gap-2 items-center flex-wrap" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          {% csrf_token %}
+          <input type="hidden" name="demo_id" value="{{ demo.id }}">
+          
+          <input type="url" name="meeting_link" value="{{ demo.meeting_link }}" class="form-control" placeholder="Paste Google Meet / Zoom URL..." style="max-width: 280px; font-size: 0.825rem;">
+
+          <input type="text" name="tutor_notes" value="{{ demo.tutor_notes }}" class="form-control" placeholder="Tutor notes / topic covered..." style="max-width: 280px; font-size: 0.825rem;">
+
+          <select name="status" class="form-select" style="max-width: 160px; font-size: 0.825rem;">
+            <option value="PROPOSED" {% if demo.status == 'PROPOSED' %}selected{% endif %}>Time Proposed</option>
+            <option value="CONFIRMED" {% if demo.status == 'CONFIRMED' %}selected{% endif %}>Confirmed</option>
+            <option value="COMPLETED" {% if demo.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+            <option value="NO_SHOW" {% if demo.status == 'NO_SHOW' %}selected{% endif %}>No Show</option>
+            <option value="CANCELLED" {% if demo.status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+          </select>
+
+          <button type="submit" class="btn btn-secondary btn-sm">Update Demo</button>
+        </form>
+      </div>
+    {% empty %}
+      <div class="card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="calendar-x" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No scheduled demos yet</h3>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          When parents shortlist your profile or accept your proposals, demo classes appear here.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

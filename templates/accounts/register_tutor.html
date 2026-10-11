@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Registration — Teach & Earn — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; padding-top: 3.5rem; padding-bottom: 4rem;">
+  <div class="card">
+    <div class="card-body" style="padding: 2.25rem;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <span class="badge badge-success" style="margin-bottom: 0.75rem;">🎁 3 Free Contact Unlock Credits Included</span>
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Join as a Professional Tutor</h1>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Get verified, connect with students in your city, and start teaching
+        </p>
+      </div>
+
+      <form method="post" action="{% url 'accounts:register_tutor' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name</label>
+          <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Dr. Rajesh Nambiar" required>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="rajesh@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone / WhatsApp Number</label>
+            <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98451 11222" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="headline">Professional Headline</label>
+          <input type="text" name="headline" id="headline" class="form-control" placeholder="e.g. Senior CBSE & ICSE Mathematics Faculty | 8+ Yrs Exp" required>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="form-group">
+            <label class="form-label" for="qualification">Highest Degree / Qualification</label>
+            <input type="text" name="qualification" id="qualification" class="form-control" placeholder="e.g. M.Sc Mathematics, B.Tech IIT" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="teaching_mode">Teaching Mode Preference</label>
+            <select name="teaching_mode" id="teaching_mode" class="form-select">
+              <option value="BOTH_HOME_ONLINE">Both Home & Online Tuition</option>
+              <option value="HOME_ONLY">Home Tuition Only</option>
+              <option value="ONLINE_ONLY">Online Tuition Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="form-group">
+            <label class="form-label" for="city">Primary City</label>
+            <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="locality">Primary Locality</label>
+            <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Koramangala" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Create Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          <i data-lucide="award" style="width: 18px; height: 18px;"></i> Submit Tutor Registration & Claim 3 Credits
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+        Already have a tutor account? <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 600;">Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

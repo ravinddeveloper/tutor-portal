@@ -1,0 +1,1288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full {% if theme.dark_mode_enabled %}dark{% endif %}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ company.company_name }} — {{ company.tagline }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Find verified home and online tutors for CBSE, ICSE, State Boards, NEET, and IIT-JEE. Post tuition requirements or explore certified teaching opportunities.{% endblock %}">
+  
+  {% if company.favicon_url %}
+  <link rel="icon" href="{{ company.favicon_url }}">
+  {% endif %}
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Prevent Dark Mode FOUC (Flash of Unstyled Content) -->
+  <script>
+    (function() {
+      const storedTheme = localStorage.getItem('edututor_theme');
+      if (storedTheme === 'dark' || (!storedTheme && {{ theme.dark_mode_enabled|yesno:"true,false" }})) {
+        document.documentElement.classList.add('dark');
+      } else if (storedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+
+  <!-- Dynamic Theme CSS Variables from Database ThemeSettings -->
+  <style>
+    :root {
+      --primary: {{ theme.primary_color|default:"#4f46e5" }};
+      --primary-hover: #4338ca;
+      --primary-light: rgba(79, 70, 229, 0.08);
+      --secondary: {{ theme.secondary_color|default:"#06b6d4" }};
+      --accent: {{ theme.accent_color|default:"#f59e0b" }};
+      --background: {{ theme.background_color|default:"#f8fafc" }};
+      --surface: {{ theme.surface_color|default:"#ffffff" }};
+      --surface-hover: #f1f5f9;
+      --text: {{ theme.text_color|default:"#0f172a" }};
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-radius: {{ theme.border_radius|default:"0.75rem" }};
+      --sidebar-bg: {{ theme.sidebar_color|default:"#0f172a" }};
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --table-header-bg: #f8fafc;
+      --table-header-color: #475569;
+      --table-row-hover: #f1f5f9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Dark Mode Overrides */
+    html.dark {
+      --background: #090d16;
+      --surface: #111827;
+      --surface-hover: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1f2937;
+      --sidebar-bg: #0b0f19;
+      --header-bg: rgba(17, 24, 39, 0.94);
+      --table-header-bg: #1e293b;
+      --table-header-color: #94a3b8;
+      --table-row-hover: rgba(30, 41, 59, 0.6);
+      --primary-light: rgba(99, 102, 241, 0.16);
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Layout Utilities */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-1 { gap: 0.25rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .gap-8 { gap: 2rem; }
+    .flex-wrap { flex-wrap: wrap; }
+    .flex-1 { flex: 1; }
+
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    @media (min-width: 640px) {
+      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+    @media (min-width: 768px) {
+      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:flex-row { flex-direction: row; }
+    }
+    @media (min-width: 1024px) {
+      .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    /* Cards & Components */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      transition: all 0.2s ease-in-out;
+    }
+    .card:hover {
+      box-shadow: var(--card-shadow-hover);
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      line-height: 1.25;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-sm {
+      padding: 0.45rem 0.85rem;
+      font-size: 0.8125rem;
+    }
+    .btn-lg {
+      padding: 0.875rem 1.75rem;
+      font-size: 1.0625rem;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background-color: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background-color: var(--surface-hover);
+      border-color: #cbd5e1;
+    }
+    .btn-accent {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+    .btn-accent:hover {
+      filter: brightness(0.95);
+    }
+    .btn-outline-primary {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-outline-primary:hover {
+      background: var(--primary-light);
+    }
+    .btn-danger {
+      background-color: var(--danger);
+      color: #ffffff;
+    }
+    .btn-success {
+      background-color: var(--success);
+      color: #ffffff;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-success { background: rgba(16, 185, 129, 0.12); color: #059669; }
+    .badge-warning { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+    .badge-danger { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+    .badge-secondary { background: var(--surface-hover); color: var(--text-muted); }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.375rem;
+    }
+    .form-control, .form-select {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      color: var(--text);
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 0.875rem 1.25rem;
+      border-radius: var(--border-radius);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+    .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+    .alert-error, .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    html.dark .alert-success { background: #064e3b; border-color: #047857; color: #ecfdf5; }
+    html.dark .alert-error { background: #7f1d1d; border-color: #991b1b; color: #fef2f2; }
+    html.dark .alert-warning { background: #78350f; border-color: #92400e; color: #fffbeb; }
+    html.dark .alert-info { background: #1e3a8a; border-color: #1e40af; color: #eff6ff; }
+
+    /* ==========================================================================
+       THEME-AWARE TABLE SYSTEM (LIGHT & DARK THEMES)
+       ========================================================================== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+    thead {
+      background-color: var(--table-header-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    thead tr,
+    tr.table-header,
+    tr[style*="background: #f8fafc"],
+    tr[style*="background:#f8fafc"],
+    tr[style*="background: var(--table-header-bg)"] {
+      background-color: var(--table-header-bg) !important;
+      border-bottom: 1px solid var(--border) !important;
+      text-align: left;
+    }
+    th {
+      padding: 0.85rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--table-header-color) !important;
+      text-align: left;
+      white-space: nowrap;
+      background-color: transparent !important;
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tbody tr {
+      transition: background-color 0.15s ease;
+    }
+    tbody tr:hover {
+      background-color: var(--table-row-hover);
+    }
+
+    /* Dark theme specific table overrides */
+    html.dark thead,
+    html.dark thead tr,
+    html.dark tr.table-header,
+    html.dark tr[style*="background: #f8fafc"],
+    html.dark tr[style*="background:#f8fafc"],
+    html.dark tr[style*="background: #f1f5f9"],
+    html.dark tr[style*="background:#f1f5f9"],
+    html.dark tr[style*="background: var(--table-header-bg)"] {
+      background-color: #1e293b !important;
+      border-bottom: 1px solid #334155 !important;
+    }
+    html.dark th,
+    html.dark thead th {
+      color: #94a3b8 !important;
+      background-color: #1e293b !important;
+    }
+    html.dark td {
+      border-bottom-color: #1f2937 !important;
+      color: #f1f5f9;
+    }
+    html.dark tbody tr:hover {
+      background-color: rgba(30, 41, 59, 0.7) !important;
+    }
+
+    /* Neutralize inline light backgrounds in dark mode */
+    html.dark [style*="background: #f8fafc"],
+    html.dark [style*="background:#f8fafc"] {
+      background-color: var(--surface-hover) !important;
+    }
+    html.dark [style*="border: 1px solid var(--border)"],
+    html.dark [style*="border-bottom: 1px solid var(--border)"],
+    html.dark [style*="border-top: 1px solid var(--border)"] {
+      border-color: #1f2937 !important;
+    }
+
+    /* ==========================================================================
+       MODERN HEADER & NAVBAR
+       ========================================================================== */
+    .site-header {
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .header-inner {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.025em;
+      flex-shrink: 0;
+    }
+    .brand-icon-box {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+      transition: transform 0.2s ease;
+    }
+    .brand-logo:hover .brand-icon-box {
+      transform: scale(1.04);
+    }
+
+    /* Desktop Navigation Links */
+    .desktop-nav {
+      display: none;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    @media (min-width: 992px) {
+      .desktop-nav {
+        display: flex;
+      }
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      opacity: 0.85;
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--border-radius);
+      transition: all 0.15s ease;
+    }
+    .nav-pill:hover {
+      opacity: 1;
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .nav-pill.active {
+      opacity: 1;
+      color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+    .icon-btn:hover {
+      background: var(--surface-hover);
+      border-color: #cbd5e1;
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .icon-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: white;
+      border-radius: 9999px;
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      font-weight: 800;
+      min-width: 17px;
+      height: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 2px var(--surface);
+    }
+
+    /* User Profile Dropdown */
+    .user-menu-wrapper {
+      position: relative;
+    }
+    .user-profile-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .user-profile-btn:hover {
+      border-color: var(--primary);
+      background: var(--surface-hover);
+    }
+    .user-avatar-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .user-dropdown-card {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 270px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      display: none;
+      flex-direction: column;
+      z-index: 200;
+      overflow: hidden;
+      animation: fadeInDown 0.18s ease-out;
+    }
+    .user-dropdown-card.show {
+      display: flex;
+    }
+
+    .dropdown-header {
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-hover);
+    }
+    .dropdown-body {
+      padding: 0.4rem 0;
+    }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 1.15rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.15s ease;
+    }
+    .dropdown-item:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.35rem 0;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile Hamburger Trigger */
+    .mobile-hamburger-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--border-radius);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    @media (min-width: 992px) {
+      .mobile-hamburger-btn {
+        display: none !important;
+      }
+    }
+    .mobile-hamburger-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Mobile Off-Canvas Drawer */
+    .mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .mobile-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 320px;
+      max-width: 86vw;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 1000;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .drawer-body {
+      padding: 1.15rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .drawer-section-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin: 1.15rem 0 0.45rem;
+    }
+    .drawer-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      transition: all 0.15s ease;
+      margin-bottom: 0.2rem;
+    }
+    .drawer-nav-item:hover, .drawer-nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .drawer-footer {
+      padding: 1.15rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface-hover);
+    }
+
+    /* Dashboard Layout */
+    .dashboard-layout {
+      display: flex;
+      min-height: calc(100vh - 70px);
+    }
+    .dashboard-content {
+      flex: 1;
+      padding: 2rem;
+      background: var(--background);
+      overflow-y: auto;
+    }
+    @media (max-width: 900px) {
+      .dashboard-content {
+        padding: 1.25rem 1rem;
+      }
+    }
+
+    /* Footer */
+    .site-footer {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 4rem 0 2rem;
+      margin-top: auto;
+      border-top: 1px solid #1e293b;
+    }
+    .footer-title {
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .footer-link {
+      color: #94a3b8;
+      font-size: 0.875rem;
+      display: block;
+      margin-bottom: 0.6rem;
+      transition: color 0.15s;
+    }
+    .footer-link:hover {
+      color: #ffffff;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Announcement Bar: ONLY visible on public marketing pages -->
+  {% if request.path == '/' or request.path == '/how-it-works/' or request.path == '/pricing/' or request.path == '/about/' or request.path == '/contact/' %}
+  <div style="background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 600; text-align: center;">
+    <span>⚡ Need a Verified Home or Online Tutor? Post your requirements in 60 seconds — No platform fees for parents!</span>
+    <a href="{% url 'leads:post_requirement' %}" style="text-decoration: underline; margin-left: 0.5rem; color: #fef08a; font-weight: 700;">Post Requirement &rarr;</a>
+  </div>
+  {% endif %}
+
+  <!-- Main Navigation Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        
+        <!-- Brand Logo & Context Badge -->
+        <a href="{% url 'core:home' %}" class="brand-logo" aria-label="{{ company.company_name }} Home">
+          <div class="brand-icon-box">
+            <i data-lucide="graduation-cap" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div>
+            <span>{{ company.company_name }}</span>
+            {% if request.resolver_match.namespace == 'custom_admin' %}
+              <span style="display: block; font-size: 0.65rem; font-weight: 800; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Admin Console</span>
+            {% elif request.resolver_match.namespace == 'tutors' and '/dashboard' in request.path %}
+              <span style="display: block; font-size: 0.65rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Tutor Portal</span>
+            {% elif request.resolver_match.namespace == 'parents' %}
+              <span style="display: block; font-size: 0.65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Parent Portal</span>
+            {% else %}
+              <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1;">Verified Educators</span>
+            {% endif %}
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links (>= 992px) -->
+        <nav class="desktop-nav" aria-label="Main Navigation">
+          {% if request.resolver_match.namespace == 'custom_admin' %}
+            <!-- Admin Top Shortcuts -->
+            <a href="{% url 'custom_admin:dashboard' %}" class="nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+              <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Admin Dashboard
+            </a>
+            <a href="{% url 'custom_admin:leads' %}" class="nav-pill {% if request.resolver_match.url_name == 'leads' %}active{% endif %}">
+              <i data-lucide="compass" style="width: 16px; height: 16px;"></i> Leads
+            </a>
+            <a href="{% url 'custom_admin:tutors' %}" class="nav-pill {% if request.resolver_match.url_name == 'tutors' %}active{% endif %}">
+              <i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Tutors
+            </a>
+            <a href="{% url 'custom_admin:commissions' %}" class="nav-pill {% if request.resolver_match.url_name == 'commissions' %}active{% endif %}">
+              <i data-lucide="percent" style="width: 16px; height: 16px;"></i> Commissions
+            </a>
+            <a href="{% url 'custom_admin:reports' %}" class="nav-pill {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+              <i data-lucide="bar-chart-3" style="width: 16px; height: 16px;"></i> Reports
+            </a>
+          {% else %}
+            <!-- Public / Member Navigation -->
+            <a href="{% url 'core:home' %}" class="nav-pill {% if request.path == '/' %}active{% endif %}">
+              <i data-lucide="home" style="width: 16px; height: 16px;"></i> Home
+            </a>
+            <a href="{% url 'tutors:directory' %}" class="nav-pill {% if '/tutors/' in request.path and '/tutors/dashboard' not in request.path %}active{% endif %}">
+              <i data-lucide="search" style="width: 16px; height: 16px;"></i> Find Tutors
+            </a>
+            <a href="{% url 'leads:board' %}" class="nav-pill {% if '/leads/board' in request.path %}active{% endif %}">
+              <i data-lucide="briefcase" style="width: 16px; height: 16px;"></i> Tuition Jobs
+              <span class="badge badge-primary" style="font-size: 0.6rem; padding: 0.15rem 0.4rem;">NEW</span>
+            </a>
+            <a href="{% url 'core:how_it_works' %}" class="nav-pill {% if '/how-it-works' in request.path %}active{% endif %}">
+              <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i> How It Works
+            </a>
+            <a href="{% url 'core:pricing' %}" class="nav-pill {% if '/pricing' in request.path %}active{% endif %}">
+              <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i> Plans & Pricing
+            </a>
+          {% endif %}
+        </nav>
+
+        <!-- Right Header Actions -->
+        <div class="header-actions">
+          
+          <!-- Quick Theme Switcher Button -->
+          <button type="button" class="icon-btn theme-toggle-btn" title="Toggle Light / Dark Mode" onclick="toggleThemeMode()" aria-label="Toggle theme">
+            <i data-lucide="moon" class="dark-icon" style="width: 17px; height: 17px; display: none;"></i>
+            <i data-lucide="sun" class="light-icon" style="width: 17px; height: 17px;"></i>
+          </button>
+
+          {% if user.is_authenticated %}
+            <!-- Notifications Icon -->
+            <a href="{% url 'communication:notifications' %}" class="icon-btn" title="Notifications" aria-label="Notifications">
+              <i data-lucide="bell" style="width: 17px; height: 17px;"></i>
+              {% if unread_notifications_count > 0 %}
+                <span class="icon-badge">{{ unread_notifications_count }}</span>
+              {% endif %}
+            </a>
+
+            <!-- Messages Icon -->
+            <a href="{% url 'communication:inbox' %}" class="icon-btn" title="Messaging Inbox" aria-label="Messages">
+              <i data-lucide="message-square" style="width: 17px; height: 17px;"></i>
+            </a>
+
+            <!-- User Menu Avatar Dropdown Trigger (Desktop) -->
+            <div class="user-menu-wrapper" style="display: none;">
+              <button type="button" class="user-profile-btn" id="user-menu-btn" onclick="toggleUserMenu(event)" aria-expanded="false" aria-haspopup="true">
+                <div class="user-avatar-circle">
+                  {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
+                </div>
+                <span style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  {{ user.first_name|default:user.username }}
+                </span>
+                <i data-lucide="chevron-down" style="width: 13px; height: 13px; opacity: 0.7;"></i>
+              </button>
+
+              <!-- Floating Dropdown Card -->
+              <div class="user-dropdown-card" id="user-menu-dropdown">
+                <div class="dropdown-header">
+                  <div style="font-weight: 800; font-size: 0.95rem; color: var(--text);">{{ user.display_name }}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">{{ user.email }}</div>
+                  <div class="flex items-center gap-2">
+                    <span class="badge badge-primary">{{ user.get_role_display }}</span>
+                    {% if user.is_tutor and user.tutor_profile %}
+                      <span class="badge badge-success">
+                        ⚡ {{ user.tutor_profile.credit_wallet.total_balance|default:0 }} Credits
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="dropdown-body">
+                  {% if user.is_super_admin or user.is_operations %}
+                    <a href="{% url 'custom_admin:dashboard' %}" class="dropdown-item">
+                      <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Admin Console
+                    </a>
+                    <a href="{% url 'custom_admin:theme' %}" class="dropdown-item">
+                      <i data-lucide="palette" style="width: 16px; height: 16px;"></i> Theme Customizer
+                    </a>
+                  {% elif user.is_tutor %}
+                    <a href="{% url 'tutors:dashboard' %}" class="dropdown-item">
+                      <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Tutor Dashboard
+                    </a>
+                    <a href="{% url 'tutors:leads_browse' %}" class="dropdown-item">
+                      <i data-lucide="compass" style="width: 16px; height: 16px;"></i> Browse Leads
+                    </a>
+                    <a href="{% url 'tutors:billing' %}" class="dropdown-item">
+                      <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i> Wallet & Credits
+                    </a>
+                  {% elif user.is_parent %}
+                    <a href="{% url 'parents:dashboard' %}" class="dropdown-item">
+                      <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Parent Dashboard
+                    </a>
+                    <a href="{% url 'parents:requirements' %}" class="dropdown-item">
+                      <i data-lucide="list" style="width: 16px; height: 16px;"></i> My Requirements
+                    </a>
+                  {% else %}
+                    <a href="{% url 'core:dashboard_redirect' %}" class="dropdown-item">
+                      <i data-lucide="user" style="width: 16px; height: 16px;"></i> My Dashboard
+                    </a>
+                  {% endif %}
+
+                  <a href="{% url 'communication:inbox' %}" class="dropdown-item">
+                    <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Messages
+                  </a>
+                  <a href="{% url 'communication:notifications' %}" class="dropdown-item">
+                    <i data-lucide="bell" style="width: 16px; height: 16px;"></i> Notifications
+                  </a>
+
+                  <div class="dropdown-divider"></div>
+
+                  <a href="{% url 'accounts:logout' %}" class="dropdown-item" style="color: var(--danger);">
+                    <i data-lucide="log-out" style="width: 16px; height: 16px;"></i> Sign Out
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- Guest CTAs (Desktop) -->
+            <div class="desktop-guest-actions" style="display: none; align-items: center; gap: 0.5rem;">
+              <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">
+                <i data-lucide="log-in" style="width: 14px; height: 14px;"></i> Log In
+              </a>
+              <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm">
+                <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> Post Requirement
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- Mobile Hamburger Toggle Button (< 992px) -->
+          <button type="button" class="mobile-hamburger-btn" id="mobile-nav-toggle" onclick="toggleMobileDrawer()" aria-label="Toggle navigation menu" aria-expanded="false">
+            <i data-lucide="menu" id="hamburger-icon" style="width: 22px; height: 22px;"></i>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Responsive display rules for desktop menu -->
+  <style>
+    @media (min-width: 992px) {
+      .user-menu-wrapper { display: block !important; }
+      .desktop-guest-actions { display: inline-flex !important; }
+    }
+  </style>
+
+  <!-- ========================================================================
+       MODERN MOBILE NAVIGATION DRAWER & BACKDROP
+       ======================================================================== -->
+  <div class="mobile-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+
+  <aside class="mobile-drawer" id="mobile-drawer" aria-label="Mobile Navigation Menu" aria-hidden="true">
+    
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="flex items-center gap-2">
+        <div class="brand-icon-box" style="width: 34px; height: 34px; border-radius: 10px;">
+          <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 1rem; color: var(--text);">{{ company.company_name }}</div>
+          <div style="font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">
+            {% if request.resolver_match.namespace == 'custom_admin' %}Admin Navigation{% else %}Menu{% endif %}
+          </div>
+        </div>
+      </div>
+      <button type="button" class="icon-btn" onclick="closeMobileDrawer()" aria-label="Close navigation menu">
+        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+      </button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="drawer-body">
+
+      <!-- Context-Aware Mobile Navigation -->
+      {% if request.resolver_match.namespace == 'custom_admin' %}
+        <!-- ADMIN SPECIFIC DRAWER NAVIGATION -->
+        <div class="drawer-section-title">Operations & Leads</div>
+        <a href="{% url 'custom_admin:dashboard' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="layout-dashboard" style="width: 17px; height: 17px; color: var(--primary);"></i> Overview Dashboard</span>
+        </a>
+        <a href="{% url 'custom_admin:leads' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'leads' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="compass" style="width: 17px; height: 17px; color: var(--secondary);"></i> Leads & Matching</span>
+        </a>
+        <a href="{% url 'custom_admin:tutors' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'tutors' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="user-check" style="width: 17px; height: 17px; color: var(--success);"></i> Tutors & Verification</span>
+        </a>
+        <a href="{% url 'custom_admin:parents' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'parents' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="users" style="width: 17px; height: 17px;"></i> Parents & Students</span>
+        </a>
+
+        <div class="drawer-section-title">Revenue & Finance</div>
+        <a href="{% url 'custom_admin:commissions' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'commissions' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="percent" style="width: 17px; height: 17px; color: var(--accent);"></i> Commission Engine</span>
+        </a>
+        <a href="{% url 'custom_admin:subscriptions' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'subscriptions' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="credit-card" style="width: 17px; height: 17px;"></i> Plans & Credits</span>
+        </a>
+        <a href="{% url 'custom_admin:financials' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'financials' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="receipt" style="width: 17px; height: 17px;"></i> Financials & Invoices</span>
+        </a>
+
+        <div class="drawer-section-title">Trust & Administration</div>
+        <a href="{% url 'custom_admin:complaints' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'complaints' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="alert-octagon" style="width: 17px; height: 17px; color: var(--danger);"></i> Complaints & Disputes</span>
+        </a>
+        <a href="{% url 'custom_admin:announcements' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'announcements' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="megaphone" style="width: 17px; height: 17px;"></i> Announcements</span>
+        </a>
+        <a href="{% url 'custom_admin:reports' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="bar-chart-3" style="width: 17px; height: 17px;"></i> Reports & CSV Export</span>
+        </a>
+        <a href="{% url 'custom_admin:branding' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'branding' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="settings" style="width: 17px; height: 17px;"></i> Company Branding</span>
+        </a>
+        <a href="{% url 'custom_admin:theme' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'theme' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="palette" style="width: 17px; height: 17px; color: var(--primary);"></i> Theme Customizer</span>
+        </a>
+        <a href="{% url 'custom_admin:audit_logs' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="file-text" style="width: 17px; height: 17px;"></i> Audit Trail</span>
+        </a>
+
+        <div class="drawer-section-title">Platform</div>
+        <a href="{% url 'core:home' %}" class="drawer-nav-item">
+          <span class="flex items-center gap-2"><i data-lucide="external-link" style="width: 17px; height: 17px;"></i> View Public Website</span>
+        </a>
+
+      {% else %}
+        <!-- STANDARD / MEMBER DRAWER NAVIGATION -->
+        {% if user.is_authenticated %}
+          <div class="card" style="padding: 0.85rem; margin-bottom: 1rem; background: var(--surface-hover); border-color: var(--border);">
+            <div class="flex items-center gap-2">
+              <div class="user-avatar-circle" style="width: 36px; height: 36px;">
+                {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
+              </div>
+              <div style="flex: 1; overflow: hidden;">
+                <div style="font-weight: 800; font-size: 0.9rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ user.display_name }}</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">{{ user.get_role_display }}</div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="drawer-section-title">Explore</div>
+        <a href="{% url 'core:home' %}" class="drawer-nav-item {% if request.path == '/' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="home" style="width: 17px; height: 17px; color: var(--primary);"></i> Home</span>
+        </a>
+        <a href="{% url 'tutors:directory' %}" class="drawer-nav-item {% if '/tutors/' in request.path and '/tutors/dashboard' not in request.path %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="search" style="width: 17px; height: 17px; color: var(--secondary);"></i> Find Tutors</span>
+        </a>
+        <a href="{% url 'leads:board' %}" class="drawer-nav-item {% if '/leads/board' in request.path %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="briefcase" style="width: 17px; height: 17px; color: var(--accent);"></i> Tuition Jobs</span>
+          <span class="badge badge-primary" style="font-size: 0.6rem;">NEW</span>
+        </a>
+        <a href="{% url 'core:how_it_works' %}" class="drawer-nav-item {% if '/how-it-works' in request.path %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="sparkles" style="width: 17px; height: 17px; color: var(--warning);"></i> How It Works</span>
+        </a>
+        <a href="{% url 'core:pricing' %}" class="drawer-nav-item {% if '/pricing' in request.path %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="credit-card" style="width: 17px; height: 17px; color: var(--success);"></i> Plans & Pricing</span>
+        </a>
+
+        {% if user.is_authenticated %}
+          <div class="drawer-section-title">My Account</div>
+          {% if user.is_super_admin or user.is_operations %}
+            <a href="{% url 'custom_admin:dashboard' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i> Admin Console</span></a>
+          {% elif user.is_tutor %}
+            <a href="{% url 'tutors:dashboard' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i> Tutor Dashboard</span></a>
+            <a href="{% url 'tutors:leads_browse' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="compass" style="width: 17px; height: 17px;"></i> Browse Opportunities</span></a>
+            <a href="{% url 'tutors:billing' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="credit-card" style="width: 17px; height: 17px;"></i> Wallet & Plans</span></a>
+            <a href="{% url 'billing:checkout' %}?type=credits&credits=15&amount=699" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="zap" style="width: 17px; height: 17px; color: var(--primary);"></i> Recharge Credits</span></a>
+          {% elif user.is_parent %}
+            <a href="{% url 'parents:dashboard' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i> Parent Dashboard</span></a>
+            <a href="{% url 'parents:requirements' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="list" style="width: 17px; height: 17px;"></i> My Requirements</span></a>
+            <a href="{% url 'parents:tuitions' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="book-open" style="width: 17px; height: 17px;"></i> Ongoing Tuitions</span></a>
+          {% endif %}
+          <a href="{% url 'communication:inbox' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="message-square" style="width: 17px; height: 17px;"></i> Messages</span></a>
+          <a href="{% url 'communication:notifications' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="bell" style="width: 17px; height: 17px;"></i> Notifications</span></a>
+        {% else %}
+          <div class="drawer-section-title">Get Started</div>
+          <a href="{% url 'accounts:login' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="log-in" style="width: 17px; height: 17px; color: var(--primary);"></i> Log In</span></a>
+          <a href="{% url 'leads:post_requirement' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="plus-circle" style="width: 17px; height: 17px; color: var(--accent);"></i> Post Requirement</span></a>
+          <a href="{% url 'accounts:register_tutor' %}" class="drawer-nav-item"><span class="flex items-center gap-2"><i data-lucide="graduation-cap" style="width: 17px; height: 17px; color: var(--secondary);"></i> Register as Tutor</span></a>
+        {% endif %}
+      {% endif %}
+
+      <!-- Theme Switcher in Drawer -->
+      <div class="drawer-section-title">Preferences</div>
+      <div class="drawer-nav-item" style="cursor: pointer;" onclick="toggleThemeMode()">
+        <span class="flex items-center gap-2">
+          <i data-lucide="sun-moon" style="width: 17px; height: 17px; color: var(--accent);"></i>
+          <span>Theme Mode</span>
+        </span>
+        <span class="badge badge-secondary theme-mode-label">Auto</span>
+      </div>
+
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="drawer-footer">
+      {% if user.is_authenticated %}
+        <a href="{% url 'accounts:logout' %}" class="btn btn-secondary" style="width: 100%; justify-content: center; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i> Sign Out
+        </a>
+      {% else %}
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+          Helpline: <strong style="color: var(--text);">{{ company.support_phone }}</strong>
+        </div>
+      {% endif %}
+    </div>
+
+  </aside>
+
+  <!-- Global Flash Messages -->
+  {% if messages %}
+  <div class="container" style="margin-top: 1rem;">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags|default:'info' }}">
+        <div class="flex items-center gap-2">
+          <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+          <span>{{ message }}</span>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: inherit; font-size: 1.1rem;">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main Content Block -->
+  <main style="flex: 1;">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8" style="margin-bottom: 3rem;">
+        
+        <!-- Company Info -->
+        <div>
+          <div class="flex items-center gap-2" style="font-size: 1.25rem; font-weight: 800; color: white; margin-bottom: 0.75rem;">
+            <i data-lucide="graduation-cap" style="width: 24px; height: 24px; color: var(--secondary);"></i>
+            <span>{{ company.company_name }}</span>
+          </div>
+          <p style="font-size: 0.875rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.6;">
+            {{ company.tagline }}. Connect with background-checked home tutors and online educators across major cities.
+          </p>
+          <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+            <div><i data-lucide="phone" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i> {{ company.support_phone }}</div>
+            <div><i data-lucide="mail" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i> {{ company.support_email }}</div>
+          </div>
+        </div>
+
+        <!-- Quick Links For Parents -->
+        <div>
+          <h4 class="footer-title">For Parents & Students</h4>
+          <a href="{% url 'leads:post_requirement' %}" class="footer-link">Post Tuition Requirement</a>
+          <a href="{% url 'tutors:directory' %}" class="footer-link">Search Verified Tutors</a>
+          <a href="{% url 'core:how_it_works' %}" class="footer-link">How Tuition Matching Works</a>
+          <a href="{% url 'accounts:register_parent' %}" class="footer-link">Parent Registration</a>
+        </div>
+
+        <!-- Quick Links For Tutors -->
+        <div>
+          <h4 class="footer-title">For Tutors & Teachers</h4>
+          <a href="{% url 'accounts:register_tutor' %}" class="footer-link">Register as a Tutor</a>
+          <a href="{% url 'leads:board' %}" class="footer-link">Browse Tuition Leads</a>
+          <a href="{% url 'core:pricing' %}" class="footer-link">Membership Plans & Credits</a>
+          <a href="{% url 'core:terms' %}" class="footer-link">Tutor Code of Conduct</a>
+        </div>
+
+        <!-- Company & Policies -->
+        <div>
+          <h4 class="footer-title">Platform Policies</h4>
+          <a href="{% url 'core:about' %}" class="footer-link">About Us</a>
+          <a href="{% url 'core:terms' %}" class="footer-link">Terms & Conditions</a>
+          <a href="{% url 'core:privacy' %}" class="footer-link">Privacy Policy</a>
+          <a href="{% url 'core:contact' %}" class="footer-link">Support & Grievances</a>
+        </div>
+
+      </div>
+
+      <!-- Copyright & Currency -->
+      <div style="border-top: 1px solid #1e293b; padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.8125rem; color: #64748b;">
+        <div>
+          &copy; {% now "Y" %} {{ company.company_name }}. All rights reserved. Operating in {{ company.currency_code }} ({{ company.currency_symbol }}).
+        </div>
+        <div class="flex items-center gap-4">
+          <span>{{ company.office_address }}</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Unified Navigation & Interactive Controller -->
+  <script>
+    // 1. Mobile Drawer Navigation Controller
+    function toggleMobileDrawer() {
+      const drawer = document.getElementById('mobile-drawer');
+      const backdrop = document.getElementById('mobile-drawer-backdrop');
+      const toggleBtn = document.getElementById('mobile-nav-toggle');
+      const isOpen = drawer.classList.contains('open');
+
+      if (isOpen) {
+        closeMobileDrawer();
+      } else {
+        drawer.classList.add('open');
+        backdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function closeMobileDrawer() {
+      const drawer = document.getElementById('mobile-drawer');
+      const backdrop = document.getElementById('mobile-drawer-backdrop');
+      const toggleBtn = document.getElementById('mobile-nav-toggle');
+
+      if (drawer && backdrop) {
+        drawer.classList.remove('open');
+        backdrop.classList.remove('open');
+        document.body.style.overflow = '';
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    // 2. User Avatar Dropdown Controller
+    function toggleUserMenu(e) {
+      if (e) e.stopPropagation();
+      const dropdown = document.getElementById('user-menu-dropdown');
+      const btn = document.getElementById('user-menu-btn');
+      if (dropdown) {
+        const isShown = dropdown.classList.contains('show');
+        dropdown.classList.toggle('show');
+        if (btn) btn.setAttribute('aria-expanded', !isShown);
+      }
+    }
+
+    // Close user menu on clicking outside
+    document.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('user-menu-dropdown');
+      const btn = document.getElementById('user-menu-btn');
+      if (dropdown && dropdown.classList.contains('show')) {
+        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+          dropdown.classList.remove('show');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+
+    // Close on Escape Key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeMobileDrawer();
+        const dropdown = document.getElementById('user-menu-dropdown');
+        if (dropdown) dropdown.classList.remove('show');
+      }
+    });
+
+    // 3. Theme Toggle Controller
+    function updateThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const darkIcons = document.querySelectorAll('.dark-icon');
+      const lightIcons = document.querySelectorAll('.light-icon');
+      const labels = document.querySelectorAll('.theme-mode-label');
+
+      darkIcons.forEach(icon => icon.style.display = isDark ? 'inline-block' : 'none');
+      lightIcons.forEach(icon => icon.style.display = isDark ? 'none' : 'inline-block');
+      labels.forEach(lbl => lbl.textContent = isDark ? 'Dark Theme' : 'Light Theme');
+    }
+
+    function toggleThemeMode() {
+      const html = document.documentElement;
+      const willBeDark = !html.classList.contains('dark');
+      if (willBeDark) {
+        html.classList.add('dark');
+        localStorage.setItem('edututor_theme', 'dark');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('edututor_theme', 'light');
+      }
+      updateThemeIcons();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateThemeIcons();
+      lucide.createIcons();
+    });
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

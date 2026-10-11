@@ -1,0 +1,875 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Checkout & Payment — {{ company.company_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .checkout-container {
+    max-width: 1100px;
+    margin: 2.5rem auto 5rem;
+    padding: 0 1.25rem;
+  }
+  .checkout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 992px) {
+    .checkout-grid {
+      grid-template-columns: 1.25fr 0.95fr;
+      align-items: start;
+    }
+  }
+
+  /* Payment Method Tabs */
+  .method-tab-nav {
+    display: flex;
+    background: #f1f5f9;
+    padding: 0.35rem;
+    border-radius: 0.75rem;
+    gap: 0.35rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+  .method-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    background: transparent;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .method-tab-btn:hover {
+    color: var(--text);
+  }
+  .method-tab-btn.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Virtual Card Display */
+  .virtual-card-preview {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    color: #ffffff;
+    border-radius: 1rem;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 25px -5px rgba(67, 56, 202, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .virtual-card-preview::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .card-chip {
+    width: 42px;
+    height: 32px;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    position: relative;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+  }
+  .card-preview-number {
+    font-family: 'Courier New', monospace;
+    font-size: 1.25rem;
+    letter-spacing: 2.5px;
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+  }
+  .card-preview-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-size: 0.8rem;
+  }
+
+  /* Bank selection grid */
+  .bank-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .bank-choice-card {
+    border: 1px solid var(--border);
+    border-radius: 0.65rem;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #ffffff;
+  }
+  .bank-choice-card:hover {
+    border-color: var(--primary);
+    background: #f8fafc;
+  }
+  .bank-choice-card.selected {
+    border-color: var(--primary);
+    background: #eef2ff;
+    box-shadow: 0 0 0 2px var(--primary);
+  }
+
+  /* Processing Overlay */
+  #processingOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #ffffff;
+    text-align: center;
+    padding: 2rem;
+  }
+  .spinner-pulse {
+    width: 68px;
+    height: 68px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Quick Coupon Chips */
+  .coupon-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .coupon-chip:hover {
+    background: #e2e8f0;
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+
+  <!-- Minimalist Checkout Navigation -->
+  <div class="checkout-header">
+    <div class="flex items-center gap-3">
+      <a href="{% url 'core:home' %}" class="flex items-center gap-2" style="font-weight: 800; font-size: 1.25rem; color: var(--primary); text-decoration: none;">
+        <i data-lucide="graduation-cap" style="width: 28px; height: 28px;"></i>
+        <span>{{ company.company_name }}</span>
+      </a>
+      <span style="color: var(--border);">|</span>
+      <span style="font-size: 0.95rem; font-weight: 700; color: var(--text);">Secure Payment Gateway</span>
+    </div>
+
+    <div class="flex items-center gap-2" style="font-size: 0.85rem; color: #10b981; font-weight: 600;">
+      <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+      <span>256-Bit SSL Encrypted</span>
+    </div>
+  </div>
+
+  <div class="checkout-grid">
+
+    <!-- LEFT COLUMN: Payment Methods & Gateway Form -->
+    <div class="card" style="padding: 2rem;">
+      
+      <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text);">Select Payment Method</h2>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+          Instant activation upon verified payment clearance
+        </p>
+      </div>
+
+      <!-- Payment Method Navigation Tabs -->
+      <div class="method-tab-nav" role="tablist">
+        <button type="button" class="method-tab-btn active" data-tab="upi" onclick="switchMethod('UPI')">
+          <i data-lucide="smartphone" style="width: 16px; height: 16px;"></i>
+          <span>UPI / QR</span>
+        </button>
+        <button type="button" class="method-tab-btn" data-tab="card" onclick="switchMethod('CARD')">
+          <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i>
+          <span>Cards</span>
+        </button>
+        <button type="button" class="method-tab-btn" data-tab="netbanking" onclick="switchMethod('NET_BANKING')">
+          <i data-lucide="landmark" style="width: 16px; height: 16px;"></i>
+          <span>Net Banking</span>
+        </button>
+        <button type="button" class="method-tab-btn" data-tab="wallet" onclick="switchMethod('WALLET')">
+          <i data-lucide="wallet" style="width: 16px; height: 16px;"></i>
+          <span>Wallets</span>
+        </button>
+      </div>
+
+      <!-- Master Payment Form -->
+      <form id="paymentForm" method="post" action="{% url 'billing:process_payment' %}">
+        {% csrf_token %}
+        <input type="hidden" name="checkout_type" value="{{ checkout_type }}">
+        <input type="hidden" name="payment_method" id="selectedPaymentMethod" value="UPI">
+        <input type="hidden" name="base_price" id="formBasePrice" value="{{ base_price }}">
+        <input type="hidden" name="coupon_code" id="formCouponCode" value="{{ coupon_code }}">
+        <input type="hidden" name="simulate_outcome" id="simulateOutcome" value="SUCCESS">
+
+        <!-- Hidden item metadata -->
+        {% if checkout_type == 'plan' %}
+          <input type="hidden" name="plan_id" value="{{ metadata.plan_id }}">
+        {% elif checkout_type == 'credits' %}
+          <input type="hidden" name="credits_count" value="{{ metadata.credits_count }}">
+        {% elif checkout_type == 'commission' %}
+          <input type="hidden" name="commission_id" value="{{ metadata.commission_id }}">
+        {% elif checkout_type == 'invoice' %}
+          <input type="hidden" name="invoice_number" value="{{ metadata.invoice_number }}">
+        {% elif checkout_type == 'tuition_fee' %}
+          <input type="hidden" name="engagement_id" value="{{ metadata.engagement_id }}">
+        {% endif %}
+
+        <!-- TAB 1: UPI PAYMENT -->
+        <div id="tab-upi" class="tab-content">
+          <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.85rem; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+            
+            <div style="margin-bottom: 1rem;">
+              <span class="badge badge-success" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                <i data-lucide="zap" style="width: 12px; height: 12px; display: inline;"></i> 0% Gateway Convenience Fee
+              </span>
+            </div>
+
+            <!-- Dynamic QR Code Container -->
+            <div style="background: #ffffff; padding: 1rem; border-radius: 0.75rem; display: inline-block; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid var(--border); margin-bottom: 1rem;">
+              <!-- Authentic SVG QR simulation with merchant center mark -->
+              <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                <rect width="180" height="180" fill="white"/>
+                <!-- Corner 1 -->
+                <rect x="15" y="15" width="45" height="45" stroke="#0f172a" stroke-width="6" fill="white"/>
+                <rect x="25" y="25" width="25" height="25" fill="#0f172a"/>
+                <!-- Corner 2 -->
+                <rect x="120" y="15" width="45" height="45" stroke="#0f172a" stroke-width="6" fill="white"/>
+                <rect x="130" y="25" width="25" height="25" fill="#0f172a"/>
+                <!-- Corner 3 -->
+                <rect x="15" y="120" width="45" height="45" stroke="#0f172a" stroke-width="6" fill="white"/>
+                <rect x="25" y="130" width="25" height="25" fill="#0f172a"/>
+                <!-- Data blocks simulation -->
+                <rect x="75" y="20" width="12" height="12" fill="#0f172a"/>
+                <rect x="95" y="20" width="12" height="12" fill="#0f172a"/>
+                <rect x="75" y="45" width="12" height="20" fill="#0f172a"/>
+                <rect x="20" y="75" width="20" height="12" fill="#0f172a"/>
+                <rect x="45" y="95" width="15" height="15" fill="#0f172a"/>
+                <rect x="70" y="75" width="40" height="40" rx="6" fill="#4f46e5"/>
+                <rect x="120" y="75" width="15" height="15" fill="#0f172a"/>
+                <rect x="145" y="95" width="20" height="12" fill="#0f172a"/>
+                <rect x="75" y="125" width="15" height="15" fill="#0f172a"/>
+                <rect x="100" y="145" width="20" height="15" fill="#0f172a"/>
+                <rect x="130" y="130" width="15" height="25" fill="#0f172a"/>
+                <text x="90" y="99" fill="white" font-size="16" font-weight="bold" text-anchor="middle" font-family="sans-serif">₹</text>
+              </svg>
+            </div>
+
+            <div style="font-size: 0.9rem; font-weight: 700; color: var(--text);">
+              Scan with any UPI App to Pay <span class="total-display" style="color: var(--primary);">{{ company.currency_symbol }}{{ total_payable }}</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+              VPA: <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: 600;">{{ upi_pa }}</code>
+            </div>
+
+            <!-- UPI Apps row -->
+            <div style="display: flex; justify-content: center; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap;">
+              <span class="badge" style="background: #ffffff; border: 1px solid var(--border); font-size: 0.75rem; color: #1e293b;">Google Pay</span>
+              <span class="badge" style="background: #ffffff; border: 1px solid var(--border); font-size: 0.75rem; color: #1e293b;">PhonePe</span>
+              <span class="badge" style="background: #ffffff; border: 1px solid var(--border); font-size: 0.75rem; color: #1e293b;">Paytm</span>
+              <span class="badge" style="background: #ffffff; border: 1px solid var(--border); font-size: 0.75rem; color: #1e293b;">BHIM</span>
+              <span class="badge" style="background: #ffffff; border: 1px solid var(--border); font-size: 0.75rem; color: #1e293b;">CRED</span>
+            </div>
+
+            <!-- Expiry countdown -->
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+              <i data-lucide="clock" style="width: 13px; height: 13px;"></i>
+              <span>QR expires in <strong id="upiCountdown" style="color: #ef4444;">09:59</strong></span>
+            </div>
+          </div>
+
+          <!-- Enter UPI ID Option -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem;">
+              Or Enter UPI ID / VPA
+            </label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="upiVpaInput" placeholder="username@okhdfcbank or 9876543210@upi" 
+                     value="tutor@okhdfcbank"
+                     class="input-control" style="flex: 1; font-family: monospace;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="validateUpiId()">Verify</button>
+            </div>
+            <span id="upiVerifyFeedback" style="font-size: 0.75rem; color: #10b981; display: block; margin-top: 0.35rem; font-weight: 600;">
+              ✓ Verified: Rajesh Nambiar (Verified Tutor)
+            </span>
+          </div>
+        </div>
+
+        <!-- TAB 2: CREDIT / DEBIT CARD -->
+        <div id="tab-card" class="tab-content" style="display: none;">
+          
+          <!-- Virtual Card Live Visualizer -->
+          <div class="virtual-card-preview">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="card-chip"></div>
+              <div id="cardBrandLogo" style="font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; color: #ffffff;">VISA</div>
+            </div>
+            <div class="card-preview-number" id="cardPreviewNumber">4532 •••• •••• 8921</div>
+            <div class="card-preview-footer">
+              <div>
+                <div style="font-size: 0.65rem; opacity: 0.75; text-transform: uppercase;">Card Holder</div>
+                <div id="cardPreviewName" style="font-weight: 700; font-size: 0.9rem; text-transform: uppercase;">{{ user.display_name }}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 0.65rem; opacity: 0.75; text-transform: uppercase;">Expires</div>
+                <div id="cardPreviewExpiry" style="font-weight: 700; font-size: 0.9rem;">12/28</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Input Fields -->
+          <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+                Card Number
+              </label>
+              <input type="text" id="cardNumberInput" class="input-control" 
+                     placeholder="4532 0123 4567 8921" maxlength="19"
+                     value="4532 9876 5432 8921" oninput="formatCardNumber(this)">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+                  Valid Thru (MM/YY)
+                </label>
+                <input type="text" id="cardExpiryInput" class="input-control" 
+                       placeholder="MM/YY" maxlength="5" value="12/28" oninput="formatExpiry(this)">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+                  CVV / CVC
+                </label>
+                <input type="password" id="cardCvvInput" class="input-control" 
+                       placeholder="•••" maxlength="4" value="789">
+              </div>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+                Name on Card
+              </label>
+              <input type="text" id="cardNameInput" class="input-control" 
+                     value="{{ user.display_name }}" oninput="updateCardName(this)">
+            </div>
+
+            <label class="flex items-center gap-2" style="font-size: 0.8rem; color: #475569; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--primary);">
+              <span>Save card securely under RBI Tokenization guidelines</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- TAB 3: NET BANKING -->
+        <div id="tab-netbanking" class="tab-content" style="display: none;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">
+            Select Popular Bank
+          </label>
+          
+          <div class="bank-grid">
+            <div class="bank-choice-card selected" onclick="selectBank(this, 'HDFC Bank')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #1e3a8a;">HDFC Bank</div>
+              <span style="font-size: 0.7rem; color: #10b981;">Fast</span>
+            </div>
+            <div class="bank-choice-card" onclick="selectBank(this, 'State Bank of India')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #0369a1;">SBI</div>
+              <span style="font-size: 0.7rem; color: #10b981;">Fast</span>
+            </div>
+            <div class="bank-choice-card" onclick="selectBank(this, 'ICICI Bank')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #c2410c;">ICICI Bank</div>
+              <span style="font-size: 0.7rem; color: #10b981;">Fast</span>
+            </div>
+            <div class="bank-choice-card" onclick="selectBank(this, 'Axis Bank')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #9f1239;">Axis Bank</div>
+              <span style="font-size: 0.7rem; color: #64748b;">Active</span>
+            </div>
+            <div class="bank-choice-card" onclick="selectBank(this, 'Kotak Mahindra Bank')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #b91c1c;">Kotak Bank</div>
+              <span style="font-size: 0.7rem; color: #64748b;">Active</span>
+            </div>
+            <div class="bank-choice-card" onclick="selectBank(this, 'Punjab National Bank')">
+              <div style="font-size: 0.85rem; font-weight: 700; color: #d97706;">PNB</div>
+              <span style="font-size: 0.7rem; color: #64748b;">Active</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem;">
+              Or Choose from All Indian Banks
+            </label>
+            <select class="input-control" onchange="document.getElementById('selectedBankName').innerText = this.value;">
+              <option value="HDFC Bank">HDFC Bank</option>
+              <option value="State Bank of India">State Bank of India</option>
+              <option value="ICICI Bank">ICICI Bank</option>
+              <option value="Axis Bank">Axis Bank</option>
+              <option value="Bank of Baroda">Bank of Baroda</option>
+              <option value="Canara Bank">Canara Bank</option>
+              <option value="Union Bank of India">Union Bank of India</option>
+              <option value="IndusInd Bank">IndusInd Bank</option>
+              <option value="IDFC FIRST Bank">IDFC FIRST Bank</option>
+              <option value="Federal Bank">Federal Bank</option>
+              <option value="Yes Bank">Yes Bank</option>
+            </select>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            You will be securely redirected to <strong id="selectedBankName" style="color: var(--text);">HDFC Bank</strong> Net Banking portal to authenticate your payment.
+          </p>
+        </div>
+
+        <!-- TAB 4: WALLETS -->
+        <div id="tab-wallet" class="tab-content" style="display: none;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">
+            Select Digital Wallet
+          </label>
+          <div class="grid grid-cols-2 gap-3" style="margin-bottom: 1.5rem;">
+            <label class="bank-choice-card selected" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem;">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="wallet_provider" value="Paytm" checked style="accent-color: var(--primary);">
+                <span style="font-weight: 700; font-size: 0.9rem;">Paytm Wallet</span>
+              </div>
+              <span class="badge badge-success" style="font-size: 0.7rem;">Linked</span>
+            </label>
+
+            <label class="bank-choice-card" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem;">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="wallet_provider" value="PhonePe" style="accent-color: var(--primary);">
+                <span style="font-weight: 700; font-size: 0.9rem;">PhonePe Wallet</span>
+              </div>
+            </label>
+
+            <label class="bank-choice-card" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem;">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="wallet_provider" value="AmazonPay" style="accent-color: var(--primary);">
+                <span style="font-weight: 700; font-size: 0.9rem;">Amazon Pay</span>
+              </div>
+            </label>
+
+            <label class="bank-choice-card" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem;">
+              <div class="flex items-center gap-2">
+                <input type="radio" name="wallet_provider" value="MobiKwik" style="accent-color: var(--primary);">
+                <span style="font-weight: 700; font-size: 0.9rem;">MobiKwik</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Testing Simulation Bar (QA & Demo Friendly) -->
+        <div style="background: #f1f5f9; border-radius: 0.65rem; padding: 0.75rem 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+          <div class="flex items-center gap-2 text-muted">
+            <i data-lucide="sliders" style="width: 14px; height: 14px;"></i>
+            <span>Gateway Sandbox Simulator:</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="btn btn-sm" id="btnSimSuccess" style="background: #10b981; color: white; padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="setSimulationOutcome('SUCCESS')">
+              ✓ Simulate Success
+            </button>
+            <button type="button" class="btn btn-sm" id="btnSimFail" style="background: #e2e8f0; color: #475569; padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="setSimulationOutcome('FAIL')">
+              ✕ Test Declined
+            </button>
+          </div>
+        </div>
+
+        <!-- Primary Action Button -->
+        <button type="button" id="paySubmitBtn" class="btn btn-primary" 
+                style="width: 100%; padding: 1rem; font-size: 1.05rem; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 0.5rem;"
+                onclick="triggerPaymentProcessing()">
+          <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+          <span>Pay <span class="total-display">{{ company.currency_symbol }}{{ total_payable }}</span> & Complete Order</span>
+        </button>
+
+        <p style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem;">
+          By placing this order you agree to {{ company.company_name }} <a href="{% url 'core:terms' %}" target="_blank" style="color: var(--primary);">Terms</a> & <a href="{% url 'core:privacy' %}" target="_blank" style="color: var(--primary);">Privacy Policy</a>
+        </p>
+
+      </form>
+
+    </div>
+
+
+    <!-- RIGHT COLUMN: Order Summary & Coupon Card -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Order Summary Card -->
+      <div class="card" style="padding: 2rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+          <span class="badge badge-primary" style="font-size: 0.75rem;">{{ item_category_badge }}</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">Ref: {{ order_ref }}</span>
+        </div>
+
+        <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem;">
+          {{ item_title }}
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          {{ item_subtitle }}
+        </p>
+
+        <!-- Feature List -->
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: #334155; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border);">
+          {% for f in features %}
+            <li class="flex items-center gap-2">
+              <i data-lucide="check-circle-2" style="width: 16px; height: 16px; color: #10b981; flex-shrink: 0;"></i>
+              <span>{{ f }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Promo Code Section -->
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+            Have a Promo Code or Voucher?
+          </label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="couponInput" class="input-control" placeholder="e.g. WELCOME50" 
+                   value="{{ coupon_code }}" style="text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="applyCouponCode()">Apply</button>
+          </div>
+
+          <div id="couponMessageArea" style="margin-top: 0.5rem; font-size: 0.8rem;">
+            {% if coupon_code and discount_amount > 0 %}
+              <span style="color: #10b981; font-weight: 600;">✓ {{ coupon_desc }} applied (-{{ company.currency_symbol }}{{ discount_amount }})</span>
+            {% endif %}
+          </div>
+
+          <!-- Quick Coupon Chips -->
+          <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap;">
+            <span class="coupon-chip" onclick="quickApplyCoupon('WELCOME50')">WELCOME50 (50% Off)</span>
+            <span class="coupon-chip" onclick="quickApplyCoupon('TUTOR20')">TUTOR20 (20% Off)</span>
+            <span class="coupon-chip" onclick="quickApplyCoupon('FIRST100')">FIRST100 (₹100 Off)</span>
+          </div>
+        </div>
+
+        <!-- Detailed Price Breakdown Table -->
+        <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+          
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>Order Subtotal:</span>
+            <span id="displayBasePrice" style="font-weight: 600; color: var(--text);">{{ company.currency_symbol }}{{ base_price }}</span>
+          </div>
+
+          <div id="rowDiscount" style="display: {% if discount_amount > 0 %}flex{% else %}none{% endif %}; justify-content: space-between; color: #10b981;">
+            <span>Coupon Discount:</span>
+            <span id="displayDiscount">-{{ company.currency_symbol }}{{ discount_amount }}</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>Net Taxable Value:</span>
+            <span id="displayNetSubtotal" style="font-weight: 600; color: var(--text);">{{ company.currency_symbol }}{{ discounted_subtotal }}</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>{{ company.tax_name }} ({{ company.tax_percentage }}%):</span>
+            <span id="displayTax" style="font-weight: 600; color: var(--text);">{{ company.currency_symbol }}{{ tax_amount }}</span>
+          </div>
+
+          <div style="font-size: 0.75rem; color: #94a3b8; display: flex; justify-content: space-between;">
+            <span>CGST 9% ({{ company.currency_symbol }}<span id="displayCgst">{{ cgst_amount }}</span>) + SGST 9% ({{ company.currency_symbol }}<span id="displaySgst">{{ sgst_amount }}</span>)</span>
+            <span>B2C Invoice</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: 800; color: var(--text); border-top: 2px dashed var(--border); padding-top: 0.85rem; margin-top: 0.35rem;">
+            <span>Total Payable:</span>
+            <span class="total-display" style="color: var(--primary);">{{ company.currency_symbol }}{{ total_payable }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Trust Badges & Guarantee -->
+      <div class="card" style="padding: 1.5rem; background: #ffffff;">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          
+          <div class="flex items-center gap-3">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #ecfdf5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="shield-alert" style="width: 18px; height: 18px; color: #10b981;"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text);">Verified Contact Guarantee</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Automatic replacement credit if parent contact is invalid or fake</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #eef2ff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="zap" style="width: 18px; height: 18px; color: var(--primary);"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text);">Instant Wallet Credit</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Credits and plan privileges are added to your profile immediately</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: #fef3c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="headphones" style="width: 18px; height: 18px; color: #d97706;"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text);">Need Billing Help?</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Call {{ company.support_phone }} or email {{ company.support_email }}</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- AUTHENTIC PAYMENT PROCESSING OVERLAY -->
+<div id="processingOverlay">
+  <div class="spinner-pulse"></div>
+  <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">Connecting to Bank Gateway</h3>
+  <p style="font-size: 0.95rem; opacity: 0.85; max-width: 420px; line-height: 1.5; margin-bottom: 1.5rem;">
+    Authorizing secure transaction of <strong class="total-display">{{ company.currency_symbol }}{{ total_payable }}</strong>. Please do not refresh, go back, or close this window.
+  </p>
+  <div class="badge" style="background: rgba(255,255,255,0.15); color: #ffffff; padding: 0.4rem 1rem; font-size: 0.8rem;">
+    <i data-lucide="lock" style="width: 14px; height: 14px; display: inline;"></i> 256-Bit SSL Handshake in progress...
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentMethod = 'UPI';
+  let currencySymbol = "{{ company.currency_symbol }}";
+
+  // Switch Payment Methods
+  function switchMethod(method) {
+    currentMethod = method;
+    document.getElementById('selectedPaymentMethod').value = method;
+
+    // Toggle Tab Buttons
+    document.querySelectorAll('.method-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-tab').toUpperCase() === method.replace('_', ''));
+    });
+
+    // Toggle Content Panels
+    const tabMap = {
+      'UPI': 'tab-upi',
+      'CARD': 'tab-card',
+      'NET_BANKING': 'tab-netbanking',
+      'WALLET': 'tab-wallet'
+    };
+
+    document.querySelectorAll('.tab-content').forEach(panel => panel.style.display = 'none');
+    const activePanel = document.getElementById(tabMap[method]);
+    if (activePanel) {
+      activePanel.style.display = 'block';
+    }
+    lucide.createIcons();
+  }
+
+  // Bank Selection
+  function selectBank(element, bankName) {
+    document.querySelectorAll('.bank-choice-card').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('selectedBankName').innerText = bankName;
+  }
+
+  // Card Formatting & Simulation
+  function formatCardNumber(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+    input.value = formatted;
+    document.getElementById('cardPreviewNumber').innerText = formatted || '•••• •••• •••• ••••';
+
+    // Detect card brand
+    const logoEl = document.getElementById('cardBrandLogo');
+    if (val.startsWith('4')) {
+      logoEl.innerText = 'VISA';
+    } else if (val.startsWith('5')) {
+      logoEl.innerText = 'MASTERCARD';
+    } else if (val.startsWith('6') || val.startsWith('8')) {
+      logoEl.innerText = 'RUPAY';
+    } else if (val.startsWith('3')) {
+      logoEl.innerText = 'AMEX';
+    } else {
+      logoEl.innerText = 'CARD';
+    }
+  }
+
+  function formatExpiry(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 2) {
+      input.value = val.substring(0, 2) + '/' + val.substring(2);
+    } else {
+      input.value = val;
+    }
+    document.getElementById('cardPreviewExpiry').innerText = input.value || 'MM/YY';
+  }
+
+  function updateCardName(input) {
+    document.getElementById('cardPreviewName').innerText = input.value.toUpperCase() || 'CARD HOLDER';
+  }
+
+  function validateUpiId() {
+    const val = document.getElementById('upiVpaInput').value.trim();
+    const feedback = document.getElementById('upiVerifyFeedback');
+    if (val && val.includes('@')) {
+      feedback.style.color = '#10b981';
+      feedback.innerText = '✓ Verified UPI ID: ' + val;
+    } else {
+      feedback.style.color = '#ef4444';
+      feedback.innerText = '✕ Invalid UPI format. Use name@bank or mobile@upi';
+    }
+  }
+
+  // Sandbox simulation switch
+  function setSimulationOutcome(outcome) {
+    document.getElementById('simulateOutcome').value = outcome;
+    const btnSuccess = document.getElementById('btnSimSuccess');
+    const btnFail = document.getElementById('btnSimFail');
+
+    if (outcome === 'SUCCESS') {
+      btnSuccess.style.background = '#10b981';
+      btnSuccess.style.color = '#ffffff';
+      btnFail.style.background = '#e2e8f0';
+      btnFail.style.color = '#475569';
+    } else {
+      btnFail.style.background = '#ef4444';
+      btnFail.style.color = '#ffffff';
+      btnSuccess.style.background = '#e2e8f0';
+      btnSuccess.style.color = '#475569';
+    }
+  }
+
+  // Dynamic Coupon Calculation via AJAX
+  function applyCouponCode() {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const baseAmt = document.getElementById('formBasePrice').value;
+    const msgArea = document.getElementById('couponMessageArea');
+
+    if (!code) {
+      msgArea.innerHTML = '<span style="color: #ef4444;">Please enter a coupon code.</span>';
+      return;
+    }
+
+    msgArea.innerHTML = '<span style="color: #64748b;">Validating code...</span>';
+
+    fetch("{% url 'billing:apply_coupon' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+      },
+      body: JSON.stringify({
+        coupon_code: code,
+        base_amount: baseAmt
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.valid) {
+        msgArea.innerHTML = `<span style="color: #10b981; font-weight: 600;">✓ ${data.message}</span>`;
+        document.getElementById('formCouponCode').value = data.coupon_code;
+
+        // Update breakdown rows
+        document.getElementById('rowDiscount').style.display = 'flex';
+        document.getElementById('displayDiscount').innerText = `-${currencySymbol}${data.discount_amount.toFixed(2)}`;
+        document.getElementById('displayTax').innerText = `${currencySymbol}${data.tax_amount.toFixed(2)}`;
+        
+        let net = parseFloat(baseAmt) - data.discount_amount;
+        document.getElementById('displayNetSubtotal').innerText = `${currencySymbol}${net.toFixed(2)}`;
+        
+        let cgst = data.tax_amount / 2;
+        document.getElementById('displayCgst').innerText = cgst.toFixed(2);
+        document.getElementById('displaySgst').innerText = cgst.toFixed(2);
+
+        // Update all total labels
+        document.querySelectorAll('.total-display').forEach(el => {
+          el.innerText = `${currencySymbol}${data.total_payable.toFixed(2)}`;
+        });
+      } else {
+        msgArea.innerHTML = `<span style="color: #ef4444; font-weight: 600;">✕ ${data.message}</span>`;
+      }
+    })
+    .catch(err => {
+      msgArea.innerHTML = '<span style="color: #ef4444;">Error applying coupon. Please try again.</span>';
+    });
+  }
+
+  function quickApplyCoupon(code) {
+    document.getElementById('couponInput').value = code;
+    applyCouponCode();
+  }
+
+  // Trigger processing overlay before submit
+  function triggerPaymentProcessing() {
+    const overlay = document.getElementById('processingOverlay');
+    overlay.style.display = 'flex';
+    lucide.createIcons();
+
+    // Submit form after realistic 1.2s delay for seamless SaaS feel
+    setTimeout(() => {
+      document.getElementById('paymentForm').submit();
+    }, 1200);
+  }
+
+  // 10-minute UPI timer countdown
+  let timerSeconds = 599;
+  setInterval(() => {
+    if (timerSeconds > 0) {
+      timerSeconds--;
+      let m = Math.floor(timerSeconds / 60);
+      let s = timerSeconds % 60;
+      let countdownEl = document.getElementById('upiCountdown');
+      if (countdownEl) {
+        countdownEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }
+    }
+  }, 1000);
+</script>
+{% endblock %}

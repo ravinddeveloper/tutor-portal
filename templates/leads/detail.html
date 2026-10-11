@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Lead {{ lead.lead_id }}: {{ lead.title }} — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  
+  <div style="margin-bottom: 2rem;">
+    <a href="{% url 'leads:board' %}" style="font-size: 0.875rem; color: var(--primary); font-weight: 600;">
+      &larr; Back to Tuition Leads Board
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- Lead Details -->
+    <div style="grid-column: span 2;">
+      <div class="card" style="padding: 2.25rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-primary">{{ lead.lead_id }}</span>
+            <span class="badge badge-secondary">{{ lead.get_tuition_type_display }}</span>
+            <span class="badge badge-success">{{ lead.get_status_display }}</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Posted {{ lead.created_at|date:"M d, Y" }}</span>
+        </div>
+
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; line-height: 1.35;">
+          {{ lead.title }}
+        </h1>
+
+        <!-- Key Parameter Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1.75rem; font-size: 0.9rem;">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Subjects</div>
+            <div style="font-weight: 700; color: var(--text);">{{ lead.subjects }}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Class & Board</div>
+            <div style="font-weight: 700; color: var(--text);">{{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Budget</div>
+            <div style="font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">City & Locality</div>
+            <div style="font-weight: 700; color: var(--text);">{{ lead.locality }}, {{ lead.city }}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Days & Time</div>
+            <div style="font-weight: 700; color: var(--text);">{{ lead.days_per_week }} days/wk ({{ lead.preferred_timing }})</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Tutor Gender</div>
+            <div style="font-weight: 700; color: var(--text);">{{ lead.get_preferred_gender_display }}</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">Specific Student Goals & Notes</h3>
+        <p style="font-size: 0.95rem; color: #334155; line-height: 1.7; margin-bottom: 1.75rem;">
+          {{ lead.learning_goals|default:"Student requires dedicated one-on-one conceptual teaching, homework assistance, and regular doubt clearance." }}
+        </p>
+
+        <!-- Unlocked Contact Reveal Card -->
+        {% if is_unlocked %}
+          <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="flex items-center gap-2" style="font-size: 1.1rem; font-weight: 800; color: #166534; margin-bottom: 0.75rem;">
+              <i data-lucide="check-circle" style="width: 20px; height: 20px;"></i>
+              Parent Contact Details (Unlocked)
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem; color: #14532d;">
+              <div><strong>Parent Name:</strong> {{ lead.parent_contact_name }}</div>
+              <div>
+                <strong>Phone / WhatsApp:</strong>
+                <a href="tel:{{ lead.contact_phone }}" style="font-weight: 800; text-decoration: underline;">
+                  {{ lead.contact_phone }}
+                </a>
+              </div>
+              {% if lead.contact_email %}
+                <div><strong>Email:</strong> {{ lead.contact_email }}</div>
+              {% endif %}
+              <div><strong>Exact Address:</strong> {{ lead.full_address|default:lead.locality }}</div>
+            </div>
+          </div>
+        {% else %}
+          <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1.5rem; text-align: center; color: var(--text-muted);">
+            <i data-lucide="lock" style="width: 28px; height: 28px; margin: 0 auto 0.5rem; color: var(--primary);"></i>
+            <h4 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">Parent Contact Information is Protected</h4>
+            <p style="font-size: 0.85rem;">
+              Verified tutors can unlock phone, email, and exact home address using 1 contact credit.
+            </p>
+          </div>
+        {% endif %}
+
+        <!-- Match Score Information if tutor logged in -->
+        {% if match_info %}
+          <div style="background: var(--primary-light); border-left: 4px solid var(--primary); padding: 1rem 1.25rem; border-radius: 0.5rem; margin-top: 1.5rem;">
+            <div class="flex items-center justify-between" style="margin-bottom: 0.25rem;">
+              <span style="font-weight: 700; color: var(--primary);">Your AI Match Compatibility: {{ match_info.match_score }}%</span>
+              <span class="badge badge-success">High Fit</span>
+            </div>
+            <div style="font-size: 0.825rem; color: #334155;">
+              {{ match_info.match_reasons|linebreaksbr }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Action Sidebar -->
+    <div style="grid-column: span 1;">
+      <div class="card" style="padding: 1.75rem; position: sticky; top: 90px;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Lead Unlock Cost</div>
+          <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary);">
+            1 Credit
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Direct phone access • 100% genuine lead
+          </div>
+        </div>
+
+        {% if user.is_authenticated and user.is_tutor %}
+          {% if is_unlocked %}
+            <a href="tel:{{ lead.contact_phone }}" class="btn btn-success" style="width: 100%; margin-bottom: 0.75rem;">
+              <i data-lucide="phone" style="width: 18px; height: 18px;"></i> Call Parent Now
+            </a>
+          {% else %}
+            <form method="post" style="margin-bottom: 1rem;" onsubmit="return confirm('Spend 1 contact credit to unlock parent phone and contact details?');">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="unlock">
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i data-lucide="unlock" style="width: 18px; height: 18px;"></i> Unlock Contact Details
+              </button>
+            </form>
+          {% endif %}
+
+          <!-- Submit Proposal Form -->
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin: 1.25rem 0 0.75rem;">Apply with Fee Proposal</h4>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="apply">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem;">Proposed Fee ({{ company.currency_symbol }}/mo)</label>
+              <input type="number" name="proposed_fee" class="form-control" value="{{ lead.budget_amount }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem;">Cover Message to Parent</label>
+              <textarea name="cover_note" class="form-control" rows="3" placeholder="Explain your experience with this syllabus..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
+              Submit Proposal
+            </button>
+          </form>
+
+        {% elif user.is_authenticated and user.is_parent %}
+          <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            You are viewing this requirement as a Parent.
+          </div>
+        {% else %}
+          <div style="text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Are you a qualified tutor? Register or sign in to unlock parent contact information.
+            </p>
+            <a href="{% url 'accounts:register_tutor' %}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;">
+              Join as Tutor (3 Free Credits)
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm" style="width: 100%;">
+              Sign In
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

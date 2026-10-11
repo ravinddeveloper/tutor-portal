@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Unlocked Parent Contacts — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">My Unlocked Tuition Contacts ({{ unlocks.count }})</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">
+      Parent contact records unlocked through your wallet credits. You can call or WhatsApp them directly.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for unlock in unlocks %}
+      <div class="card" style="padding: 1.5rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+          <span class="badge badge-primary">{{ unlock.requirement.lead_id }}</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Unlocked {{ unlock.unlocked_at|date:"M d, Y" }}</span>
+        </div>
+
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">
+          {{ unlock.requirement.title }}
+        </h3>
+
+        <!-- Confidential Contact Box -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; font-size: 0.9rem; color: #166534;">
+          <div style="margin-bottom: 0.35rem;"><strong>Parent Name:</strong> {{ unlock.requirement.parent_contact_name }}</div>
+          <div style="margin-bottom: 0.35rem;">
+            <strong>Phone / WhatsApp:</strong>
+            <a href="tel:{{ unlock.requirement.contact_phone }}" style="font-weight: 800; text-decoration: underline;">
+              {{ unlock.requirement.contact_phone }}
+            </a>
+          </div>
+          {% if unlock.requirement.contact_email %}
+            <div style="margin-bottom: 0.35rem;"><strong>Email:</strong> {{ unlock.requirement.contact_email }}</div>
+          {% endif %}
+          <div><strong>Address:</strong> {{ unlock.requirement.full_address }}</div>
+        </div>
+
+        <!-- Outcome Feedback Section -->
+        <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          <div class="flex justify-between items-center" style="margin-bottom: 0.5rem;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Contact Status:</span>
+            <span class="badge {% if unlock.feedback_status == 'VALID_CONTACT' %}badge-success{% elif unlock.feedback_status == 'REFUND_REQUESTED' %}badge-warning{% else %}badge-secondary{% endif %}">
+              {{ unlock.get_feedback_status_display }}
+            </span>
+          </div>
+
+          <form method="post" class="flex gap-2" style="margin-top: 0.5rem;">
+            {% csrf_token %}
+            <input type="hidden" name="unlock_id" value="{{ unlock.id }}">
+            <select name="feedback_status" class="form-select" style="font-size: 0.8rem; padding: 0.3rem 0.5rem;">
+              <option value="VALID_CONTACT" {% if unlock.feedback_status == 'VALID_CONTACT' %}selected{% endif %}>In Touch / Discussing Demo</option>
+              <option value="NO_RESPONSE" {% if unlock.feedback_status == 'NO_RESPONSE' %}selected{% endif %}>No Response / RNR</option>
+              <option value="WRONG_PHONE" {% if unlock.feedback_status == 'WRONG_PHONE' %}selected{% endif %}>Wrong / Invalid Number (Request Refund)</option>
+              <option value="ALREADY_HIRED" {% if unlock.feedback_status == 'ALREADY_HIRED' %}selected{% endif %}>Already Hired</option>
+            </select>
+            <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.8rem;">Update Status</button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="phone-off" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No unlocked contacts yet</h3>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          Browse the tuition opportunities feed and unlock contacts to see them listed here.
+        </p>
+        <div style="margin-top: 1.25rem;">
+          <a href="{% url 'tutors:leads_browse' %}" class="btn btn-primary">Browse Tuition Leads</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Post Tuition Requirement — Find Top Tutors — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 780px;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <span class="badge badge-primary" style="margin-bottom: 0.5rem;">100% Free For Parents</span>
+    <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--text);">Post a Tuition Requirement</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+      Fill out the details below. Our AI matching engine will immediately recommend verified educators in your locality.
+    </p>
+  </div>
+
+  <div class="card" style="box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+    <div class="card-body" style="padding: 2.5rem;">
+      <form method="post" action="{% url 'leads:post_requirement' %}">
+        {% csrf_token %}
+
+        <!-- SECTION 1: ACADEMIC DETAILS -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="book-open"></i> 1. Academic Details
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="student_class">Class / Grade Level *</label>
+            <select name="student_class" id="student_class" class="form-select" required>
+              <option value="Class 10" selected>Class 10</option>
+              <option value="Class 12">Class 12</option>
+              <option value="Class 9">Class 9</option>
+              <option value="Class 11">Class 11</option>
+              <option value="Class 8">Class 8</option>
+              <option value="Class 6-7">Class 6 - 7</option>
+              <option value="Class 1-5">Class 1 - 5 (Primary)</option>
+              <option value="IIT-JEE / NEET">Competitive (IIT-JEE / NEET)</option>
+              <option value="College / Degree">College / Degree Level</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="board_curriculum">Curriculum / Education Board *</label>
+            <select name="board_curriculum" id="board_curriculum" class="form-select" required>
+              <option value="CBSE" selected>CBSE</option>
+              <option value="ICSE">ICSE</option>
+              <option value="State Board">State Board</option>
+              <option value="IB (International Baccalaureate)">IB (International Baccalaureate)</option>
+              <option value="IGCSE / Cambridge">IGCSE / Cambridge</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="subjects">Required Subjects *</label>
+          <input type="text" name="subjects" id="subjects" class="form-control" placeholder="e.g. Mathematics, Physics, Chemistry" required>
+          <div class="form-text">Separate multiple subjects with commas</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="learning_goals">Specific Learning Goals & Challenges</label>
+          <textarea name="learning_goals" id="learning_goals" class="form-control" rows="3" placeholder="e.g. Needs conceptual foundation in Algebra, weak in word problems, preparing for board exam in March..."></textarea>
+        </div>
+
+        <!-- SECTION 2: TUITION MODE & SCHEDULE -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 2rem 0 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="calendar"></i> 2. Tuition Mode & Schedule
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="tuition_type">Tuition Type *</label>
+            <select name="tuition_type" id="tuition_type" class="form-select" required>
+              <option value="HOME_TUITION" selected>Home Tuition (Tutor visits residence)</option>
+              <option value="ONLINE_TUITION">Online Tuition (Live Interactive)</option>
+              <option value="TUTOR_LOCATION">At Tutor's Coaching / Residence</option>
+              <option value="HYBRID">Hybrid (Mix of Home & Online)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="preferred_gender">Preferred Tutor Gender</label>
+            <select name="preferred_gender" id="preferred_gender" class="form-select">
+              <option value="ANY" selected>No Preference (Any)</option>
+              <option value="FEMALE">Female Tutor Preferred</option>
+              <option value="MALE">Male Tutor Preferred</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="days_per_week">Days Per Week</label>
+            <select name="days_per_week" id="days_per_week" class="form-select">
+              <option value="2">2 Days / Week</option>
+              <option value="3" selected>3 Days / Week</option>
+              <option value="4">4 Days / Week</option>
+              <option value="5">5 Days / Week</option>
+              <option value="6">6 Days / Week</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="preferred_timing">Preferred Timing</label>
+            <input type="text" name="preferred_timing" id="preferred_timing" class="form-control" value="Evening (5:00 PM - 7:00 PM)">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="budget_amount">Monthly Budget ({{ company.currency_symbol }}) *</label>
+            <input type="number" name="budget_amount" id="budget_amount" class="form-control" value="6000" step="500" required>
+          </div>
+        </div>
+
+        <!-- SECTION 3: LOCATION & PRIVATE CONTACT -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary); margin: 2rem 0 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="shield"></i> 3. Location & Confidential Contact Information
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="city">City *</label>
+            <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="locality">Locality / Area *</label>
+            <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Whitefield" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="landmark">Nearby Landmark</label>
+            <input type="text" name="landmark" id="landmark" class="form-control" placeholder="e.g. Near BDA Complex">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="parent_contact_name">Parent / Guardian Name *</label>
+            <input type="text" name="parent_contact_name" id="parent_contact_name" class="form-control" value="{{ user.first_name }} {{ user.last_name }}" placeholder="e.g. Meena Iyer" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact_phone">Phone / WhatsApp Number *</label>
+            <input type="tel" name="contact_phone" id="contact_phone" class="form-control" value="{{ user.phone_number }}" placeholder="+91 98860 11998" required>
+            <div class="form-text">Kept private. Only verified tutors unlocking this lead can see your number.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="contact_email">Email Address</label>
+          <input type="email" name="contact_email" id="contact_email" class="form-control" value="{{ user.email }}" placeholder="meena@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="full_address">Full Residential Address (for Home Tuition)</label>
+          <input type="text" name="full_address" id="full_address" class="form-control" placeholder="#42, 6th Cross, Indiranagar Stage 2...">
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin: 1.5rem 0; font-size: 0.85rem; color: #475569;">
+          <i data-lucide="lock" style="width: 14px; height: 14px; display: inline;"></i> <strong>Privacy Guarantee:</strong> We never publicly disclose your contact phone or address. Tutors view academic requirements and must undergo platform verification before accessing contact details.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <i data-lucide="sparkles" style="width: 20px; height: 20px;"></i> Post Requirement & Find Matched Tutors
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}About Us — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 820px;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text);">About {{ company.company_name }}</h1>
+    <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 0.5rem;">{{ company.tagline }}</p>
+  </div>
+
+  <div class="card" style="padding: 2.5rem; line-height: 1.8; color: #334155; font-size: 1rem;">
+    <p style="margin-bottom: 1.5rem;">
+      <strong>{{ company.company_name }}</strong> was founded to solve a fundamental problem in personalized education: connecting students with genuinely qualified, verified home and online educators without excessive middleman delays and inflated agency markups.
+    </p>
+
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Our Mission</h3>
+    <p style="margin-bottom: 1.5rem;">
+      Every student learns differently. We believe that 1-on-1 home tuition and focused online tutoring unlock academic confidence, conceptual depth, and examination excellence. Our platform ensures that tutors undergo document verification and identity checks before they enter your home.
+    </p>
+
+    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Platform Highlights</h3>
+    <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+      <li><strong>Intelligent Matching:</strong> Algorithms that take curriculum, locality proximity, budget, and time availability into account.</li>
+      <li><strong>Parent Privacy First:</strong> Contact numbers remain confidential until legitimately unlocked by verified educators.</li>
+      <li><strong>Transparent Economics:</strong> Configurable business models with zero platform markups on parent monthly tuition fees.</li>
+      <li><strong>Continuous Progress Tracking:</strong> Attendance records, lesson notes, and monthly parent feedback.</li>
+    </ul>
+
+    <div style="background: var(--primary-light); padding: 1.25rem; border-radius: var(--border-radius); border-left: 4px solid var(--primary); margin-top: 1rem;">
+      <h4 style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">Headquarters & Contact</h4>
+      <p style="font-size: 0.9rem; color: #334155;">{{ company.office_address }}</p>
+      <p style="font-size: 0.9rem; color: #334155;">Phone: {{ company.support_phone }} | Email: {{ company.support_email }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

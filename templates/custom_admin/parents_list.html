@@ -1,0 +1,67 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Parents & Students Management — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Parents & Students Directory</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Review registered families, student grade profiles, and active tuition requirements
+  </p>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 1rem;">Parent Name</th>
+          <th style="padding: 1rem;">Contact Info</th>
+          <th style="padding: 1rem;">Location</th>
+          <th style="padding: 1rem;">Associated Students</th>
+          <th style="padding: 1rem;">Posted Requirements</th>
+          <th style="padding: 1rem;">Registered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in parents %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem; font-weight: 700; color: var(--text);">
+              {{ p.display_name }}
+            </td>
+            <td style="padding: 1rem; font-size: 0.85rem;">
+              <div>{{ p.user.email }}</div>
+              <div style="color: var(--text-muted);">{{ p.user.phone_number }}</div>
+            </td>
+            <td style="padding: 1rem; font-size: 0.85rem;">
+              <div>{{ p.locality }}, {{ p.city }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ p.address_line|truncatechars:35 }}</div>
+            </td>
+            <td style="padding: 1rem; font-size: 0.85rem;">
+              {% for s in p.students.all %}
+                <span class="badge badge-secondary" style="font-size: 0.7rem; margin-right: 0.25rem;">
+                  {{ s.student_name }} ({{ s.grade_level }})
+                </span>
+              {% empty %}
+                <span style="color: var(--text-muted); font-size: 0.8rem;">None recorded</span>
+              {% endfor %}
+            </td>
+            <td style="padding: 1rem; font-weight: 700; color: var(--primary);">
+              {{ p.requirements.count }} Requirements
+            </td>
+            <td style="padding: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+              {{ p.created_at|date:"M d, Y" }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+              No parents registered yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

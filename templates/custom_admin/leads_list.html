@@ -1,0 +1,122 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Tuition Leads & Matching Operations — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Tuition Leads & Matching Engine</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Monitor live requirements, execute intelligent matching algorithms, and oversee parent-tutor pairing
+      </p>
+    </div>
+
+    <div>
+      <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" target="_blank">
+        + Post Requirement on Behalf of Client
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 1rem;">Lead ID</th>
+          <th style="padding: 1rem;">Title & Subjects</th>
+          <th style="padding: 1rem;">Parent Contact</th>
+          <th style="padding: 1rem;">Location / Mode</th>
+          <th style="padding: 1rem;">Budget</th>
+          <th style="padding: 1rem;">Matches / Unlocks</th>
+          <th style="padding: 1rem;">Status</th>
+          <th style="padding: 1rem; text-align: right;">Operations Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in leads %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem; font-weight: 700;">
+              <a href="{% url 'leads:detail' lead.lead_id %}" target="_blank" style="color: var(--primary);">
+                {{ lead.lead_id }}
+              </a>
+              <div style="font-size: 0.725rem; color: var(--text-muted);">{{ lead.created_at|date:"M d, Y" }}</div>
+            </td>
+
+            <td style="padding: 1rem;">
+              <div style="font-weight: 700; color: var(--text);">{{ lead.title }}</div>
+              <div style="font-size: 0.8rem; color: #475569; margin-top: 0.2rem;">
+                {{ lead.student_class }} ({{ lead.board_curriculum }}) • {{ lead.subjects }}
+              </div>
+            </td>
+
+            <td style="padding: 1rem; font-size: 0.825rem;">
+              <div style="font-weight: 600;">{{ lead.parent_contact_name }}</div>
+              <div style="color: var(--text-muted);">{{ lead.contact_phone }}</div>
+            </td>
+
+            <td style="padding: 1rem; font-size: 0.825rem;">
+              <div>{{ lead.locality }}, {{ lead.city }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.get_tuition_type_display }}</div>
+            </td>
+
+            <td style="padding: 1rem; font-weight: 800; color: #059669;">
+              {{ company.currency_symbol }}{{ lead.budget_amount }}/mo
+            </td>
+
+            <td style="padding: 1rem; font-size: 0.8rem;">
+              <div><strong>{{ lead.matched_tutors.count }}</strong> Matched</div>
+              <div style="color: var(--text-muted);">{{ lead.total_unlocks }} Unlocks • {{ lead.applications.count }} Proposals</div>
+            </td>
+
+            <td style="padding: 1rem;">
+              <span class="badge {% if lead.status == 'CONFIRMED' %}badge-success{% elif lead.status == 'OPEN' %}badge-primary{% elif lead.status == 'CLOSED' %}badge-secondary{% else %}badge-warning{% endif %}">
+                {{ lead.get_status_display }}
+              </span>
+            </td>
+
+            <td style="padding: 1rem; text-align: right;">
+              <div class="flex gap-1 justify-end flex-wrap">
+                <!-- Trigger Matching Engine -->
+                <form method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+                  <input type="hidden" name="action" value="run_matching">
+                  <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.75rem;" title="Recalculate AI Tutor Matches">
+                    <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i> Match
+                  </button>
+                </form>
+
+                <!-- Status toggles -->
+                {% if lead.status == 'OPEN' %}
+                  <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+                    <input type="hidden" name="action" value="close">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Close</button>
+                  </form>
+                {% else %}
+                  <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+                    <input type="hidden" name="action" value="reopen">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">Reopen</button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+              No tuition requirements posted yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}My Submitted Applications — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "tutors/_tutor_nav.html" %}
+
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">My Lead Applications ({{ applications.count }})</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Proposals you have sent to parents for tuition requirements</p>
+  </div>
+
+  <div class="card">
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 1rem;">Lead ID</th>
+            <th style="padding: 1rem;">Requirement Title</th>
+            <th style="padding: 1rem;">Proposed Fee</th>
+            <th style="padding: 1rem;">Applied Date</th>
+            <th style="padding: 1rem;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for app in applications %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 1rem;">
+                <span class="badge badge-primary">{{ app.requirement.lead_id }}</span>
+              </td>
+              <td style="padding: 1rem;">
+                <a href="{% url 'leads:detail' app.requirement.lead_id %}" style="font-weight: 700; color: var(--primary);">
+                  {{ app.requirement.title }}
+                </a>
+                <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  Cover note: "{{ app.cover_note|truncatewords:15 }}"
+                </div>
+              </td>
+              <td style="padding: 1rem; font-weight: 700; color: #059669;">
+                {{ company.currency_symbol }}{{ app.proposed_fee }}/mo
+              </td>
+              <td style="padding: 1rem; color: var(--text-muted); font-size: 0.8rem;">
+                {{ app.created_at|date:"M d, Y" }}
+              </td>
+              <td style="padding: 1rem;">
+                <span class="badge {% if app.status == 'ACCEPTED' %}badge-success{% elif app.status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}">
+                  {{ app.get_status_display }}
+                </span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+                No applications submitted yet. Browse open leads to submit proposals.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}My Demo Classes — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+  {% include "parents/_parent_nav.html" %}
+
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Trial Demo Classes ({{ demos.count }})</h2>
+    <p style="color: var(--text-muted); font-size: 0.875rem;">Manage trial demo sessions booked with tutors, review meeting links, and submit feedback</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+    {% for demo in demos %}
+      <div class="card" style="padding: 1.75rem;">
+        <div class="flex items-center justify-between" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div class="flex items-center gap-2">
+            <span class="badge {% if demo.status == 'COMPLETED' %}badge-success{% elif demo.status == 'CANCELLED' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ demo.get_status_display }}
+            </span>
+            <span style="font-weight: 700; color: var(--text);">Demo for {{ demo.requirement.subjects }}</span>
+          </div>
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">
+            <i data-lucide="clock" style="width: 14px; height: 14px; display: inline;"></i> {{ demo.scheduled_datetime|date:"l, M d, Y - h:i A" }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.875rem;">
+          <div>
+            <div><strong>Tutor:</strong> {{ demo.tutor.display_name }} ({{ demo.tutor.highest_qualification }})</div>
+            <div><strong>Mode:</strong> {{ demo.get_mode_display }}</div>
+            {% if demo.meeting_link %}
+              <div><strong>Meeting URL:</strong> <a href="{{ demo.meeting_link }}" target="_blank" style="color: var(--primary); text-decoration: underline;">Join Online Demo</a></div>
+            {% endif %}
+          </div>
+          <div>
+            {% if demo.tutor_notes %}
+              <div><strong>Tutor Notes:</strong> "{{ demo.tutor_notes }}"</div>
+            {% endif %}
+            {% if demo.parent_feedback %}
+              <div style="color: #065f46;"><strong>Your Feedback:</strong> "{{ demo.parent_feedback }}"</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between items-center flex-wrap gap-2" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+          <a href="{% url 'tutors:detail' demo.tutor.pk %}" class="btn btn-secondary btn-sm" target="_blank">
+            View Tutor Profile
+          </a>
+
+          <div class="flex gap-2">
+            {% if demo.status == 'PROPOSED' or demo.status == 'REQUESTED' %}
+              <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="demo_id" value="{{ demo.id }}">
+                <input type="hidden" name="action" value="confirm">
+                <button type="submit" class="btn btn-success btn-sm">Confirm Demo Time</button>
+              </form>
+            {% endif %}
+
+            {% if demo.status == 'CONFIRMED' %}
+              <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('feedback-modal-{{ demo.id }}').style.display='flex'">
+                Mark Completed & Give Feedback
+              </button>
+            {% endif %}
+
+            {% if demo.status == 'COMPLETED' and demo.requirement.status != 'CONFIRMED' %}
+              <a href="{% url 'parents:confirm_tuition' demo.requirement.lead_id %}" class="btn btn-primary btn-sm">
+                Confirm This Tutor for Regular Classes &rarr;
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal-{{ demo.id }}" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem;">
+          <div class="card" style="max-width: 500px; width: 100%;">
+            <div class="card-body">
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem;">Demo Class Feedback</h3>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="demo_id" value="{{ demo.id }}">
+                <input type="hidden" name="action" value="complete">
+                <div class="form-group">
+                  <label class="form-label">How was the session with {{ demo.tutor.display_name }}?</label>
+                  <textarea name="feedback" class="form-control" rows="3" placeholder="Share your experience (teaching quality, punctuality, concept clarity)..." required></textarea>
+                </div>
+                <div class="flex justify-between gap-2">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('feedback-modal-{{ demo.id }}').style.display='none'">Cancel</button>
+                  <button type="submit" class="btn btn-primary btn-sm">Submit & Complete</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    {% empty %}
+      <div class="card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+        <i data-lucide="calendar-x" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
+        <h3 style="font-size: 1.25rem; font-weight: 700;">No trial demos requested</h3>
+        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+          View your matched tutors and schedule free 1-on-1 trial classes.
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

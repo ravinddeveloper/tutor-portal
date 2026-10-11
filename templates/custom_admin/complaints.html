@@ -1,0 +1,105 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Complaints & Disputes Resolution — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Complaints & Dispute Resolution</h1>
+  <p style="color: var(--text-muted); font-size: 0.9rem;">
+    Review reported issues (invalid phone numbers, tutor no-shows, fee disputes) and issue credit replacements
+  </p>
+</div>
+
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+      <thead>
+        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 1rem;">ID</th>
+          <th style="padding: 1rem;">Filed By</th>
+          <th style="padding: 1rem;">Category</th>
+          <th style="padding: 1rem;">Subject & Description</th>
+          <th style="padding: 1rem;">Status</th>
+          <th style="padding: 1rem; text-align: right;">Resolve / Refund</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in complaints %}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 1rem; font-weight: 700;">{{ c.complaint_id }}</td>
+            <td style="padding: 1rem;">
+              <div style="font-weight: 600;">{{ c.filed_by.display_name }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ c.filed_by.get_role_display }}</div>
+            </td>
+            <td style="padding: 1rem;">
+              <span class="badge badge-warning" style="font-size: 0.7rem;">{{ c.get_category_display }}</span>
+            </td>
+            <td style="padding: 1rem;">
+              <div style="font-weight: 700;">{{ c.subject }}</div>
+              <div style="font-size: 0.8rem; color: #475569; margin-top: 0.2rem;">{{ c.description }}</div>
+              {% if c.resolution_notes %}
+                <div style="font-size: 0.75rem; color: #065f46; margin-top: 0.25rem;"><strong>Resolution:</strong> {{ c.resolution_notes }}</div>
+              {% endif %}
+            </td>
+            <td style="padding: 1rem;">
+              <span class="badge {% if c.status == 'RESOLVED' %}badge-success{% elif c.status == 'DISMISSED' %}badge-secondary{% else %}badge-danger{% endif %}">
+                {{ c.get_status_display }}
+              </span>
+            </td>
+            <td style="padding: 1rem; text-align: right;">
+              {% if c.status == 'OPEN' or c.status == 'INVESTIGATING' %}
+                <button type="button" class="btn btn-primary btn-sm" style="font-size: 0.75rem;" onclick="document.getElementById('resolve-modal-{{ c.id }}').style.display='flex'">
+                  Resolve Ticket
+                </button>
+
+                <div id="resolve-modal-{{ c.id }}" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 1rem; text-align: left;">
+                  <div class="card" style="max-width: 460px; width: 100%;">
+                    <div class="card-body">
+                      <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem;">Resolve Ticket {{ c.complaint_id }}</h4>
+                      <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="complaint_id" value="{{ c.id }}">
+
+                        <div class="form-group">
+                          <label class="form-label">Resolution Status</label>
+                          <select name="status" class="form-select">
+                            <option value="RESOLVED">Mark Resolved</option>
+                            <option value="DISMISSED">Dismiss (Invalid Request)</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Resolution Notes</label>
+                          <textarea name="resolution_notes" class="form-control" rows="3" placeholder="Explain action taken..." required></textarea>
+                        </div>
+
+                        {% if c.filed_by.is_tutor %}
+                          <div class="form-group" style="background: var(--surface-hover); padding: 0.75rem; border-radius: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+                              <input type="checkbox" name="refund_credit" style="accent-color: var(--primary);">
+                              <span>Refund 1 Contact Credit to Tutor Wallet (Replacement Credit)</span>
+                            </label>
+                          </div>
+                        {% endif %}
+
+                        <div class="flex justify-between gap-2">
+                          <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('resolve-modal-{{ c.id }}').style.display='none'">Cancel</button>
+                          <button type="submit" class="btn btn-primary btn-sm">Save Resolution</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <span style="font-size: 0.75rem; color: #10b981; font-weight: 700;">Resolved</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">No complaints or disputes reported.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Tutor Membership Plans & Credit Packs — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem;">
+  <div style="text-align: center; max-width: 700px; margin: 0 auto 3.5rem;">
+    <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Transparent Pricing</span>
+    <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text);">Plans Tailored for Modern Educators</h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.5rem;">
+      Choose between flexible pay-as-you-go contact credit packs or high-volume monthly membership plans
+    </p>
+  </div>
+
+  <!-- Subscription Plans Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="margin-bottom: 4rem;">
+    {% for plan in plans %}
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; {% if plan.is_featured_badge %}border: 2px solid var(--primary); transform: scale(1.03); box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);{% endif %}">
+        <div class="card-body" style="padding: 2.25rem;">
+          {% if plan.is_featured_badge %}
+            <div style="text-align: right; margin-top: -1rem; margin-bottom: 0.5rem;">
+              <span class="badge badge-primary">Most Popular</span>
+            </div>
+          {% endif %}
+
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text);">{{ plan.name }}</h3>
+          <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; min-height: 40px;">
+            {{ plan.tagline }}
+          </p>
+
+          <div style="margin: 1.75rem 0;">
+            <span style="font-size: 2.5rem; font-weight: 800; color: var(--text);">{{ company.currency_symbol }}{{ plan.price }}</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;"> / {{ plan.duration_days }} days</span>
+          </div>
+
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.9rem; color: #334155;">
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" style="width: 18px; height: 18px; color: #10b981;"></i>
+              <strong>{{ plan.lead_credits_included }}</strong> Contact Unlock Credits Included
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" style="width: 18px; height: 18px; color: #10b981;"></i>
+              <strong>{{ plan.free_contact_unlocks }}</strong> Priority Instant Leads
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="{% if plan.is_featured_badge %}check{% else %}x{% endif %}" style="width: 18px; height: 18px; color: {% if plan.is_featured_badge %}#10b981{% else %}#94a3b8{% endif %};"></i>
+              Featured Listing in Public Directory
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="{% if plan.priority_matching %}check{% else %}x{% endif %}" style="width: 18px; height: 18px; color: {% if plan.priority_matching %}#10b981{% else %}#94a3b8{% endif %};"></i>
+              AI Priority Matching Engine Boost
+            </li>
+            <li class="flex items-center gap-2">
+              <i data-lucide="check" style="width: 18px; height: 18px; color: #10b981;"></i>
+              Instant SMS & In-App Lead Alerts
+            </li>
+          </ul>
+        </div>
+
+        <div style="padding: 1.5rem 2.25rem; background: #f8fafc; border-top: 1px solid var(--border);">
+          {% if user.is_authenticated and user.is_tutor %}
+            <a href="{% url 'billing:checkout' %}?type=plan&id={{ plan.id }}" class="btn {% if plan.is_featured_badge %}btn-primary{% else %}btn-secondary{% endif %}" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              <span>Activate {{ plan.name }} &rarr;</span>
+            </a>
+          {% elif user.is_authenticated %}
+            <a href="{% url 'billing:checkout' %}?type=plan&id={{ plan.id }}" class="btn {% if plan.is_featured_badge %}btn-primary{% else %}btn-secondary{% endif %}" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+              <span>Choose {{ plan.name }}</span>
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:login' %}?next={% url 'billing:checkout' %}?type=plan&id={{ plan.id }}" class="btn {% if plan.is_featured_badge %}btn-primary{% else %}btn-secondary{% endif %}" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+              <span>Subscribe & Get Started &rarr;</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pay-As-You-Go Credit Packs -->
+  <div class="card" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); padding: 2.5rem;">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto 2rem;">
+      <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text);">Pay-As-You-Go Credit Packs</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+        Don't need a monthly subscription? Purchase credits on demand. 1 Credit = 1 Verified Parent Contact Unlock. Credits never expire!
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6" style="max-width: 900px; margin: 0 auto;">
+      <div class="card" style="padding: 1.5rem; text-align: center;">
+        <h4 style="font-size: 1.1rem; font-weight: 700;">Pack of 5 Credits</h4>
+        <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin: 0.75rem 0;">{{ company.currency_symbol }}299</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">₹59 per unlock</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'billing:checkout' %}?type=credits&credits=5&amount=299" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 5 Credits &rarr;
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={% url 'billing:checkout' %}?type=credits&credits=5&amount=299" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 5 Credits
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="card" style="padding: 1.5rem; text-align: center; border: 2px solid var(--primary); box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.2);">
+        <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Best Value</span>
+        <h4 style="font-size: 1.1rem; font-weight: 700;">Pack of 15 Credits</h4>
+        <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin: 0.75rem 0;">{{ company.currency_symbol }}699</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">₹46 per unlock</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'billing:checkout' %}?type=credits&credits=15&amount=699" class="btn btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 15 Credits &rarr;
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={% url 'billing:checkout' %}?type=credits&credits=15&amount=699" class="btn btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 15 Credits
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="card" style="padding: 1.5rem; text-align: center;">
+        <h4 style="font-size: 1.1rem; font-weight: 700;">Pack of 35 Credits</h4>
+        <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin: 0.75rem 0;">{{ company.currency_symbol }}1299</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">₹37 per unlock</p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'billing:checkout' %}?type=credits&credits=35&amount=1299" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 35 Credits &rarr;
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={% url 'billing:checkout' %}?type=credits&credits=35&amount=1299" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            Buy 35 Credits
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

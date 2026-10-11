@@ -1,0 +1,83 @@
+<div class="card" style="margin-bottom: 1.5rem; background: var(--surface); border: 1px solid var(--border);">
+  <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    
+    <!-- Profile Info -->
+    <div class="flex items-center gap-3">
+      <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);">
+        {{ request.user.first_name|slice:":1"|default:"T" }}
+      </div>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em;">{{ tutor.display_name }}</h2>
+          <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}">
+            <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+            {{ tutor.get_verification_status_display }}
+          </span>
+        </div>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.15rem;">{{ tutor.headline|default:"Verified Educator & Tutor" }}</p>
+      </div>
+    </div>
+
+    <!-- Right Quick Actions: Credits & Public Profile -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <a href="{% url 'tutors:billing' %}" class="btn btn-secondary btn-sm" style="border-radius: 9999px; font-weight: 700; color: var(--primary);" title="Available Contact Credits">
+        <i data-lucide="zap" style="width: 14px; height: 14px; fill: var(--primary);"></i>
+        <span>{{ tutor.credit_wallet.total_balance|default:0 }} Credits</span>
+      </a>
+      <a href="{% url 'tutors:detail' tutor.pk %}" class="btn btn-secondary btn-sm" target="_blank" style="border-radius: 9999px;">
+        <i data-lucide="external-link" style="width: 14px; height: 14px;"></i> View Public Profile
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Modern Horizontal Segmented Navigation Pills -->
+<div style="margin-bottom: 2rem;">
+  <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+    
+    <a href="{% url 'tutors:dashboard' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'dashboard' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="layout-dashboard" style="width: 15px; height: 15px;"></i> Overview
+    </a>
+
+    <a href="{% url 'tutors:leads_browse' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'leads_browse' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Browse Leads
+    </a>
+
+    <a href="{% url 'tutors:unlocked_leads' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'unlocked_leads' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="phone-call" style="width: 15px; height: 15px;"></i> Unlocked Contacts
+    </a>
+
+    <a href="{% url 'tutors:applications' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'applications' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="send" style="width: 15px; height: 15px;"></i> My Applications
+    </a>
+
+    <a href="{% url 'tutors:demos' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'demos' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="calendar" style="width: 15px; height: 15px;"></i> Demo Classes
+    </a>
+
+    <a href="{% url 'tutors:engagements' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'engagements' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="book-open" style="width: 15px; height: 15px;"></i> Active Tuitions
+    </a>
+
+    <a href="{% url 'tutors:profile_edit' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'profile_edit' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="user" style="width: 15px; height: 15px;"></i> Edit Profile
+    </a>
+
+    <a href="{% url 'tutors:subjects_manage' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'subjects_manage' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="layers" style="width: 15px; height: 15px;"></i> Subjects
+    </a>
+
+    <a href="{% url 'tutors:availability_manage' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'availability_manage' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="clock" style="width: 15px; height: 15px;"></i> Schedule
+    </a>
+
+    <a href="{% url 'tutors:documents_upload' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'documents_upload' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="file-check" style="width: 15px; height: 15px;"></i> Verification Docs
+    </a>
+
+    <a href="{% url 'tutors:billing' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'billing' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
+      <i data-lucide="credit-card" style="width: 15px; height: 15px;"></i> Wallet & Credits
+    </a>
+
+  </div>
+</div>

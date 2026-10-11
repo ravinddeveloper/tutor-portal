@@ -1,0 +1,298 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Theme Customizer & Design Tokens — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<div style="margin-bottom: 2rem;">
+  <div class="flex items-center justify-between flex-wrap gap-4">
+    <div>
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em;">Platform Theme & Visual Customizer</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+        Configure brand accents, background modes, card curvature, and typography tokens across the marketplace without writing code.
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="badge badge-primary" style="padding: 0.5rem 0.85rem; font-size: 0.85rem;">
+        <i data-lucide="palette" style="width: 14px; height: 14px;"></i> Active: {{ theme.theme_preset }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  
+  <!-- Theme Controls Form -->
+  <div style="grid-column: span 2;">
+    <div class="card" style="padding: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text);">Color Palette & Style Tokens</h3>
+
+      <!-- Preset Themes Quick Switcher -->
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; margin-bottom: 1.75rem;">
+        <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--accent);"></i>
+          <span>Instant Design Presets (Click to Load):</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Modern Indigo', '#4f46e5', '#06b6d4', '#f59e0b', '#f8fafc', '#ffffff', '#0f172a', '#1e293b', '0.75rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4f46e5; margin-right:4px;"></span> Modern Indigo
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Emerald Education', '#059669', '#0284c7', '#d97706', '#f0fdf4', '#ffffff', '#064e3b', '#065f46', '0.5rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#059669; margin-right:4px;"></span> Emerald Education
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Royal Sapphire', '#2563eb', '#8b5cf6', '#f97316', '#f0f9ff', '#ffffff', '#0f172a', '#1e3a8a', '1rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#2563eb; margin-right:4px;"></span> Royal Sapphire
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Violet Elite', '#7c3aed', '#ec4899', '#eab308', '#faf5ff', '#ffffff', '#1e1b4b', '#2e1065', '0.75rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#7c3aed; margin-right:4px;"></span> Violet Elite
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Sunset Amber', '#ea580c', '#0284c7', '#10b981', '#fff7ed', '#ffffff', '#431407', '#7c2d12', '0.65rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#ea580c; margin-right:4px;"></span> Sunset Amber
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Cyber Slate Dark', '#6366f1', '#14b8a6', '#f43f5e', '#0b0f19', '#111827', '#f3f4f6', '#0f172a', '0.75rem', true)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#6366f1; margin-right:4px;"></span> Cyber Slate (Dark)
+          </button>
+        </div>
+      </div>
+
+      <form method="post" id="theme-form">
+        {% csrf_token %}
+        <input type="hidden" name="theme_preset" id="theme_preset" value="{{ theme.theme_preset }}">
+
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text);">1. Brand & Accent Colors</div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" style="margin-bottom: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Primary Brand Accent</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="primary_picker" value="{{ theme.primary_color }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('primary', this.value)">
+              <input type="text" name="primary_color" id="primary_color" class="form-control" value="{{ theme.primary_color }}" oninput="syncColor('primary', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Secondary Brand Accent</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="secondary_picker" value="{{ theme.secondary_color }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('secondary', this.value)">
+              <input type="text" name="secondary_color" id="secondary_color" class="form-control" value="{{ theme.secondary_color }}" oninput="syncColor('secondary', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Highlight / Star Accent</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="accent_picker" value="{{ theme.accent_color }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('accent', this.value)">
+              <input type="text" name="accent_color" id="accent_color" class="form-control" value="{{ theme.accent_color }}" oninput="syncColor('accent', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text); padding-top: 0.5rem; border-top: 1px solid var(--border);">2. Surface, Background & Text Colors</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" style="margin-bottom: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Page Background Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="background_picker" value="{{ theme.background_color|default:'#f8fafc' }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('background', this.value)">
+              <input type="text" name="background_color" id="background_color" class="form-control" value="{{ theme.background_color|default:'#f8fafc' }}" oninput="syncColor('background', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Card / Surface Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="surface_picker" value="{{ theme.surface_color|default:'#ffffff' }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('surface', this.value)">
+              <input type="text" name="surface_color" id="surface_color" class="form-control" value="{{ theme.surface_color|default:'#ffffff' }}" oninput="syncColor('surface', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Main Text Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="text_picker" value="{{ theme.text_color|default:'#0f172a' }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('text', this.value)">
+              <input type="text" name="text_color" id="text_color" class="form-control" value="{{ theme.text_color|default:'#0f172a' }}" oninput="syncColor('text', this.value)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Admin / Sidebar Background</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="sidebar_picker" value="{{ theme.sidebar_color|default:'#1e293b' }}" style="width: 44px; height: 38px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 6px;" oninput="syncColor('sidebar', this.value)">
+              <input type="text" name="sidebar_color" id="sidebar_color" class="form-control" value="{{ theme.sidebar_color|default:'#1e293b' }}" oninput="syncColor('sidebar', this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text); padding-top: 0.5rem; border-top: 1px solid var(--border);">3. Curvature & Mode Settings</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label">Card & Button Curvature</label>
+            <select name="border_radius" id="border_radius" class="form-select" onchange="updatePreviewRadius(this.value)">
+              <option value="0.25rem" {% if theme.border_radius == '0.25rem' %}selected{% endif %}>Sharp / Compact (0.25rem)</option>
+              <option value="0.5rem" {% if theme.border_radius == '0.5rem' %}selected{% endif %}>Smooth Rounded (0.5rem)</option>
+              <option value="0.75rem" {% if theme.border_radius == '0.75rem' %}selected{% endif %}>Modern Rounded (0.75rem - Recommended)</option>
+              <option value="1rem" {% if theme.border_radius == '1rem' %}selected{% endif %}>Extra Rounded / Pill-Friendly (1rem)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dark Theme Mode</label>
+            <div style="background: var(--surface); border: 1px solid var(--border); padding: 0.625rem 0.875rem; border-radius: var(--border-radius); display: flex; align-items: center; gap: 0.75rem;">
+              <input type="checkbox" name="dark_mode_enabled" id="dark_mode_enabled" style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;" {% if theme.dark_mode_enabled %}checked{% endif %} onchange="toggleDarkPreview(this.checked)">
+              <label for="dark_mode_enabled" style="font-size: 0.9rem; font-weight: 600; cursor: pointer; color: var(--text);">
+                Enable Platform Dark Theme by Default
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.75rem;">
+            <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Save & Apply Marketplace Theme Tokens
+          </button>
+          <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Live Component Preview -->
+  <div style="grid-column: span 1;">
+    <div class="card" style="padding: 1.75rem; position: sticky; top: 90px;" id="live-preview-box">
+      <div class="flex items-center justify-between" style="margin-bottom: 1.25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">Live Interactive Preview</h3>
+        <span class="badge badge-success">Dynamic CSS</span>
+      </div>
+      
+      <!-- Sample Preview Container -->
+      <div id="sample-box" style="border: 1px solid var(--border); border-radius: {{ theme.border_radius }}; padding: 1.25rem; background: {{ theme.surface_color|default:'#ffffff' }}; box-shadow: var(--card-shadow); margin-bottom: 1.25rem; transition: all 0.2s ease;">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+          <span id="sample-badge" class="badge" style="background: rgba(79, 70, 229, 0.12); color: {{ theme.primary_color }};">
+            Verified Tutor
+          </span>
+          <span id="sample-star" style="font-size: 0.8rem; font-weight: 700; color: {{ theme.accent_color }};">
+            ★ 4.95 (38)
+          </span>
+        </div>
+
+        <h4 id="sample-title" style="font-size: 1.1rem; font-weight: 800; color: {{ theme.text_color|default:'#0f172a' }}; margin-bottom: 0.25rem;">Dr. Rajesh Nambiar</h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Senior CBSE & ICSE Mathematics Faculty</p>
+
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.12); color: {{ theme.secondary_color }}; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">
+            Mathematics
+          </span>
+          <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.12); color: {{ theme.secondary_color }}; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">
+            Physics
+          </span>
+        </div>
+
+        <button type="button" id="sample-btn" class="btn btn-sm" style="width: 100%; background-color: {{ theme.primary_color }}; color: #ffffff; border: none; font-weight: 700; border-radius: {{ theme.border_radius }};">
+          Contact Tutor (₹5,000/mo)
+        </button>
+
+        <!-- Sample Table Header Preview -->
+        <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 0.35rem; text-transform: uppercase;">Table Header Styling</div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+            <thead>
+              <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border);">
+                <th style="padding: 0.45rem 0.6rem;">Lead ID</th>
+                <th style="padding: 0.45rem 0.6rem;">Status</th>
+                <th style="padding: 0.45rem 0.6rem; text-align: right;">Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 0.45rem 0.6rem; font-weight: 700;">TUT-8172</td>
+                <td style="padding: 0.45rem 0.6rem;"><span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">Confirmed</span></td>
+                <td style="padding: 0.45rem 0.6rem; text-align: right; font-weight: 700; color: var(--primary);">₹4,500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sample Sidebar slice -->
+      <div id="sample-sidebar" style="background: {{ theme.sidebar_color|default:'#1e293b' }}; color: white; padding: 1rem; border-radius: {{ theme.border_radius }}; margin-bottom: 1rem; font-size: 0.85rem;">
+        <div style="font-weight: 800; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 0.5rem;">Sidebar Token Preview</div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: white; font-weight: 600;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ theme.primary_color }};"></span>
+          <span>Admin & Portal Menu Theme</span>
+        </div>
+      </div>
+
+      <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; background: var(--surface); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+        <i data-lucide="info" style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i>
+        All saved color and curvature variables instantly re-theme the entire platform: desktop headers, mobile navigation drawers, tutor cards, and printable invoices.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function syncColor(type, val) {
+    var picker = document.getElementById(type + '_picker');
+    var input = document.getElementById(type + '_color');
+    if (picker) picker.value = val;
+    if (input) input.value = val;
+
+    if (type === 'primary') {
+      var btn = document.getElementById('sample-btn');
+      var badge = document.getElementById('sample-badge');
+      if (btn) btn.style.backgroundColor = val;
+      if (badge) {
+        badge.style.color = val;
+        badge.style.background = val + '1f';
+      }
+    } else if (type === 'secondary') {
+      // secondary accent
+    } else if (type === 'accent') {
+      var star = document.getElementById('sample-star');
+      if (star) star.style.color = val;
+    } else if (type === 'surface') {
+      var box = document.getElementById('sample-box');
+      if (box) box.style.backgroundColor = val;
+    } else if (type === 'text') {
+      var title = document.getElementById('sample-title');
+      if (title) title.style.color = val;
+    } else if (type === 'sidebar') {
+      var sb = document.getElementById('sample-sidebar');
+      if (sb) sb.style.backgroundColor = val;
+    }
+  }
+
+  function updatePreviewRadius(val) {
+    var box = document.getElementById('sample-box');
+    var btn = document.getElementById('sample-btn');
+    var sb = document.getElementById('sample-sidebar');
+    if (box) box.style.borderRadius = val;
+    if (btn) btn.style.borderRadius = val;
+    if (sb) sb.style.borderRadius = val;
+  }
+
+  function toggleDarkPreview(isDark) {
+    if (isDark) {
+      syncColor('background', '#0b0f19');
+      syncColor('surface', '#111827');
+      syncColor('text', '#f8fafc');
+      syncColor('sidebar', '#0f172a');
+    }
+  }
+
+  function setPreset(name, p, s, a, bg, surf, txt, side, r, dark) {
+    document.getElementById('theme_preset').value = name;
+    syncColor('primary', p);
+    syncColor('secondary', s);
+    syncColor('accent', a);
+    syncColor('background', bg);
+    syncColor('surface', surf);
+    syncColor('text', txt);
+    syncColor('sidebar', side);
+    document.getElementById('border_radius').value = r;
+    updatePreviewRadius(r);
+    var darkBox = document.getElementById('dark_mode_enabled');
+    if (darkBox) {
+      darkBox.checked = dark;
+    }
+  }
+</script>
+{% endblock %}

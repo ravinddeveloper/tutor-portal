@@ -19,13 +19,13 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Prevent Dark Mode FOUC (Flash of Unstyled Content) -->
+  <!-- Theme Initialization: Defaults to clean Educational Light theme unless user opted into Dark -->
   <script>
     (function() {
       const storedTheme = localStorage.getItem('edututor_theme');
-      if (storedTheme === 'dark' || (!storedTheme && {{ theme.dark_mode_enabled|yesno:"true,false" }})) {
+      if (storedTheme === 'dark') {
         document.documentElement.classList.add('dark');
-      } else if (storedTheme === 'light') {
+      } else {
         document.documentElement.classList.remove('dark');
       }
     })();
@@ -34,10 +34,12 @@
   <!-- Dynamic Theme CSS Variables from Database ThemeSettings -->
   <style>
     :root {
-      --primary: {{ theme.primary_color|default:"#4f46e5" }};
-      --primary-hover: #4338ca;
-      --primary-light: rgba(79, 70, 229, 0.08);
-      --secondary: {{ theme.secondary_color|default:"#06b6d4" }};
+      --primary: {{ theme.primary_color|default:"#1e40af" }};
+      --primary-hover: #1e3a8a;
+      --primary-light: rgba(30, 64, 175, 0.08);
+      --secondary: {{ theme.secondary_color|default:"#ea580c" }};
+      --secondary-hover: #c2410c;
+      --secondary-light: rgba(234, 88, 12, 0.08);
       --accent: {{ theme.accent_color|default:"#f59e0b" }};
       --background: {{ theme.background_color|default:"#f8fafc" }};
       --surface: {{ theme.surface_color|default:"#ffffff" }};
@@ -47,39 +49,63 @@
       --border: #e2e8f0;
       --border-radius: {{ theme.border_radius|default:"0.75rem" }};
       --sidebar-bg: {{ theme.sidebar_color|default:"#0f172a" }};
-      --header-bg: rgba(255, 255, 255, 0.94);
+      --header-bg: rgba(255, 255, 255, 0.96);
       --table-header-bg: #f8fafc;
       --table-header-color: #475569;
       --table-row-hover: #f1f5f9;
-      --success: #10b981;
-      --warning: #f59e0b;
+      --success: #059669;
+      --warning: #d97706;
       --danger: #ef4444;
-      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+      --card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
     }
 
-    /* Dark Mode Overrides */
+    /* Dark Mode Overrides (Refined Educational Slate) */
     html.dark {
-      --background: #090d16;
-      --surface: #111827;
-      --surface-hover: #1e293b;
+      --background: #0b1329;
+      --surface: #131c38;
+      --surface-hover: #1e294b;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #1f2937;
-      --sidebar-bg: #0b0f19;
-      --header-bg: rgba(17, 24, 39, 0.94);
-      --table-header-bg: #1e293b;
+      --border: #223157;
+      --sidebar-bg: #090e21;
+      --header-bg: rgba(19, 28, 56, 0.96);
+      --table-header-bg: #1e294b;
       --table-header-color: #94a3b8;
-      --table-row-hover: rgba(30, 41, 59, 0.6);
-      --primary-light: rgba(99, 102, 241, 0.16);
-      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+      --table-row-hover: rgba(30, 41, 75, 0.6);
+      --primary-light: rgba(59, 130, 246, 0.16);
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
+      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
 
+    /* Universal Clean Scrollbars */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.6);
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+    }
+    html.dark ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.45);
     }
 
     body {
@@ -857,7 +883,7 @@
             </a>
 
             <!-- User Menu Avatar Dropdown Trigger (Desktop) -->
-            <div class="user-menu-wrapper" style="display: none;">
+            <div class="user-menu-wrapper">
               <button type="button" class="user-profile-btn" id="user-menu-btn" onclick="toggleUserMenu(event)" aria-expanded="false" aria-haspopup="true">
                 <div class="user-avatar-circle">
                   {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
@@ -909,7 +935,7 @@
                       <i data-lucide="list" style="width: 16px; height: 16px;"></i> My Requirements
                     </a>
                   {% else %}
-                    <a href="{% url 'core:dashboard_redirect' %}" class="dropdown-item">
+                    <a href="{% url 'accounts:dashboard_redirect' %}" class="dropdown-item">
                       <i data-lucide="user" style="width: 16px; height: 16px;"></i> My Dashboard
                     </a>
                   {% endif %}
@@ -931,14 +957,14 @@
             </div>
           {% else %}
             <!-- Guest CTAs (Desktop) -->
-            <div class="desktop-guest-actions" style="display: none; align-items: center; gap: 0.5rem;">
-              <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">
+            <div class="desktop-guest-actions">
+              <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
                 <i data-lucide="log-in" style="width: 14px; height: 14px;"></i> Log In
               </a>
-              <a href="{% url 'accounts:register_tutor' %}" class="btn btn-secondary btn-sm" style="display: none;" id="desktop-become-tutor-btn">
-                <i data-lucide="graduation-cap" style="width: 14px; height: 14px;"></i> Become a Tutor
+              <a href="{% url 'accounts:register_tutor' %}" class="btn btn-secondary btn-sm" id="desktop-become-tutor-btn" style="font-weight: 700;">
+                <i data-lucide="graduation-cap" style="width: 14px; height: 14px; color: var(--primary);"></i> Become a Tutor
               </a>
-              <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm">
+              <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm" style="font-weight: 800;">
                 <i data-lucide="search" style="width: 14px; height: 14px;"></i> Find a Tutor
               </a>
             </div>
@@ -956,9 +982,21 @@
 
   <!-- Responsive display rules for desktop menu -->
   <style>
+    .desktop-guest-actions {
+      display: none !important;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .user-menu-wrapper {
+      display: none !important;
+    }
+    #desktop-become-tutor-btn {
+      display: none !important;
+    }
     @media (min-width: 992px) {
       .user-menu-wrapper { display: block !important; }
       .desktop-guest-actions { display: inline-flex !important; }
+      .mobile-hamburger-btn { display: none !important; }
     }
     @media (min-width: 1100px) {
       #desktop-become-tutor-btn { display: inline-flex !important; }
@@ -1151,6 +1189,7 @@
     {% block content %}{% endblock %}
   </main>
 
+  {% if request.resolver_match.namespace != 'custom_admin' %}
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
@@ -1211,6 +1250,16 @@
       </div>
     </div>
   </footer>
+  {% else %}
+  <!-- Admin Console Minimal Footer -->
+  <footer style="background: var(--surface); border-top: 1px solid var(--border); padding: 0.75rem 1.75rem; font-size: 0.775rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+    <div>&copy; {% now "Y" %} {{ company.company_name }} Executive Administration Console • Operating in {{ company.currency_code }} ({{ company.currency_symbol }})</div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+      <span>System Status: <strong style="color: var(--text);">Operational</strong></span>
+    </div>
+  </footer>
+  {% endif %}
 
   <!-- Unified Navigation & Interactive Controller -->
   <script>

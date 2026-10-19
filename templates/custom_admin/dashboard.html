@@ -26,39 +26,59 @@
 <!-- Primary Financial & Revenue KPIs -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
   
-  <div class="card" style="padding: 1.5rem; border-left: 4px solid #10b981;">
-    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Collected Revenue</div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: #10b981; margin: 0.35rem 0;">
-      {{ company.currency_symbol }}{{ total_revenue }}
+  <div class="card" style="padding: 1.5rem; border-top: 3px solid #10b981;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Collected Revenue</span>
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); color: #059669; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="wallet" style="width: 18px; height: 18px;"></i>
+      </div>
+    </div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+      {{ company.currency_symbol }}{{ total_revenue|floatformat:2 }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
-      Subs: {{ company.currency_symbol }}{{ subscription_revenue }} • Commission: {{ company.currency_symbol }}{{ commission_revenue }}
+      Subs: <strong>{{ company.currency_symbol }}{{ subscription_revenue|floatformat:2 }}</strong> • Comm: <strong>{{ company.currency_symbol }}{{ commission_revenue|floatformat:2 }}</strong>
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--primary);">
-    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Tuition Leads</div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--primary); margin: 0.35rem 0;">
+  <div class="card" style="padding: 1.5rem; border-top: 3px solid var(--primary);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Tuition Leads</span>
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
+      </div>
+    </div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ total_leads }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
-      {{ open_leads }} Open • {{ confirmed_leads }} Confirmed
+      <span style="color: var(--primary); font-weight: 700;">{{ open_leads }} Open</span> • <span>{{ confirmed_leads }} Confirmed</span>
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--secondary);">
-    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Verified Educators</div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--secondary); margin: 0.35rem 0;">
-      {{ verified_tutors }} / {{ total_tutors }}
+  <div class="card" style="padding: 1.5rem; border-top: 3px solid #6366f1;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Verified Educators</span>
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.12); color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
+      </div>
+    </div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+      {{ verified_tutors }} <span style="font-size: 1.15rem; font-weight: 500; color: var(--text-muted);">/ {{ total_tutors }}</span>
     </div>
     <div style="font-size: 0.775rem; color: #d97706; font-weight: 600;">
       {{ pending_verifications }} Awaiting Document Verification
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-left: 4px solid var(--accent);">
-    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Confirmed Tuitions</div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--accent); margin: 0.35rem 0;">
+  <div class="card" style="padding: 1.5rem; border-top: 3px solid var(--accent);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Confirmed Tuitions</span>
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); color: #d97706; display: flex; align-items: center; justify-content: center;">
+        <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
+      </div>
+    </div>
+    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ active_engagements }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
@@ -123,7 +143,7 @@
                 <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.student_class }} ({{ lead.board_curriculum }})</div>
               </td>
               <td style="padding: 0.75rem 1rem;">{{ lead.locality }}, {{ lead.city }}</td>
-              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount|floatformat:0 }}/mo</td>
               <td style="padding: 0.75rem 1rem;">
                 <span class="badge {% if lead.status == 'CONFIRMED' %}badge-success{% elif lead.status == 'OPEN' %}badge-primary{% else %}badge-secondary{% endif %}" style="font-size: 0.65rem;">
                   {{ lead.get_status_display }}

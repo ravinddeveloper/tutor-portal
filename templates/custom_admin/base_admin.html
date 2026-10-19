@@ -21,10 +21,26 @@
     top: 70px;
     height: calc(100vh - 70px);
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+
+  .admin-sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .admin-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+  .admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 
   .admin-sidebar-header {
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
@@ -32,23 +48,23 @@
   }
 
   .admin-nav-group {
-    padding: 0.75rem 0;
+    padding: 0.35rem 0;
   }
   .admin-nav-group-title {
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #64748b;
-    padding: 0.5rem 1.5rem 0.25rem;
+    padding: 0.35rem 1.25rem 0.2rem;
   }
 
   .admin-nav-link {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 1.5rem;
-    font-size: 0.875rem;
+    gap: 0.65rem;
+    padding: 0.48rem 1.25rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #94a3b8;
     transition: all 0.15s ease;
@@ -60,7 +76,7 @@
   }
   .admin-nav-link.active {
     color: #ffffff;
-    background: rgba(79, 70, 229, 0.16);
+    background: rgba(30, 64, 175, 0.25);
     border-left-color: var(--primary);
     font-weight: 700;
   }

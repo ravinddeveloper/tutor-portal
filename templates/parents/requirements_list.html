@@ -28,7 +28,7 @@
           <span style="font-size: 0.8rem; color: var(--text-muted);">Posted {{ req.created_at|date:"M d, Y" }}</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
           <div>
             <div><strong>Subjects:</strong> {{ req.subjects }}</div>
             <div><strong>Class:</strong> {{ req.student_class }} ({{ req.board_curriculum }})</div>
@@ -44,7 +44,7 @@
         </div>
 
         <div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="font-size: 0.85rem; color: #475569;">
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
             <strong>{{ req.applications.count }}</strong> applications received • <strong>{{ req.total_unlocks }}</strong> tutors viewed contact details
           </div>
 

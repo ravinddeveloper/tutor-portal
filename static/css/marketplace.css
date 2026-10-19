@@ -460,7 +460,7 @@ details.faq-item .faq-body {
   width: 340px;
   height: 340px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, rgba(6, 182, 212, 0.16) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(30, 64, 175, 0.12) 0%, rgba(234, 88, 12, 0.06) 45%, transparent 70%);
   filter: blur(48px);
   z-index: 0;
   pointer-events: none;

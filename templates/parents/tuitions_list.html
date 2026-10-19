@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
           <div>
             <div><strong>Tutor:</strong> {{ eng.tutor.display_name }} ({{ eng.tutor.highest_qualification }})</div>
             <div><strong>Student:</strong> {{ eng.student.student_name|default:eng.parent.display_name }}</div>

@@ -38,6 +38,14 @@ def directory_view(request):
             Q(primary_locality__icontains=city_q)
         )
 
+    class_q = request.GET.get('student_class', '').strip()
+    if class_q:
+        qs = qs.filter(
+            Q(subjects__classes_offered__icontains=class_q) |
+            Q(headline__icontains=class_q) |
+            Q(bio__icontains=class_q)
+        ).distinct()
+
     mode_q = request.GET.get('teaching_mode', '').strip()
     if mode_q:
         qs = qs.filter(teaching_mode=mode_q)
@@ -89,6 +97,7 @@ def directory_view(request):
         'tutors': tutors_page,
         'subject_q': subject_q,
         'city_q': city_q,
+        'class_q': class_q,
         'mode_q': mode_q,
         'gender_q': gender_q,
         'sort_by': sort_by,

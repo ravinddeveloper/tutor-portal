@@ -16,11 +16,18 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }, {
       root: null,
-      rootMargin: '0px 0px -40px 0px',
-      threshold: 0.1
+      rootMargin: '50px 0px -20px 0px',
+      threshold: 0.05
     });
 
-    animatedElements.forEach(el => scrollObserver.observe(el));
+    animatedElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setTimeout(() => el.classList.add('is-visible'), 60);
+      } else {
+        scrollObserver.observe(el);
+      }
+    });
   } else {
     // Fallback: immediately show all elements if observer is not supported
     animatedElements.forEach(el => el.classList.add('is-visible'));
@@ -38,14 +45,26 @@ document.addEventListener('DOMContentLoaded', function() {
           const prefix = el.getAttribute('data-prefix') || '';
           
           if (!isNaN(targetNum)) {
-            animateCounter(el, 0, targetNum, 1400, prefix, suffix);
+            animateCounter(el, 0, targetNum, 1200, prefix, suffix);
           }
           observer.unobserve(el);
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.1 });
 
-    counterElements.forEach(el => counterObserver.observe(el));
+    counterElements.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const targetNum = parseInt(el.getAttribute('data-counter'), 10);
+        const suffix = el.getAttribute('data-suffix') || '';
+        const prefix = el.getAttribute('data-prefix') || '';
+        if (!isNaN(targetNum)) {
+          animateCounter(el, 0, targetNum, 1200, prefix, suffix);
+        }
+      } else {
+        counterObserver.observe(el);
+      }
+    });
   }
 
   function animateCounter(el, start, end, duration, prefix, suffix) {

@@ -1,3 +1,6 @@
+import os
+from django.conf import settings
+from django.http import FileResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from apps.core.models import CompanySettings, ThemeSettings, Announcement
@@ -29,6 +32,7 @@ def home_view(request):
     total_tutors = TutorProfile.objects.filter(verification_status=TutorProfile.VerificationStatus.VERIFIED).count()
     total_leads = TuitionRequirement.objects.count()
     total_engagements = TuitionEngagement.objects.count()
+    total_subjects = TutorSubject.objects.values('subject_name').distinct().count()
 
     # Popular subject categories with Lucide icon names and accent colors
     popular_subjects = [
@@ -38,9 +42,20 @@ def home_view(request):
         {'name': 'Biology', 'icon': 'dna', 'color': '#16a34a', 'bg': 'rgba(22, 163, 74, 0.1)'},
         {'name': 'English', 'icon': 'book-open', 'color': '#7c3aed', 'bg': 'rgba(124, 58, 237, 0.1)'},
         {'name': 'Computer Science', 'icon': 'monitor', 'color': '#2563eb', 'bg': 'rgba(37, 99, 235, 0.1)'},
-        {'name': 'Commerce', 'icon': 'trending-up', 'color': '#d97706', 'bg': 'rgba(217, 119, 6, 0.1)'},
-        {'name': 'Hindi', 'icon': 'languages', 'color': '#dc2626', 'bg': 'rgba(220, 38, 38, 0.1)'},
+        {'name': 'Science', 'icon': 'microscope', 'color': '#059669', 'bg': 'rgba(5, 150, 105, 0.1)'},
+        {'name': 'Social Studies', 'icon': 'globe', 'color': '#d97706', 'bg': 'rgba(217, 119, 6, 0.1)'},
     ]
+
+    # Calculate real tutor counts per subject from database
+    subject_counts = {}
+    for item in TutorSubject.objects.filter(
+        tutor__verification_status=TutorProfile.VerificationStatus.VERIFIED
+    ).values('subject_name'):
+        s_name = item['subject_name'].strip().lower()
+        subject_counts[s_name] = subject_counts.get(s_name, 0) + 1
+
+    for subj in popular_subjects:
+        subj['tutor_count'] = subject_counts.get(subj['name'].lower(), 0)
 
     context = {
         'featured_tutors': featured_tutors,
@@ -50,6 +65,7 @@ def home_view(request):
         'total_tutors': total_tutors,
         'total_leads': total_leads,
         'total_engagements': total_engagements,
+        'total_subjects': total_subjects,
         'popular_subjects': popular_subjects,
     }
     return render(request, 'core/home.html', context)
@@ -76,3 +92,17 @@ def terms_view(request):
 
 def privacy_view(request):
     return render(request, 'core/privacy.html')
+
+
+def serve_dmsans_font(request, *args, **kwargs):
+    """
+    Serve DMSans-Regular.ttf font to gracefully satisfy requests from
+    browser extensions, developer tools, or relative font links without throwing a 404.
+    """
+    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'DMSans-Regular.ttf')
+    if os.path.exists(font_path):
+        response = FileResponse(open(font_path, 'rb'), content_type='font/ttf')
+        response['Cache-Control'] = 'public, max-age=31536000'
+        return response
+    raise Http404("Font file not found")
+

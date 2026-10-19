@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
           <div>
             <div><strong>Student / Parent:</strong> {{ eng.student.student_name|default:eng.parent.display_name }} ({{ eng.parent.display_name }})</div>
             <div><strong>Location:</strong> {{ eng.requirement.locality }}, {{ eng.requirement.city }}</div>

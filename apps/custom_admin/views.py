@@ -42,12 +42,12 @@ def dashboard_view(request):
     active_engagements = TuitionEngagement.objects.filter(status=TuitionEngagement.Status.ACTIVE).count()
     scheduled_demos = DemoClass.objects.filter(status__in=[DemoClass.Status.REQUESTED, DemoClass.Status.CONFIRMED]).count()
 
-    # Financial KPIs from actual database records
-    subscription_revenue = TutorSubscription.objects.aggregate(total=Sum('amount_paid'))['total'] or Decimal('0.00')
-    commission_revenue = CommissionRecord.objects.filter(status=CommissionRecord.Status.PAID).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
-    total_revenue = subscription_revenue + commission_revenue
+    # Financial KPIs from actual database records (quantized to 2 decimal places)
+    subscription_revenue = (TutorSubscription.objects.aggregate(total=Sum('amount_paid'))['total'] or Decimal('0.00')).quantize(Decimal('0.01'))
+    commission_revenue = (CommissionRecord.objects.filter(status=CommissionRecord.Status.PAID).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')).quantize(Decimal('0.01'))
+    total_revenue = (subscription_revenue + commission_revenue).quantize(Decimal('0.01'))
 
-    pending_commission_dues = CommissionRecord.objects.filter(status=CommissionRecord.Status.PENDING).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')
+    pending_commission_dues = (CommissionRecord.objects.filter(status=CommissionRecord.Status.PENDING).aggregate(total=Sum('total_amount'))['total'] or Decimal('0.00')).quantize(Decimal('0.01'))
     open_complaints = Complaint.objects.filter(status=Complaint.Status.OPEN).count()
 
     # Recent Records

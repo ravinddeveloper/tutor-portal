@@ -124,6 +124,10 @@ def board_view(request):
     if city_q:
         qs = qs.filter(Q(city__icontains=city_q) | Q(locality__icontains=city_q))
 
+    class_q = request.GET.get('student_class', '').strip()
+    if class_q:
+        qs = qs.filter(Q(student_class__icontains=class_q) | Q(title__icontains=class_q))
+
     type_q = request.GET.get('tuition_type', '').strip()
     if type_q:
         qs = qs.filter(tuition_type=type_q)
@@ -136,6 +140,7 @@ def board_view(request):
         'leads': leads_page,
         'sub_q': sub_q,
         'city_q': city_q,
+        'class_q': class_q,
         'type_q': type_q,
         'total_count': paginator.count,
     }

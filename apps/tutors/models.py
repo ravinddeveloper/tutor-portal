@@ -69,6 +69,85 @@ class TutorProfile(models.Model):
     def display_name(self):
         return self.user.display_name
 
+    def calculate_completeness(self):
+        """
+        Dynamically calculates profile completeness percentage and actionable checklist.
+        Returns a dict: {'score': int, 'checklist': list, 'is_complete': bool, 'remaining_count': int}
+        """
+        checklist = []
+        score = 0
+
+        # 1. Basic Bio & Headline (20 pts)
+        has_basic = bool(self.headline and self.bio and len(self.bio.strip()) >= 30)
+        checklist.append({
+            'label': 'Professional Headline & Teaching Philosophy',
+            'points': 20,
+            'completed': has_basic,
+            'url_name': 'tutors:profile_edit',
+            'action_label': 'Edit Bio'
+        })
+        if has_basic:
+            score += 20
+
+        # 2. Teaching Subjects & Fee (20 pts)
+        sub_count = self.subjects.count()
+        has_subjects = sub_count > 0
+        checklist.append({
+            'label': f'Teaching Subjects & Monthly Fee ({sub_count} added)',
+            'points': 20,
+            'completed': has_subjects,
+            'url_name': 'tutors:subjects_manage',
+            'action_label': 'Manage Subjects'
+        })
+        if has_subjects:
+            score += 20
+
+        # 3. Academic Qualifications (20 pts)
+        qual_count = self.qualifications.count()
+        has_qual = qual_count > 0
+        checklist.append({
+            'label': f'Academic Degrees & Qualifications ({qual_count} added)',
+            'points': 20,
+            'completed': has_qual,
+            'url_name': 'tutors:profile_edit',
+            'action_label': 'Add Qualifications'
+        })
+        if has_qual:
+            score += 20
+
+        # 4. Identity & Credential Documents (20 pts)
+        doc_count = self.documents.count()
+        has_docs = doc_count > 0
+        checklist.append({
+            'label': f'Government ID & Certificates ({doc_count} uploaded)',
+            'points': 20,
+            'completed': has_docs,
+            'url_name': 'tutors:documents_upload',
+            'action_label': 'Upload Documents'
+        })
+        if has_docs:
+            score += 20
+
+        # 5. Weekly Availability Slots (20 pts)
+        slot_count = self.availabilities.filter(is_active=True).count()
+        has_avail = slot_count > 0
+        checklist.append({
+            'label': f'Weekly Teaching Availability ({slot_count} slots active)',
+            'points': 20,
+            'completed': has_avail,
+            'url_name': 'tutors:availability_manage',
+            'action_label': 'Set Time Slots'
+        })
+        if has_avail:
+            score += 20
+
+        return {
+            'score': score,
+            'checklist': checklist,
+            'is_complete': score == 100,
+            'remaining_count': sum(1 for item in checklist if not item['completed'])
+        }
+
     def __str__(self):
         return f"{self.display_name} - {self.primary_city} ({self.get_verification_status_display()})"
 
@@ -151,3 +230,19 @@ class TutorAvailability(models.Model):
 
     def __str__(self):
         return f"{self.tutor.display_name} - {self.get_day_of_week_display()} ({self.get_slot_display()})"
+
+
+class SavedTutor(models.Model):
+    """Bookmarks / shortlists saved by students and parents."""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='saved_tutors')
+    tutor = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, related_name='saved_by_users')
+    notes = models.CharField(max_length=255, blank=True, help_text=_('Personal notes on why this tutor was saved'))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'tutor')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.display_name} saved {self.tutor.display_name}"
+

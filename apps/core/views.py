@@ -30,6 +30,18 @@ def home_view(request):
     total_leads = TuitionRequirement.objects.count()
     total_engagements = TuitionEngagement.objects.count()
 
+    # Popular subject categories with Lucide icon names and accent colors
+    popular_subjects = [
+        {'name': 'Mathematics', 'icon': 'calculator', 'color': '#4f46e5', 'bg': 'rgba(79, 70, 229, 0.1)'},
+        {'name': 'Physics', 'icon': 'zap', 'color': '#0891b2', 'bg': 'rgba(8, 145, 178, 0.1)'},
+        {'name': 'Chemistry', 'icon': 'flask-conical', 'color': '#059669', 'bg': 'rgba(5, 150, 105, 0.1)'},
+        {'name': 'Biology', 'icon': 'dna', 'color': '#16a34a', 'bg': 'rgba(22, 163, 74, 0.1)'},
+        {'name': 'English', 'icon': 'book-open', 'color': '#7c3aed', 'bg': 'rgba(124, 58, 237, 0.1)'},
+        {'name': 'Computer Science', 'icon': 'monitor', 'color': '#2563eb', 'bg': 'rgba(37, 99, 235, 0.1)'},
+        {'name': 'Commerce', 'icon': 'trending-up', 'color': '#d97706', 'bg': 'rgba(217, 119, 6, 0.1)'},
+        {'name': 'Hindi', 'icon': 'languages', 'color': '#dc2626', 'bg': 'rgba(220, 38, 38, 0.1)'},
+    ]
+
     context = {
         'featured_tutors': featured_tutors,
         'recent_leads': recent_leads,
@@ -38,8 +50,10 @@ def home_view(request):
         'total_tutors': total_tutors,
         'total_leads': total_leads,
         'total_engagements': total_engagements,
+        'popular_subjects': popular_subjects,
     }
     return render(request, 'core/home.html', context)
+
 
 def how_it_works_view(request):
     return render(request, 'core/how_it_works.html')

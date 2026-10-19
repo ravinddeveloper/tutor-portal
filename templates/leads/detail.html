@@ -30,7 +30,7 @@
         </h1>
 
         <!-- Key Parameter Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.25rem; margin-bottom: 1.75rem; font-size: 0.9rem;">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; margin-bottom: 1.75rem; font-size: 0.9rem;">
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">Subjects</div>
             <div style="font-weight: 700; color: var(--text);">{{ lead.subjects }}</div>
@@ -58,7 +58,7 @@
         </div>
 
         <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">Specific Student Goals & Notes</h3>
-        <p style="font-size: 0.95rem; color: #334155; line-height: 1.7; margin-bottom: 1.75rem;">
+        <p style="font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 1.75rem;">
           {{ lead.learning_goals|default:"Student requires dedicated one-on-one conceptual teaching, homework assistance, and regular doubt clearance." }}
         </p>
 
@@ -84,7 +84,7 @@
             </div>
           </div>
         {% else %}
-          <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 0.5rem; padding: 1.5rem; text-align: center; color: var(--text-muted);">
+          <div style="background: var(--surface-hover); border: 1px dashed var(--border); border-radius: var(--border-radius); padding: 1.5rem; text-align: center; color: var(--text-muted);">
             <i data-lucide="lock" style="width: 28px; height: 28px; margin: 0 auto 0.5rem; color: var(--primary);"></i>
             <h4 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem;">Parent Contact Information is Protected</h4>
             <p style="font-size: 0.85rem;">

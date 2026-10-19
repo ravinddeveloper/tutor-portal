@@ -3,43 +3,102 @@
 {% block title %}Matched Tutors for {{ requirement.lead_id }} — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 1020px;">
   {% include "parents/_parent_nav.html" %}
 
-  <div style="margin-bottom: 1.5rem;">
-    <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+  <div style="margin-bottom: 2rem;">
+    <div class="flex items-center gap-2 flex-wrap" style="margin-bottom: 0.5rem;">
       <span class="badge badge-primary">{{ requirement.lead_id }}</span>
-      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">{{ requirement.title }}</h2>
+      <span class="badge badge-secondary">{{ requirement.student_class }} ({{ requirement.board_curriculum }})</span>
+      <span class="badge {% if requirement.status == 'OPEN' %}badge-success{% else %}badge-warning{% endif %}">
+        {{ requirement.get_status_display }}
+      </span>
     </div>
-    <p style="color: var(--text-muted); font-size: 0.875rem;">
-      Matched tutors scored by subject compatibility, geographic proximity, curriculum experience, and verified ratings.
+    <h1 style="font-size: 1.65rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0 0 0.4rem;">
+      {{ requirement.title }}
+    </h1>
+    <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0;">
+      Matched tutors scored by subject compatibility, geographic proximity (within {{ requirement.city }} / {{ requirement.locality }}), curriculum experience, and verified parent reviews.
     </p>
   </div>
 
-  <!-- Applications Received Tab/Section if any -->
+  <!-- Direct Tutor Proposals Received -->
   {% if applications %}
-    <div class="card" style="margin-bottom: 2rem; border-left: 4px solid #10b981;">
-      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
-        <h3 style="font-size: 1.15rem; font-weight: 700; color: #065f46;">Direct Proposals From Tutors ({{ applications.count }})</h3>
+    <div class="card" style="margin-bottom: 2.5rem; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+      <div style="padding: 1.25rem 1.5rem; background: rgba(16, 185, 129, 0.08); border-bottom: 1px solid rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: space-between;">
+        <div class="flex items-center gap-2">
+          <i data-lucide="inbox" style="width: 20px; height: 20px; color: #059669;"></i>
+          <h2 style="font-size: 1.15rem; font-weight: 800; color: #065f46; margin: 0;">
+            Direct Proposals Received from Tutors ({{ applications.count }})
+          </h2>
+        </div>
+        <span class="badge badge-success" style="font-size: 0.75rem;">Action Needed</span>
       </div>
-      <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+
+      <div style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
         {% for app in applications %}
-          <div style="border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; background: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div>
-              <div class="flex items-center gap-2">
-                <span style="font-weight: 700; font-size: 1.05rem;">{{ app.tutor.display_name }}</span>
-                <span class="badge badge-success">{{ app.tutor.highest_qualification }}</span>
+          <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: var(--surface); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.25rem;">
+            
+            <div style="display: flex; gap: 1rem; align-items: flex-start; flex: 1; min-width: 280px;">
+              <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; flex-shrink: 0;">
+                {{ app.tutor.display_name|slice:":1"|upper }}
               </div>
-              <p style="font-size: 0.85rem; color: #475569; margin: 0.25rem 0;">"{{ app.cover_note }}"</p>
-              <div style="font-size: 0.8rem; color: var(--text-muted);">
-                Proposed Fee: <strong>{{ company.currency_symbol }}{{ app.proposed_fee }}/mo</strong> • Applied {{ app.created_at|timesince }} ago
+
+              <div>
+                <div class="flex items-center gap-2 flex-wrap" style="margin-bottom: 0.25rem;">
+                  <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0;">
+                    {{ app.tutor.display_name }}
+                  </h3>
+                  {% if app.tutor.is_verified %}
+                    <span class="badge badge-success" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">
+                      <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Verified
+                    </span>
+                  {% endif %}
+                  <span class="badge badge-secondary" style="font-size: 0.7rem;">{{ app.tutor.highest_qualification }}</span>
+                </div>
+
+                <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                  <span><i data-lucide="map-pin" style="width: 13px; height: 13px; display: inline;"></i> {{ app.tutor.primary_locality }}, {{ app.tutor.primary_city }}</span>
+                  <span style="margin: 0 0.35rem;">•</span>
+                  <span>{{ app.tutor.experience_years }} yrs exp</span>
+                  <span style="margin: 0 0.35rem;">•</span>
+                  <span style="color: var(--accent); font-weight: 700;">★ {{ app.tutor.average_rating }} ({{ app.tutor.total_reviews }})</span>
+                </div>
+
+                <!-- Tutor's Proposal Message -->
+                <div style="background: var(--surface-hover); border-left: 3px solid var(--primary); padding: 0.6rem 0.85rem; border-radius: 0 4px 4px 0; font-size: 0.85rem; color: var(--text); line-height: 1.5; margin-bottom: 0.5rem;">
+                  <strong style="color: var(--text-muted); font-size: 0.725rem; text-transform: uppercase;">Message:</strong>
+                  "{{ app.cover_note }}"
+                </div>
+
+                <div style="font-size: 0.775rem; color: var(--text-muted);">
+                  Applied {{ app.created_at|timesince }} ago
+                </div>
               </div>
             </div>
 
-            <div class="flex gap-2">
-              <a href="{% url 'tutors:detail' app.tutor.pk %}" class="btn btn-secondary btn-sm" target="_blank">View Profile</a>
-              <a href="{% url 'parents:confirm_tuition' requirement.lead_id %}" class="btn btn-success btn-sm">Confirm Tutor</a>
+            <!-- Fee & Action Controls -->
+            <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; min-width: 180px;">
+              <div style="text-align: right;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Proposed Monthly Fee</div>
+                <div style="font-size: 1.4rem; font-weight: 900; color: #059669;">
+                  {{ company.currency_symbol }}{{ app.proposed_fee }}<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/mo</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2" style="width: 100%;">
+                <a href="{% url 'parents:confirm_tuition' requirement.lead_id %}" class="btn btn-primary btn-sm" style="width: 100%; font-weight: 700; background: #10b981; border-color: #10b981; justify-content: center;">
+                  <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> Confirm Tutor
+                </a>
+                <a href="{% url 'tutors:detail' app.tutor.pk %}#bookDemo" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 700; justify-content: center;">
+                  <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Book Trial Demo
+                </a>
+                <a href="{% url 'tutors:detail' app.tutor.pk %}" class="btn btn-outline-primary btn-sm" style="width: 100%; justify-content: center;" target="_blank">
+                  View Profile &rarr;
+                </a>
+              </div>
             </div>
+
           </div>
         {% endfor %}
       </div>
@@ -47,54 +106,73 @@
   {% endif %}
 
   <!-- AI Matched Tutors List -->
-  <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 1rem;">
-    Recommended Tutors ({{ matches.count }})
-  </h3>
+  <div class="flex items-center justify-between gap-3 flex-wrap" style="margin-bottom: 1.25rem;">
+    <div>
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0 0 0.25rem;">
+        Recommended Tutors Matching Your Need ({{ matches.count }})
+      </h2>
+      <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">
+        You can invite tutors to review your requirement or schedule a free 1-on-1 trial demo class directly.
+      </p>
+    </div>
+    <a href="{% url 'tutors:directory' %}?city={{ requirement.city }}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+      <i data-lucide="compass" style="width: 14px; height: 14px;"></i> Explore All City Tutors
+    </a>
+  </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {% for match in matches %}
-      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); transition: transform 0.15s ease, box-shadow 0.15s ease;">
         <div class="card-body">
           <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
-            <div class="flex items-center gap-2">
-              <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
-                {{ match.tutor.display_name|slice:":1" }}
+            <div class="flex items-center gap-3">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; flex-shrink: 0;">
+                {{ match.tutor.display_name|slice:":1"|upper }}
               </div>
               <div>
-                <h4 style="font-size: 1.05rem; font-weight: 700;">{{ match.tutor.display_name }}</h4>
+                <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0;">
+                  {{ match.tutor.display_name }}
+                </h3>
                 <div style="font-size: 0.775rem; color: var(--text-muted);">{{ match.tutor.highest_qualification }}</div>
               </div>
             </div>
 
-            <span class="badge badge-success" style="font-size: 0.8rem; padding: 0.35rem 0.65rem;">
-              {{ match.match_score }}% Match
+            <span class="badge badge-success" style="font-size: 0.8rem; padding: 0.35rem 0.65rem; font-weight: 800;">
+              <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> {{ match.match_score }}% Match
             </span>
           </div>
 
-          <p style="font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.75rem;">
+          <p style="font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; line-height: 1.4;">
             {{ match.tutor.headline }}
           </p>
 
-          <div style="background: rgba(79, 70, 229, 0.05); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.775rem; color: #334155; border-radius: 0.25rem; margin-bottom: 0.75rem;">
-            <strong>Matching Factors:</strong><br>
+          <div style="background: rgba(79, 70, 229, 0.05); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.775rem; color: var(--text); border-radius: 0.25rem; margin-bottom: 0.75rem; line-height: 1.4;">
+            <strong style="color: var(--primary);">Matching Factors:</strong><br>
             {{ match.match_reasons|linebreaksbr }}
           </div>
 
           <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.25rem;">
-            <div><i data-lucide="map-pin" style="width: 13px; height: 13px; display: inline;"></i> {{ match.tutor.primary_locality }}, {{ match.tutor.primary_city }}</div>
+            <div><i data-lucide="map-pin" style="width: 13px; height: 13px; display: inline;"></i> {{ match.tutor.primary_locality }}, {{ match.tutor.primary_city }} ({{ match.tutor.service_radius_km }}km service radius)</div>
             <div><i data-lucide="star" style="width: 13px; height: 13px; display: inline; color: var(--accent);"></i> {{ match.tutor.average_rating }} ★ ({{ match.tutor.total_reviews }} reviews)</div>
             <div><i data-lucide="clock" style="width: 13px; height: 13px; display: inline;"></i> {{ match.tutor.experience_years }} Years Teaching Experience</div>
           </div>
         </div>
 
-        <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-size: 0.95rem; font-weight: 800; color: var(--primary);">
-            {{ company.currency_symbol }}{{ match.tutor.monthly_rate_estimate }}/mo
+        <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Estimated Fee</div>
+            <div style="font-size: 1.05rem; font-weight: 900; color: var(--primary);">
+              {{ company.currency_symbol }}{{ match.tutor.monthly_rate_estimate }}<span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">/mo</span>
+            </div>
           </div>
 
-          <div class="flex gap-2">
+          <div class="flex items-center gap-2">
             <a href="{% url 'tutors:detail' match.tutor.pk %}" class="btn btn-secondary btn-sm" target="_blank">
               View Profile
+            </a>
+
+            <a href="{% url 'tutors:detail' match.tutor.pk %}#bookDemo" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+              <i data-lucide="calendar" style="width: 13px; height: 13px;"></i> Demo
             </a>
 
             {% if match.is_invited %}
@@ -104,7 +182,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="invite">
                 <input type="hidden" name="tutor_id" value="{{ match.tutor.pk }}">
-                <button type="submit" class="btn btn-outline-primary btn-sm">
+                <button type="submit" class="btn btn-outline-primary btn-sm" style="font-weight: 700;">
                   Invite Tutor
                 </button>
               </form>
@@ -113,8 +191,17 @@
         </div>
       </div>
     {% empty %}
-      <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center; color: var(--text-muted);">
-        <p>No tutors matched yet. We will notify you as soon as tutors matching your subject and city register.</p>
+      <div class="card col-span-full" style="padding: 3.5rem 2rem; text-align: center; color: var(--text-muted);">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--surface-hover); color: var(--text-muted); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+          <i data-lucide="search" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">Finding Matching Tutors</h3>
+        <p style="max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+          Our algorithm actively indexes registered tutors in {{ requirement.city }}. We will immediately notify verified educators matching {{ requirement.subjects }}.
+        </p>
+        <a href="{% url 'tutors:directory' %}" class="btn btn-primary" style="font-weight: 700;">
+          <i data-lucide="compass" style="width: 16px; height: 16px;"></i> Browse All Tutors Manually
+        </a>
       </div>
     {% endfor %}
   </div>

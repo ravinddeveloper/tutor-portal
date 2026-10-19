@@ -3,49 +3,90 @@
 {% block title %}Tutor Registration — Teach & Earn — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px; padding-top: 3.5rem; padding-bottom: 4rem;">
-  <div class="card">
+<div class="container" style="max-width: 620px; padding-top: 3.5rem; padding-bottom: 5rem;">
+  <div class="card" style="box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08), 0 5px 15px -3px rgba(0, 0, 0, 0.04); border: 1px solid var(--border); overflow: hidden;">
+    
+    <!-- Top Indigo Accent Strip -->
+    <div style="height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent));"></div>
+
     <div class="card-body" style="padding: 2.25rem;">
+      
+      <!-- Header -->
       <div style="text-align: center; margin-bottom: 2rem;">
-        <span class="badge badge-success" style="margin-bottom: 0.75rem;">🎁 3 Free Contact Unlock Credits Included</span>
-        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Join as a Professional Tutor</h1>
-        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
-          Get verified, connect with students in your city, and start teaching
+        <span class="badge badge-success" style="margin-bottom: 0.75rem; font-size: 0.8rem; padding: 0.35rem 0.85rem;">
+          <i data-lucide="gift" style="width: 14px; height: 14px;"></i> 3 Free Contact Unlock Credits Included
+        </span>
+        <h1 style="font-size: 1.65rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.35rem;">
+          Join as a Professional Tutor
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5;">
+          Get verified, connect directly with students & parents in your city, and grow your independent tuition practice.
         </p>
+      </div>
+
+      <!-- Perks Summary -->
+      <div class="grid grid-cols-3 gap-2" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 0.85rem; margin-bottom: 1.75rem; text-align: center;">
+        <div>
+          <div style="font-weight: 800; color: var(--primary); font-size: 0.9rem;">Direct Matching</div>
+          <div style="font-size: 0.725rem; color: var(--text-muted);">Home & Online Leads</div>
+        </div>
+        <div style="border-left: 1px solid var(--border); border-right: 1px solid var(--border);">
+          <div style="font-weight: 800; color: #10b981; font-size: 0.9rem;">3 Free Credits</div>
+          <div style="font-size: 0.725rem; color: var(--text-muted);">Instant Welcome Pack</div>
+        </div>
+        <div>
+          <div style="font-weight: 800; color: var(--secondary); font-size: 0.9rem;">Keep Your Fees</div>
+          <div style="font-size: 0.725rem; color: var(--text-muted);">Direct Client Terms</div>
+        </div>
       </div>
 
       <form method="post" action="{% url 'accounts:register_tutor' %}">
         {% csrf_token %}
         <div class="form-group">
-          <label class="form-label" for="full_name">Full Name</label>
-          <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Dr. Rajesh Nambiar" required>
+          <label class="form-label" for="full_name">Full Name (with Honorific/Degree if applicable)</label>
+          <div style="position: relative;">
+            <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Dr. Rajesh Nambiar" required style="padding-left: 2.25rem;">
+            <i data-lucide="user" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="form-group">
             <label class="form-label" for="email">Email Address</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="rajesh@example.com" required>
+            <div style="position: relative;">
+              <input type="email" name="email" id="email" class="form-control" placeholder="rajesh@example.com" required style="padding-left: 2.25rem;">
+              <i data-lucide="mail" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="phone">Phone / WhatsApp Number</label>
-            <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98451 11222" required>
+            <div style="position: relative;">
+              <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98451 11222" required style="padding-left: 2.25rem;">
+              <i data-lucide="phone" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="headline">Professional Headline</label>
-          <input type="text" name="headline" id="headline" class="form-control" placeholder="e.g. Senior CBSE & ICSE Mathematics Faculty | 8+ Yrs Exp" required>
+          <label class="form-label" for="headline">Professional Headline / Specialty</label>
+          <div style="position: relative;">
+            <input type="text" name="headline" id="headline" class="form-control" placeholder="e.g. Senior CBSE & ICSE Mathematics Faculty | 8+ Yrs Exp" required style="padding-left: 2.25rem;">
+            <i data-lucide="award" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="form-group">
             <label class="form-label" for="qualification">Highest Degree / Qualification</label>
-            <input type="text" name="qualification" id="qualification" class="form-control" placeholder="e.g. M.Sc Mathematics, B.Tech IIT" required>
+            <div style="position: relative;">
+              <input type="text" name="qualification" id="qualification" class="form-control" placeholder="e.g. M.Sc Mathematics, B.Tech" required style="padding-left: 2.25rem;">
+              <i data-lucide="graduation-cap" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="teaching_mode">Teaching Mode Preference</label>
+            <label class="form-label" for="teaching_mode">Teaching Mode</label>
             <select name="teaching_mode" id="teaching_mode" class="form-select">
               <option value="BOTH_HOME_ONLINE">Both Home & Online Tuition</option>
               <option value="HOME_ONLY">Home Tuition Only</option>
@@ -57,27 +98,37 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="form-group">
             <label class="form-label" for="city">Primary City</label>
-            <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required>
+            <div style="position: relative;">
+              <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required style="padding-left: 2.25rem;">
+              <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="locality">Primary Locality</label>
-            <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Koramangala" required>
+            <label class="form-label" for="locality">Primary Locality / Area</label>
+            <div style="position: relative;">
+              <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Koramangala" required style="padding-left: 2.25rem;">
+              <i data-lucide="navigation" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="password">Create Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+          <div style="position: relative;">
+            <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6" style="padding-left: 2.25rem;">
+            <i data-lucide="lock" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
-          <i data-lucide="award" style="width: 18px; height: 18px;"></i> Submit Tutor Registration & Claim 3 Credits
+        <button type="submit" class="btn btn-primary" style="width: 100%; height: 46px; font-weight: 800; font-size: 0.95rem; margin-top: 0.5rem;">
+          <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i> Complete Registration & Claim 3 Free Credits
         </button>
       </form>
 
-      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-        Already have a tutor account? <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 600;">Sign In</a>
+      <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+        Already have a tutor account?
+        <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 700; margin-left: 0.25rem;">Sign In</a>
       </div>
     </div>
   </div>

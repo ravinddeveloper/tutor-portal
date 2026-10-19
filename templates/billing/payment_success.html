@@ -41,7 +41,7 @@
     display: flex;
     justify-content: space-between;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border);
     font-size: 0.9rem;
   }
   .receipt-row:last-child {
@@ -94,15 +94,15 @@
 
     <!-- Active Privileges / Wallet Callout -->
     {% if wallet %}
-      <div style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border: 1px solid #c7d2fe; border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+      <div style="background: var(--primary-light); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div class="flex items-center gap-3">
           <div style="width: 42px; height: 42px; border-radius: 0.5rem; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center;">
             <i data-lucide="wallet" style="width: 22px; height: 22px;"></i>
           </div>
           <div>
-            <div style="font-size: 0.8rem; color: #4338ca; font-weight: 700; text-transform: uppercase;">Updated Wallet Balance</div>
-            <div style="font-size: 1.35rem; font-weight: 800; color: #1e1b4b;">
-              {{ wallet.total_balance }} <span style="font-size: 0.85rem; font-weight: 600;">Contact Unlock Credits</span>
+            <div style="font-size: 0.8rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Updated Wallet Balance</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--text);">
+              {{ wallet.total_balance }} <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Contact Unlock Credits</span>
             </div>
           </div>
         </div>

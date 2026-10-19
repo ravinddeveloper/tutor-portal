@@ -218,11 +218,44 @@ def checkout_view(request):
         messages.error(request, "Unknown checkout category requested.")
         return redirect('core:pricing')
 
+    item_key = f"{checkout_type}:{metadata.get('plan_id') or metadata.get('credits_count') or metadata.get('commission_id') or metadata.get('invoice_number') or metadata.get('engagement_id')}"
+
+    # Stable session management: preserve order_ref, coupon, and expiration across page refreshes
+    checkout_sessions = request.session.get('checkout_sessions', {})
+    now_ts = int(timezone.now().timestamp())
+    session_data = checkout_sessions.get(item_key)
+
+    if session_data and session_data.get('expires_at', 0) > now_ts:
+        order_ref = session_data['order_ref']
+        expires_at = session_data['expires_at']
+        if not coupon_code and session_data.get('coupon_code'):
+            coupon_code = session_data['coupon_code']
+    else:
+        order_ref = f"ORD-{uuid.uuid4().hex[:7].upper()}"
+        expires_at = now_ts + (15 * 60)  # 15-minute stable payment session
+        checkout_sessions[item_key] = {
+            'order_ref': order_ref,
+            'expires_at': expires_at,
+            'coupon_code': coupon_code,
+        }
+        request.session['checkout_sessions'] = checkout_sessions
+        request.session.modified = True
+
+    remaining_seconds = max(expires_at - now_ts, 15)
+
     # Calculate discount & taxes
     discount_amount, coupon_desc, coupon_err = calculate_discount(coupon_code, base_price)
     if coupon_err and coupon_code:
         messages.warning(request, coupon_err)
         coupon_code = ""
+        if item_key in checkout_sessions:
+            checkout_sessions[item_key]['coupon_code'] = ""
+            request.session['checkout_sessions'] = checkout_sessions
+            request.session.modified = True
+    elif coupon_code and not coupon_err:
+        checkout_sessions[item_key]['coupon_code'] = coupon_code
+        request.session['checkout_sessions'] = checkout_sessions
+        request.session.modified = True
 
     discounted_subtotal = max(base_price - discount_amount, Decimal('0.00'))
     
@@ -238,10 +271,31 @@ def checkout_view(request):
     cgst_amount = round(tax_amount / Decimal('2.00'), 2)
     sgst_amount = round(tax_amount - cgst_amount, 2)
 
-    # UPI simulation URI
-    order_ref = f"ORD-{uuid.uuid4().hex[:7].upper()}"
+    # UPI URI with persistent order_ref
     upi_pa = f"edututorpro@hdfcbank"
-    upi_qr_string = f"upi://pay?pa={upi_pa}&pn={company.company_name}&am={total_payable}&cu=INR&tn={order_ref}"
+    upi_qr_string = f"upi://pay?pa={upi_pa}&pn={company.company_name.replace(' ', '+')}&am={total_payable}&cu=INR&tn={order_ref}"
+
+    # Generate real, scannable QR Code base64 image
+    qr_base64 = ""
+    try:
+        import qrcode
+        import io
+        import base64
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=10,
+            border=2,
+        )
+        qr.add_data(upi_qr_string)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="#0f172a", back_color="#ffffff")
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        qr_base64 = base64.b64encode(buffered.getvalue()).decode()
+    except Exception as e:
+        qr_base64 = ""
 
     context = {
         'company': company,
@@ -249,6 +303,7 @@ def checkout_view(request):
         'item_title': item_title,
         'item_subtitle': item_subtitle,
         'item_category_badge': item_category_badge,
+        'item_key': item_key,
         'base_price': base_price,
         'discount_amount': discount_amount,
         'discounted_subtotal': discounted_subtotal,
@@ -262,8 +317,10 @@ def checkout_view(request):
         'coupon_desc': coupon_desc,
         'available_coupons': PROMO_COUPONS.values(),
         'order_ref': order_ref,
+        'remaining_seconds': remaining_seconds,
         'upi_pa': upi_pa,
         'upi_qr_string': upi_qr_string,
+        'qr_base64': qr_base64,
         'plan_obj': plan_obj,
         'commission_obj': commission_obj,
         'invoice_obj': invoice_obj,
@@ -281,12 +338,55 @@ def apply_coupon_api(request):
         data = json.loads(request.body)
         coupon_code = data.get('coupon_code', '').strip().upper()
         base_amount = Decimal(str(data.get('base_amount', '0')))
+        item_key = data.get('item_key', '')
     except Exception:
         coupon_code = request.POST.get('coupon_code', '').strip().upper()
         base_amount = Decimal(str(request.POST.get('base_amount', '0')))
+        item_key = request.POST.get('item_key', '')
 
     company = CompanySettings.get_settings()
     tax_rate = company.tax_percentage if company.tax_percentage else Decimal('18.00')
+
+    # Allow clearing coupon
+    if not coupon_code:
+        checkout_sessions = request.session.get('checkout_sessions', {})
+        if item_key and item_key in checkout_sessions:
+            checkout_sessions[item_key]['coupon_code'] = ""
+            order_ref = checkout_sessions[item_key]['order_ref']
+            request.session['checkout_sessions'] = checkout_sessions
+            request.session.modified = True
+        else:
+            order_ref = f"ORD-{uuid.uuid4().hex[:7].upper()}"
+
+        tax_amount = round((base_amount * tax_rate) / Decimal('100.00'), 2)
+        total_payable = round(base_amount + tax_amount, 2)
+        upi_pa = f"edututorpro@hdfcbank"
+        new_upi_qr_string = f"upi://pay?pa={upi_pa}&pn={company.company_name.replace(' ', '+')}&am={total_payable}&cu=INR&tn={order_ref}"
+        new_qr_base64 = ""
+        try:
+            import qrcode, io, base64
+            qr = qrcode.QRCode(version=1, box_size=10, border=2)
+            qr.add_data(new_upi_qr_string)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="#0f172a", back_color="#ffffff")
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            new_qr_base64 = base64.b64encode(buf.getvalue()).decode()
+        except Exception:
+            new_qr_base64 = ""
+
+        return JsonResponse({
+            'valid': True,
+            'cleared': True,
+            'coupon_code': '',
+            'discount_amount': 0.0,
+            'discount_description': '',
+            'tax_amount': float(tax_amount),
+            'total_payable': float(total_payable),
+            'upi_qr_string': new_upi_qr_string,
+            'qr_base64': new_qr_base64,
+            'message': 'Coupon removed.'
+        })
 
     discount, desc, err = calculate_discount(coupon_code, base_amount)
     if err:
@@ -296,6 +396,39 @@ def apply_coupon_api(request):
     tax_amount = round((discounted_subtotal * tax_rate) / Decimal('100.00'), 2)
     total_payable = round(discounted_subtotal + tax_amount, 2)
 
+    # Preserve stable order_ref from active checkout session
+    checkout_sessions = request.session.get('checkout_sessions', {})
+    if item_key and item_key in checkout_sessions:
+        order_ref = checkout_sessions[item_key]['order_ref']
+        checkout_sessions[item_key]['coupon_code'] = coupon_code
+        request.session['checkout_sessions'] = checkout_sessions
+        request.session.modified = True
+    else:
+        order_ref = f"ORD-{uuid.uuid4().hex[:7].upper()}"
+
+    upi_pa = f"edututorpro@hdfcbank"
+    new_upi_qr_string = f"upi://pay?pa={upi_pa}&pn={company.company_name.replace(' ', '+')}&am={total_payable}&cu=INR&tn={order_ref}"
+    new_qr_base64 = ""
+    try:
+        import qrcode
+        import io
+        import base64
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=10,
+            border=2,
+        )
+        qr.add_data(new_upi_qr_string)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="#0f172a", back_color="#ffffff")
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        new_qr_base64 = base64.b64encode(buffered.getvalue()).decode()
+    except Exception:
+        new_qr_base64 = ""
+
     return JsonResponse({
         'valid': True,
         'coupon_code': coupon_code,
@@ -303,6 +436,9 @@ def apply_coupon_api(request):
         'discount_description': desc,
         'tax_amount': float(tax_amount),
         'total_payable': float(total_payable),
+        'upi_qr_string': new_upi_qr_string,
+        'qr_base64': new_qr_base64,
+        'order_ref': order_ref,
         'message': f"Coupon '{coupon_code}' applied successfully! Saved ₹{discount}"
     })
 
@@ -323,6 +459,18 @@ def process_payment_view(request):
     payment_method = request.POST.get('payment_method', Payment.Method.UPI)
     coupon_code = request.POST.get('coupon_code', '').strip().upper()
     simulate_outcome = request.POST.get('simulate_outcome', 'SUCCESS').upper()
+    order_ref = request.POST.get('order_ref', '').strip()
+
+    # Idempotency check: if this order was already processed successfully, redirect to existing receipt
+    if order_ref:
+        existing_payment = Payment.objects.filter(
+            user=request.user,
+            gateway_reference__startswith=f"{order_ref}:",
+            status=Payment.Status.SUCCESSFUL
+        ).first()
+        if existing_payment:
+            messages.info(request, "This payment order has already been completed.")
+            return redirect('billing:payment_success', payment_id=existing_payment.payment_id)
 
     # Read base amounts
     base_price = Decimal(request.POST.get('base_price', '0.00'))
@@ -334,12 +482,12 @@ def process_payment_view(request):
 
     # Allow testing of declined / failed transactions
     if simulate_outcome == 'FAIL':
-        # Create failed payment record for auditing and realism
+        failed_ref = f"{order_ref}:DECLINED" if order_ref else f"DECLINED-SIM-{uuid.uuid4().hex[:8].upper()}"
         failed_payment = Payment.objects.create(
             user=request.user,
             amount=total_payable,
             method=payment_method,
-            gateway_reference=f"DECLINED-SIM-{uuid.uuid4().hex[:8].upper()}",
+            gateway_reference=failed_ref,
             status=Payment.Status.FAILED
         )
         return redirect('billing:payment_failed')
@@ -464,7 +612,7 @@ def process_payment_view(request):
                 )
 
         # 3. Create Verified Payment record
-        gateway_ref = f"SIM-{payment_method}-{uuid.uuid4().hex[:8].upper()}"
+        gateway_ref = f"{order_ref}:{payment_method}" if order_ref else f"SIM-{payment_method}-{uuid.uuid4().hex[:8].upper()}"
         payment = Payment.objects.create(
             invoice=invoice,
             user=request.user,
@@ -497,6 +645,14 @@ def process_payment_view(request):
             )
         except Exception:
             pass
+
+        # 6. Clear checkout session for this item
+        checkout_sessions = request.session.get('checkout_sessions', {})
+        item_key = f"{checkout_type}:{request.POST.get('plan_id') or request.POST.get('credits_count') or request.POST.get('commission_id') or request.POST.get('invoice_number') or request.POST.get('engagement_id')}"
+        if item_key in checkout_sessions:
+            del checkout_sessions[item_key]
+            request.session['checkout_sessions'] = checkout_sessions
+            request.session.modified = True
 
     messages.success(request, success_message)
     return redirect('billing:payment_success', payment_id=payment.payment_id)

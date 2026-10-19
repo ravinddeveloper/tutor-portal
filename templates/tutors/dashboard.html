@@ -95,7 +95,7 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     
     <!-- AI Matched Leads Feed -->
-    <div style="grid-column: span 2;">
+    <div class="col-span-1 md:col-span-2">
       <div class="card">
         <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
           <div>
@@ -107,7 +107,7 @@
 
         <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
           {% for match in matched_leads %}
-            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: var(--surface); display: flex; flex-direction: column; justify-content: space-between;">
               <div>
                 <div class="flex items-center justify-between" style="margin-bottom: 0.5rem;">
                   <span class="badge badge-primary">{{ match.requirement.lead_id }}</span>
@@ -120,13 +120,13 @@
                   {{ match.requirement.title }}
                 </h4>
 
-                <div style="font-size: 0.825rem; color: #475569; margin-bottom: 0.5rem; line-height: 1.4;">
+                <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.5rem; line-height: 1.4;">
                   <div><strong>Subjects:</strong> {{ match.requirement.subjects }} • <strong>Class:</strong> {{ match.requirement.student_class }} ({{ match.requirement.board_curriculum }})</div>
                   <div><strong>Location:</strong> {{ match.requirement.locality }}, {{ match.requirement.city }} • <strong>Mode:</strong> {{ match.requirement.get_tuition_type_display }}</div>
                   <div><strong>Budget:</strong> {{ company.currency_symbol }}{{ match.requirement.budget_amount }}/mo</div>
                 </div>
 
-                <div style="background: rgba(79, 70, 229, 0.04); border-left: 3px solid var(--primary); padding: 0.4rem 0.6rem; font-size: 0.775rem; color: #334155; margin-bottom: 0.75rem;">
+                <div style="background: var(--primary-light); border-left: 3px solid var(--primary); padding: 0.4rem 0.6rem; font-size: 0.775rem; color: var(--text); margin-bottom: 0.75rem; border-radius: 0 4px 4px 0;">
                   <strong>Why You Match:</strong> {{ match.match_reasons|linebreaksbr }}
                 </div>
               </div>
@@ -157,7 +157,7 @@
     </div>
 
     <!-- Right Column: Scheduled Demos & Quick Tools -->
-    <div style="grid-column: span 1;">
+    <div class="col-span-1 md:col-span-1">
       <div class="card" style="margin-bottom: 1.5rem;">
         <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
           <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Scheduled Demo Classes</h3>
@@ -181,21 +181,78 @@
         </div>
       </div>
 
-      <!-- Profile Quality Card -->
-      <div class="card" style="padding: 1.5rem; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
-        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Profile Trust & Score</h4>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Completeness</span>
-          <span style="font-weight: 800; color: var(--primary);">{{ tutor.profile_score }}%</span>
+      <!-- Dynamic Profile Completeness & Trust Engine Card -->
+      <div class="card" style="padding: 1.5rem; background: var(--surface); border: 1px solid var(--border);">
+        <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="shield-check" style="width: 18px; height: 18px; color: var(--primary);"></i>
+            Profile Completeness
+          </h4>
+          <span class="badge {% if completeness.is_complete %}badge-success{% else %}badge-primary{% endif %}" style="font-size: 0.85rem; font-weight: 800; padding: 0.25rem 0.6rem;">
+            {{ completeness.score }}%
+          </span>
         </div>
-        <div style="background: #e2e8f0; height: 6px; border-radius: 9999px; margin-bottom: 1rem;">
-          <div style="background: var(--primary); height: 6px; width: {{ tutor.profile_score }}%; border-radius: 9999px;"></div>
+
+        <div style="background: var(--surface-hover); height: 8px; border-radius: 9999px; margin-bottom: 0.85rem; border: 1px solid var(--border); overflow: hidden;">
+          <div style="background: {% if completeness.is_complete %}#10b981{% else %}linear-gradient(90deg, var(--primary), var(--secondary)){% endif %}; height: 8px; width: {{ completeness.score }}%; border-radius: 9999px; transition: width 0.4s ease;"></div>
         </div>
-        <ul style="font-size: 0.8rem; color: #475569; list-style: none; display: flex; flex-direction: column; gap: 0.35rem;">
-          <li>✓ Phone & Email Verified</li>
-          <li>{% if tutor.is_verified %}✓ Documents Verified{% else %}⚠️ Upload Degrees for Verification Badge{% endif %}</li>
-          <li>✓ {{ tutor.subjects.count }} Subjects Configured</li>
-        </ul>
+
+        {% if completeness.is_complete %}
+          <div style="font-size: 0.8rem; color: #059669; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.4rem; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: var(--border-radius);">
+            <i data-lucide="sparkles" style="width: 15px; height: 15px; flex-shrink: 0;"></i>
+            <span>All sections complete! You have maximum visibility in tutor searches.</span>
+          </div>
+        {% else %}
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.4;">
+            Complete <strong>{{ completeness.remaining_count }} more step{{ completeness.remaining_count|pluralize }}</strong> to unlock higher search placement and parent trust.
+          </div>
+        {% endif %}
+
+        <!-- Dynamic Checklist Items -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for item in completeness.checklist %}
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0.65rem; border-radius: 6px; background: {% if item.completed %}rgba(16, 185, 129, 0.05){% else %}var(--surface-hover){% endif %}; border: 1px solid {% if item.completed %}rgba(16, 185, 129, 0.2){% else %}var(--border){% endif %}; font-size: 0.825rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+                {% if item.completed %}
+                  <div style="width: 20px; height: 20px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                  </div>
+                  <span style="font-weight: 600; color: var(--text); text-decoration: {% if item.completed %}none{% endif %}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ item.label }}
+                  </span>
+                {% else %}
+                  <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px dashed var(--text-muted); color: var(--text-muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 700;">
+                    +{{ item.points }}
+                  </div>
+                  <span style="font-weight: 600; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ item.label }}
+                  </span>
+                {% endif %}
+              </div>
+
+              {% if not item.completed %}
+                <a href="{% url item.url_name %}" class="btn btn-secondary btn-sm" style="font-size: 0.725rem; padding: 0.2rem 0.5rem; flex-shrink: 0; white-space: nowrap;">
+                  {{ item.action_label }} &rarr;
+                </a>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Verification Status Notice -->
+        <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; font-size: 0.775rem; color: var(--text-muted);">
+          {% if tutor.is_verified %}
+            <div style="display: flex; align-items: center; gap: 0.4rem; color: #10b981; font-weight: 700;">
+              <i data-lucide="badge-check" style="width: 16px; height: 16px;"></i>
+              <span>Official Verification Badge Active</span>
+            </div>
+          {% else %}
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <span>Verification Badge: <strong>{{ tutor.get_verification_status_display }}</strong></span>
+              <a href="{% url 'tutors:documents_upload' %}" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Verify ID</a>
+            </div>
+          {% endif %}
+        </div>
       </div>
     </div>
 

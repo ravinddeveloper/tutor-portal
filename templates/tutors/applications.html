@@ -1,64 +1,243 @@
 {% extends "base.html" %}
 
-{% block title %}My Submitted Applications — {{ company.company_name }}{% endblock %}
+{% block title %}My Submitted Applications & Tracking — {{ company.company_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .app-timeline-track {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 1.25rem 0 0.5rem;
+    padding: 0 0.5rem;
+  }
+  .app-timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 2rem;
+    right: 2rem;
+    height: 3px;
+    background: var(--border);
+    z-index: 1;
+  }
+  .app-timeline-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+  .app-timeline-node {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+  }
+  .app-timeline-node.completed {
+    background: #10b981;
+    border-color: #10b981;
+    color: #ffffff;
+  }
+  .app-timeline-node.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px var(--primary-light);
+  }
+  .app-timeline-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+  }
+  .app-timeline-label.completed {
+    color: #059669;
+  }
+  .app-timeline-label.active {
+    color: var(--primary);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
+<div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 980px;">
   {% include "tutors/_tutor_nav.html" %}
 
-  <div style="margin-bottom: 1.5rem;">
-    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">My Lead Applications ({{ applications.count }})</h2>
-    <p style="color: var(--text-muted); font-size: 0.875rem;">Proposals you have sent to parents for tuition requirements</p>
+  <div class="flex items-center justify-between gap-3 flex-wrap" style="margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 1.65rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0 0 0.35rem;">
+        Proposal Tracking & Lead Pipeline
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.875rem; margin: 0;">
+        Real-time visibility into parental reviews, demo appointments, and tuition confirmations for your proposals.
+      </p>
+    </div>
+    <a href="{% url 'tutors:leads_browse' %}" class="btn btn-primary" style="font-weight: 700;">
+      <i data-lucide="compass" style="width: 17px; height: 17px;"></i> Browse Open Leads
+    </a>
   </div>
 
-  <div class="card">
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
-        <thead>
-          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
-            <th style="padding: 1rem;">Lead ID</th>
-            <th style="padding: 1rem;">Requirement Title</th>
-            <th style="padding: 1rem;">Proposed Fee</th>
-            <th style="padding: 1rem;">Applied Date</th>
-            <th style="padding: 1rem;">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for app in applications %}
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 1rem;">
-                <span class="badge badge-primary">{{ app.requirement.lead_id }}</span>
-              </td>
-              <td style="padding: 1rem;">
-                <a href="{% url 'leads:detail' app.requirement.lead_id %}" style="font-weight: 700; color: var(--primary);">
-                  {{ app.requirement.title }}
-                </a>
-                <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
-                  Cover note: "{{ app.cover_note|truncatewords:15 }}"
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for app in applications %}
+      <div class="card" style="padding: 1.5rem 1.75rem; border: 1px solid var(--border); transition: transform 0.15s ease, box-shadow 0.15s ease;">
+        
+        <!-- Header: Lead Title, Status, and Rate -->
+        <div class="flex items-start justify-between gap-3 flex-wrap" style="border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap" style="margin-bottom: 0.35rem;">
+              <span class="badge badge-primary">{{ app.requirement.lead_id }}</span>
+              <span class="badge badge-secondary">{{ app.requirement.student_class }} ({{ app.requirement.board_curriculum }})</span>
+              <span style="font-size: 0.775rem; color: var(--text-muted);">
+                <i data-lucide="clock" style="width: 13px; height: 13px; display: inline;"></i> Applied {{ app.created_at|timesince }} ago
+              </span>
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">
+              <a href="{% url 'leads:detail' app.requirement.lead_id %}" style="color: inherit; text-decoration: none;">
+                {{ app.requirement.title }}
+              </a>
+            </h3>
+            <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">
+              <span><i data-lucide="book" style="width: 13px; height: 13px; display: inline;"></i> {{ app.requirement.subjects }}</span>
+              <span style="margin: 0 0.4rem;">•</span>
+              <span><i data-lucide="map-pin" style="width: 13px; height: 13px; display: inline;"></i> {{ app.requirement.locality }}, {{ app.requirement.city }}</span>
+              <span style="margin: 0 0.4rem;">•</span>
+              <span>Mode: <strong>{{ app.requirement.get_tuition_type_display }}</strong></span>
+            </div>
+          </div>
+
+          <div style="text-align: right; flex-shrink: 0;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Your Proposal</div>
+            <div style="font-size: 1.35rem; font-weight: 900; color: #059669;">
+              {{ company.currency_symbol }}{{ app.proposed_fee }}<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/mo</span>
+            </div>
+            <span class="badge {% if app.status == 'ACCEPTED' %}badge-success{% elif app.status == 'REJECTED' %}badge-danger{% elif app.status == 'DEMO_REQUESTED' %}badge-primary{% else %}badge-warning{% endif %}" style="margin-top: 0.35rem; display: inline-block;">
+              {{ app.get_status_display }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Cover Note Quote -->
+        {% if app.cover_note %}
+          <div style="margin-top: 1rem; background: var(--surface-hover); border-left: 3px solid var(--primary); padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; font-size: 0.85rem; color: var(--text); line-height: 1.5;">
+            <strong style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Your Proposal Note:</strong>
+            "{{ app.cover_note }}"
+          </div>
+        {% endif %}
+
+        <!-- Visual Milestone Progress Pipeline -->
+        <div style="margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem 1rem;">
+          <div style="font-size: 0.775rem; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i data-lucide="git-commit" style="width: 14px; height: 14px; color: var(--primary);"></i> Milestone Progress
+          </div>
+
+          <div class="app-timeline-track">
+            <!-- Step 1: Proposal Sent -->
+            <div class="app-timeline-step">
+              <div class="app-timeline-node completed">
+                <i data-lucide="check" style="width: 15px; height: 15px;"></i>
+              </div>
+              <div class="app-timeline-label completed">Proposal Sent</div>
+            </div>
+
+            <!-- Step 2: Under Review / Shortlisted -->
+            <div class="app-timeline-step">
+              {% if app.status == 'ACCEPTED' or app.status == 'DEMO_REQUESTED' or app.status == 'SHORTLISTED' %}
+                <div class="app-timeline-node completed">
+                  <i data-lucide="check" style="width: 15px; height: 15px;"></i>
                 </div>
-              </td>
-              <td style="padding: 1rem; font-weight: 700; color: #059669;">
-                {{ company.currency_symbol }}{{ app.proposed_fee }}/mo
-              </td>
-              <td style="padding: 1rem; color: var(--text-muted); font-size: 0.8rem;">
-                {{ app.created_at|date:"M d, Y" }}
-              </td>
-              <td style="padding: 1rem;">
-                <span class="badge {% if app.status == 'ACCEPTED' %}badge-success{% elif app.status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}">
-                  {{ app.get_status_display }}
-                </span>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="5" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
-                No applications submitted yet. Browse open leads to submit proposals.
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+                <div class="app-timeline-label completed">Parent Reviewed</div>
+              {% elif app.status == 'PENDING' %}
+                <div class="app-timeline-node active">
+                  <i data-lucide="eye" style="width: 14px; height: 14px;"></i>
+                </div>
+                <div class="app-timeline-label active">Under Review</div>
+              {% else %}
+                <div class="app-timeline-node">2</div>
+                <div class="app-timeline-label">Reviewed</div>
+              {% endif %}
+            </div>
+
+            <!-- Step 3: Demo Class -->
+            <div class="app-timeline-step">
+              {% if app.status == 'ACCEPTED' %}
+                <div class="app-timeline-node completed">
+                  <i data-lucide="check" style="width: 15px; height: 15px;"></i>
+                </div>
+                <div class="app-timeline-label completed">Demo Completed</div>
+              {% elif app.status == 'DEMO_REQUESTED' %}
+                <div class="app-timeline-node active">
+                  <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                </div>
+                <div class="app-timeline-label active">Demo Scheduled</div>
+              {% else %}
+                <div class="app-timeline-node">3</div>
+                <div class="app-timeline-label">Trial Demo</div>
+              {% endif %}
+            </div>
+
+            <!-- Step 4: Confirmed Tuition -->
+            <div class="app-timeline-step">
+              {% if app.status == 'ACCEPTED' %}
+                <div class="app-timeline-node completed">
+                  <i data-lucide="award" style="width: 15px; height: 15px;"></i>
+                </div>
+                <div class="app-timeline-label completed">Tuition Active</div>
+              {% else %}
+                <div class="app-timeline-node">4</div>
+                <div class="app-timeline-label">Tuition Started</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer Actions -->
+        <div class="flex items-center justify-between gap-3 flex-wrap" style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+          <a href="{% url 'leads:detail' app.requirement.lead_id %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+            <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> View Requirement Details
+          </a>
+
+          <div class="flex gap-2">
+            {% if app.status == 'DEMO_REQUESTED' %}
+              <a href="{% url 'tutors:demos' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
+                <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Manage Demo Class &rarr;
+              </a>
+            {% elif app.status == 'ACCEPTED' %}
+              <a href="{% url 'tutors:engagements' %}" class="btn btn-primary btn-sm" style="font-weight: 700; background: #10b981;">
+                <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> Open Class Lessons &rarr;
+              </a>
+            {% endif %}
+            <a href="{% url 'communication:inbox' %}" class="btn btn-secondary btn-sm">
+              <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> Contact Parent
+            </a>
+          </div>
+        </div>
+
+      </div>
+    {% empty %}
+      <div class="card" style="padding: 3.5rem 2rem; text-align: center; color: var(--text-muted);">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--surface-hover); color: var(--text-muted); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+          <i data-lucide="inbox" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">No Applications Submitted Yet</h3>
+        <p style="max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+          Browse student tuition leads tailored to your location and subjects. Unlock parent contacts and submit custom fee proposals to start tutoring.
+        </p>
+        <a href="{% url 'tutors:leads_browse' %}" class="btn btn-primary" style="font-weight: 700;">
+          <i data-lucide="search" style="width: 16px; height: 16px;"></i> Browse Open Tuition Leads
+        </a>
+      </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

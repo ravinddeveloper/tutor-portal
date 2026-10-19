@@ -2,50 +2,182 @@
 
 {% block title %}Search Verified Home & Online Tutors — {{ company.company_name }}{% endblock %}
 
-{% block content %}
-<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
-  
-  <!-- Header Banner -->
-  <div style="margin-bottom: 2.5rem;">
-    <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--text);">Verified Tutor Directory</h1>
-    <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
-      Browse background-checked private teachers, home tutors, and online specialists
-    </p>
-  </div>
+{% block extra_css %}
+<style>
+  .tutor-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    background: var(--surface);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .tutor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(79, 70, 229, 0.35);
+  }
 
+  .bookmark-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+  }
+  .bookmark-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: #fecaca;
+  }
+  .bookmark-btn.saved {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  /* Compare Checkbox Card Tag */
+  .card-compare-tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.725rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    background: var(--surface);
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    z-index: 2;
+    transition: border-color 0.15s ease;
+  }
+  .card-compare-tag:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* Sticky Comparison Launcher Bar */
+  #stickyCompareBar {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    border: 2px solid var(--primary);
+    padding: 0.65rem 1.25rem;
+    border-radius: 9999px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    z-index: 9999;
+    align-items: center;
+    gap: 1.25rem;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* Guided Discovery Modal */
+  .wizard-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(6px);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Directory Header Hero -->
+<section style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="flex justify-between items-center flex-wrap gap-4">
+      <div style="max-width: 720px;">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.85rem;">
+          <i data-lucide="shield-check" style="width: 15px; height: 15px; color: #10b981;"></i>
+          Verified Educator Marketplace
+        </div>
+        <h1 style="font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 900; color: var(--text); letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 0.5rem;">
+          Find Verified Tutors Near You
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.05rem; margin: 0; line-height: 1.5;">
+          Browse background-checked private teachers, home tutors, and online specialists tailored to your curriculum and budget.
+        </p>
+      </div>
+
+      <!-- Quick Action Buttons: Shortlist & Guided Matcher -->
+      <div class="flex gap-2.5 flex-wrap">
+        <button type="button" class="btn btn-secondary" onclick="openGuidedWizard()" style="font-weight: 800; font-size: 0.85rem;">
+          <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--primary);"></i> Guided Matcher
+        </button>
+        {% if user.is_authenticated %}
+          <a href="{% url 'tutors:saved_tutors' %}" class="btn btn-secondary" style="font-weight: 800; font-size: 0.85rem;">
+            <i data-lucide="heart" style="width: 16px; height: 16px; color: #ef4444;"></i> My Shortlist ({{ saved_tutor_ids|length }})
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
     
-    <!-- Filter Sidebar -->
-    <div style="grid-column: span 1;">
-      <div class="card" style="padding: 1.5rem; position: sticky; top: 90px;">
-        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
-          <span>Filter Tutors</span>
-          <a href="{% url 'tutors:directory' %}" style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Reset All</a>
-        </h3>
+    <!-- Filter Sidebar (Column 1) -->
+    <div class="col-span-1 md:col-span-1">
+      <div class="card" style="padding: 1.5rem; position: sticky; top: 90px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+            <i data-lucide="filter" style="width: 17px; height: 17px; color: var(--primary);"></i>
+            Filter Tutors
+          </h3>
+          {% if subject_q or city_q or mode_q or gender_q or sort_by != 'rating' %}
+            <a href="{% url 'tutors:directory' %}" style="font-size: 0.775rem; color: var(--primary); font-weight: 700; text-decoration: underline;">Reset All</a>
+          {% endif %}
+        </div>
 
         <form method="get" action="{% url 'tutors:directory' %}">
-          <div class="form-group">
-            <label class="form-label">Subject</label>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.825rem; font-weight: 700;">Subject / Keyword</label>
             <input type="text" name="subject" value="{{ subject_q }}" class="form-control" placeholder="e.g. Mathematics, Physics">
           </div>
 
-          <div class="form-group">
-            <label class="form-label">City / Locality</label>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.825rem; font-weight: 700;">City / Locality</label>
             <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="e.g. Bengaluru, Indiranagar">
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Teaching Mode</label>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.825rem; font-weight: 700;">Teaching Mode</label>
             <select name="teaching_mode" class="form-select">
               <option value="">All Modes</option>
-              <option value="HOME_ONLY" {% if mode_q == 'HOME_ONLY' %}selected{% endif %}>Home Tuition</option>
-              <option value="ONLINE_ONLY" {% if mode_q == 'ONLINE_ONLY' %}selected{% endif %}>Online Tuition</option>
+              <option value="HOME_ONLY" {% if mode_q == 'HOME_ONLY' %}selected{% endif %}>Home Tuition Only</option>
+              <option value="ONLINE_ONLY" {% if mode_q == 'ONLINE_ONLY' %}selected{% endif %}>Online Tuition Only</option>
               <option value="BOTH_HOME_ONLINE" {% if mode_q == 'BOTH_HOME_ONLINE' %}selected{% endif %}>Both Home & Online</option>
             </select>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Gender Preference</label>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.825rem; font-weight: 700;">Gender Preference</label>
             <select name="gender" class="form-select">
               <option value="">Any Gender</option>
               <option value="MALE" {% if gender_q == 'MALE' %}selected{% endif %}>Male Tutor</option>
@@ -53,83 +185,180 @@
             </select>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Sort By</label>
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.825rem; font-weight: 700;">Sort By</label>
             <select name="sort" class="form-select">
               <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Highest Rating</option>
               <option value="experience" {% if sort_by == 'experience' %}selected{% endif %}>Most Experienced</option>
-              <option value="fee_asc" {% if sort_by == 'fee_asc' %}selected{% endif %}>Fee: Low to High</option>
-              <option value="fee_desc" {% if sort_by == 'fee_desc' %}selected{% endif %}>Fee: High to Low</option>
+              <option value="fee_asc" {% if sort_by == 'fee_asc' %}selected{% endif %}>Monthly Fee: Low to High</option>
+              <option value="fee_desc" {% if sort_by == 'fee_desc' %}selected{% endif %}>Monthly Fee: High to Low</option>
             </select>
           </div>
 
-          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
-            <i data-lucide="filter" style="width: 16px; height: 16px;"></i> Apply Filters
+          <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700;">
+            <i data-lucide="search" style="width: 16px; height: 16px;"></i> Apply Filters
           </button>
         </form>
       </div>
     </div>
 
-    <!-- Tutors Listing Grid -->
-    <div style="grid-column: span 3;">
-      <div style="margin-bottom: 1.25rem; font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-        <span>Showing <strong>{{ tutors|length }}</strong> of {{ total_results }} verified tutors</span>
+    <!-- Tutors Listing Grid (Column 2-4) -->
+    <div class="col-span-1 md:col-span-3">
+      
+      <!-- Results Count Bar & Active Filter Chips -->
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <span style="font-size: 0.95rem; font-weight: 800; color: var(--text);">
+            Showing {{ tutors|length }} of {{ total_results }} verified tutors
+          </span>
+          {% if subject_q or city_q or mode_q %}
+            <div class="flex flex-wrap gap-1.5" style="margin-top: 0.5rem;">
+              {% if subject_q %}
+                <span class="badge badge-primary">Subject: {{ subject_q }}</span>
+              {% endif %}
+              {% if city_q %}
+                <span class="badge badge-secondary">City: {{ city_q }}</span>
+              {% endif %}
+              {% if mode_q %}
+                <span class="badge badge-secondary">Mode: {{ mode_q }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="flex gap-2">
+          <a href="{% url 'leads:post_requirement' %}" class="btn btn-outline-primary btn-sm">
+            <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> Post Requirement
+          </a>
+        </div>
       </div>
 
+      <!-- Tutors Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {% for tutor in tutors %}
-          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div class="card-body">
-              <div class="flex items-center gap-3" style="margin-bottom: 1rem;">
-                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;">
-                  {{ tutor.display_name|slice:":1" }}
-                </div>
-                <div>
-                  <div class="flex items-center gap-1">
-                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">{{ tutor.display_name }}</h3>
-                    <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #10b981;" title="Verified Profile"></i>
+          <div class="tutor-card">
+            
+            <!-- Compare Tag Checkbox -->
+            <label class="card-compare-tag" title="Select to compare side-by-side">
+              <input type="checkbox" class="compare-checkbox" value="{{ tutor.id }}" onchange="handleDirectoryCompare(this)" style="accent-color: var(--primary); cursor: pointer;">
+              <span>Compare</span>
+            </label>
+
+            <div class="card-body" style="padding: 1.5rem; padding-top: 2.75rem;">
+              
+              <!-- Header with Avatar, Name, Verification, Bookmark -->
+              <div class="flex items-start gap-3" style="margin-bottom: 1rem;">
+                {% if tutor.user.avatar %}
+                  <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--primary-light);">
+                {% else %}
+                  <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">
+                    {{ tutor.display_name|slice:":1"|upper }}
                   </div>
-                  <div style="font-size: 0.8rem; color: var(--text-muted);">{{ tutor.highest_qualification }}</div>
+                {% endif %}
+
+                <div style="flex: 1; min-width: 0;">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">
+                      {{ tutor.display_name }}
+                    </h3>
+                    {% if tutor.is_verified %}
+                      <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">
+                        <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> Verified
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem;">{{ tutor.highest_qualification }}</div>
                 </div>
+
+                <!-- Bookmark / Shortlist Button -->
+                <button type="button" class="bookmark-btn {% if tutor.id in saved_tutor_ids %}saved{% endif %}" 
+                        onclick="toggleSaveTutor({{ tutor.id }}, this)" 
+                        title="{% if tutor.id in saved_tutor_ids %}Remove from shortlist{% else %}Save to shortlist{% endif %}"
+                        aria-label="Bookmark tutor">
+                  <i data-lucide="heart" style="width: 16px; height: 16px; {% if tutor.id in saved_tutor_ids %}fill: #ef4444; color: #ef4444;{% endif %}"></i>
+                </button>
               </div>
 
-              <p style="font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.75rem; line-height: 1.4;">
-                {{ tutor.headline }}
+              <!-- Explainable Matching Reason Badges -->
+              {% if tutor.match_reasons_list %}
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 0.45rem 0.75rem; margin-bottom: 0.85rem;">
+                  <div style="font-weight: 800; color: #10b981; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.2rem; letter-spacing: 0.03em;">
+                    <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> Match Criteria
+                  </div>
+                  <div class="flex flex-wrap gap-1.5" style="font-size: 0.775rem; color: var(--text); font-weight: 600;">
+                    {% for reason in tutor.match_reasons_list %}
+                      <span style="display: inline-flex; align-items: center; gap: 0.2rem;">
+                        <span style="color: #10b981;">✓</span> {{ reason }}
+                      </span>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+
+              <!-- Headline -->
+              <p style="font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.85rem; line-height: 1.45; min-height: 38px;">
+                {{ tutor.headline|default:"Experienced educator focused on structured academic mastery." }}
               </p>
 
-              <div class="flex flex-wrap gap-1" style="margin-bottom: 1rem;">
-                {% for sub in tutor.subjects.all %}
-                  <span class="badge badge-secondary" style="font-size: 0.7rem;">{{ sub.subject_name }}</span>
+              <!-- Subject Pills -->
+              <div class="flex flex-wrap gap-1.5" style="margin-bottom: 1rem;">
+                {% for sub in tutor.subjects.all|slice:":4" %}
+                  <span class="badge badge-secondary" style="font-size: 0.72rem; font-weight: 600;">{{ sub.subject_name }}</span>
+                {% empty %}
+                  <span class="badge badge-secondary" style="font-size: 0.72rem;">Multi-Subject</span>
                 {% endfor %}
+                {% if tutor.subjects.count > 4 %}
+                  <span class="badge badge-secondary" style="font-size: 0.72rem;">+{{ tutor.subjects.count|add:"-4" }} more</span>
+                {% endif %}
               </div>
 
-              <div style="font-size: 0.825rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
-                <div><i data-lucide="map-pin" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.primary_locality }}, {{ tutor.primary_city }} ({{ tutor.service_radius_km }} km radius)</div>
-                <div><i data-lucide="monitor" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.get_teaching_mode_display }}</div>
-                <div><i data-lucide="clock" style="width: 14px; height: 14px; display: inline;"></i> {{ tutor.experience_years }} Years Teaching Experience</div>
-                <div><i data-lucide="star" style="width: 14px; height: 14px; display: inline; color: var(--accent);"></i> {{ tutor.average_rating }} ★ ({{ tutor.total_reviews }} reviews)</div>
+              <!-- Details Rows -->
+              <div style="font-size: 0.825rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; border-top: 1px solid var(--border); padding-top: 0.85rem;">
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--secondary); flex-shrink: 0;"></i>
+                  <span>{{ tutor.primary_locality }}, {{ tutor.primary_city }} ({{ tutor.service_radius_km }} km radius)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <i data-lucide="monitor" style="width: 14px; height: 14px; color: var(--primary); flex-shrink: 0;"></i>
+                  <span>{{ tutor.get_teaching_mode_display }}</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="display: flex; align-items: center; gap: 0.35rem;">
+                    <i data-lucide="clock" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
+                    {{ tutor.experience_years }} Years Teaching Exp.
+                  </span>
+                  <span style="display: flex; align-items: center; gap: 0.35rem; color: var(--text); font-weight: 700;">
+                    <i data-lucide="star" style="width: 14px; height: 14px; fill: var(--accent); color: var(--accent);"></i>
+                    {{ tutor.average_rating }} ({{ tutor.total_reviews }})
+                  </span>
+                </div>
               </div>
+
             </div>
 
-            <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <!-- Card Bottom Bar -->
+            <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
               <div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Estimate</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">{{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo</div>
+                <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Monthly Estimate</div>
+                <div style="font-size: 1.1rem; font-weight: 900; color: var(--primary);">
+                  {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo
+                </div>
               </div>
-              <a href="{% url 'tutors:detail' tutor.pk %}" class="btn btn-primary btn-sm">
+              <a href="{% url 'tutors:detail' tutor.pk %}?{{ search_query_string }}" class="btn btn-primary btn-sm">
                 View Full Profile &rarr;
               </a>
             </div>
           </div>
         {% empty %}
-          <div class="card" style="grid-column: span 2; padding: 3rem; text-align: center;">
+          <div class="card col-span-full" style="padding: 3.5rem; text-align: center;">
             <i data-lucide="search-x" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1rem;"></i>
-            <h3 style="font-size: 1.25rem; font-weight: 700;">No tutors found matching your search</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-              Try clearing specific filters or search for another subject or city.
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text);">No tutors found matching your filters</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; max-width: 440px; margin-left: auto; margin-right: auto;">
+              Try clearing specific filters, widening your search radius, or search for another subject or city.
             </p>
-            <div style="margin-top: 1.5rem;">
-              <a href="{% url 'tutors:directory' %}" class="btn btn-secondary">Clear Filters</a>
+            <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.75rem;">
+              <a href="{% url 'tutors:directory' %}" class="btn btn-secondary">Reset Filters</a>
+              <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary">Post Requirement Instead</a>
             </div>
           </div>
         {% endfor %}
@@ -137,15 +366,15 @@
 
       <!-- Pagination -->
       {% if tutors.has_other_pages %}
-        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2.5rem;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2.5rem;">
           {% if tutors.has_previous %}
-            <a href="?page={{ tutors.previous_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">&larr; Previous</a>
+            <a href="?page={{ tutors.previous_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&gender={{ gender_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">&larr; Previous</a>
           {% endif %}
-          <span style="padding: 0.4rem 0.8rem; font-size: 0.875rem; font-weight: 600; color: var(--text);">
+          <span style="padding: 0.45rem 1rem; font-size: 0.875rem; font-weight: 700; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--border-radius);">
             Page {{ tutors.number }} of {{ tutors.paginator.num_pages }}
           </span>
           {% if tutors.has_next %}
-            <a href="?page={{ tutors.next_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">Next &rarr;</a>
+            <a href="?page={{ tutors.next_page_number }}&subject={{ subject_q }}&city={{ city_q }}&teaching_mode={{ mode_q }}&gender={{ gender_q }}&sort={{ sort_by }}" class="btn btn-secondary btn-sm">Next &rarr;</a>
           {% endif %}
         </div>
       {% endif %}
@@ -153,4 +382,226 @@
 
   </div>
 </div>
+
+<!-- Floating Multi-Tutor Compare Bar -->
+<div id="stickyCompareBar">
+  <div class="flex items-center gap-2">
+    <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+      <i data-lucide="scale" style="width: 16px; height: 16px;"></i>
+    </div>
+    <span style="font-size: 0.875rem; font-weight: 800; color: var(--text);" id="compareBarLabel">2 tutors selected</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button type="button" class="btn btn-secondary btn-sm" onclick="clearAllCompare()" style="font-size: 0.75rem;">Clear</button>
+    <button type="button" class="btn btn-primary btn-sm" onclick="launchComparison()" style="font-weight: 800; font-size: 0.8rem;">
+      Compare Now &rarr;
+    </button>
+  </div>
+</div>
+
+<!-- Guided Tutor Discovery 3-Step Wizard Modal -->
+<div id="guidedWizardModal" class="wizard-overlay">
+  <div class="card" style="max-width: 520px; width: 100%; padding: 2rem; position: relative;">
+    <button type="button" onclick="closeGuidedWizard()" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+    
+    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--primary-light); color: var(--primary); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">
+      <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Interactive Discovery
+    </div>
+    
+    <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem;">
+      Find Your Tutor in 3 Quick Steps
+    </h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+      Tell us your learning goals and we will immediately match verified educators.
+    </p>
+
+    <form method="get" action="{% url 'tutors:directory' %}">
+      <!-- Step 1: Grade / Curriculum -->
+      <div style="margin-bottom: 1rem;">
+        <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Step 1: Student Class / Level</label>
+        <select name="student_class" class="form-select">
+          <option value="">Any Class Level</option>
+          <option value="Class 10">Class 10 (Board Exams)</option>
+          <option value="Class 12">Class 12 (Board / Competitive)</option>
+          <option value="Class 9">Class 9</option>
+          <option value="Class 11">Class 11</option>
+          <option value="Class 6-8">Class 6 to 8 (Middle School)</option>
+          <option value="Primary">Class 1 to 5 (Primary)</option>
+        </select>
+      </div>
+
+      <!-- Step 2: Subject -->
+      <div style="margin-bottom: 1rem;">
+        <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Step 2: Subject Needed</label>
+        <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics, Physics, Chemistry, English" required>
+      </div>
+
+      <!-- Step 3: Mode & City -->
+      <div class="grid grid-cols-2 gap-3" style="margin-bottom: 1.5rem;">
+        <div>
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">Teaching Mode</label>
+          <select name="teaching_mode" class="form-select">
+            <option value="">Either (Home or Online)</option>
+            <option value="HOME_ONLY">Home Tuition Only</option>
+            <option value="ONLINE_ONLY">Online Only</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">City / Locality</label>
+          <input type="text" name="city" class="form-control" placeholder="e.g. Bengaluru" value="Bengaluru">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; font-weight: 800; font-size: 0.95rem;">
+        <i data-lucide="search" style="width: 17px; height: 17px;"></i> Match Qualified Educators Now &rarr;
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let compareSet = new Set();
+
+  function handleDirectoryCompare(checkbox) {
+    if (checkbox.checked) {
+      if (compareSet.size >= 4) {
+        checkbox.checked = false;
+        alert("You can compare up to 4 tutors simultaneously.");
+        return;
+      }
+      compareSet.add(checkbox.value);
+    } else {
+      compareSet.delete(checkbox.value);
+    }
+    updateStickyCompareBar();
+  }
+
+  function updateStickyCompareBar() {
+    const bar = document.getElementById('stickyCompareBar');
+    const label = document.getElementById('compareBarLabel');
+    if (!bar) return;
+
+    if (compareSet.size >= 2) {
+      bar.style.display = 'flex';
+      label.innerText = `${compareSet.size} tutors selected`;
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  function clearAllCompare() {
+    compareSet.clear();
+    document.querySelectorAll('.compare-checkbox').forEach(c => c.checked = false);
+    updateStickyCompareBar();
+  }
+
+  function launchComparison() {
+    const ids = Array.from(compareSet).join(',');
+    window.location.href = `{% url 'tutors:compare' %}?ids=${ids}`;
+  }
+
+  // Toggle Save Tutor with AJAX and Toast Feedback
+  function toggleSaveTutor(tutorId, btn) {
+    {% if not user.is_authenticated %}
+      window.location.href = `{% url 'accounts:login' %}?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+      return;
+    {% endif %}
+
+    fetch(`/tutors/save/${tutorId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        const icon = btn.querySelector('i');
+        if (data.saved) {
+          btn.classList.add('saved');
+          if (icon) {
+            icon.style.fill = '#ef4444';
+            icon.style.color = '#ef4444';
+          }
+          showDirectoryToast("Tutor saved to your shortlist!");
+        } else {
+          btn.classList.remove('saved');
+          if (icon) {
+            icon.style.fill = 'none';
+            icon.style.color = 'currentColor';
+          }
+          showDirectoryToast("Tutor removed from shortlist.");
+        }
+      }
+    })
+    .catch(() => {
+      // Fallback: standard navigation if fetch fails
+      window.location.href = `/tutors/save/${tutorId}/`;
+    });
+  }
+
+  function openGuidedWizard() {
+    const m = document.getElementById('guidedWizardModal');
+    if (m) m.style.display = 'flex';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function closeGuidedWizard() {
+    const m = document.getElementById('guidedWizardModal');
+    if (m) m.style.display = 'none';
+  }
+
+  function showDirectoryToast(msg) {
+    let t = document.getElementById('dir-toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'dir-toast';
+      t.style.position = 'fixed';
+      t.style.bottom = '24px';
+      t.style.right = '24px';
+      t.style.background = '#0f172a';
+      t.style.color = '#ffffff';
+      t.style.padding = '0.75rem 1.25rem';
+      t.style.borderRadius = '9999px';
+      t.style.boxShadow = '0 10px 25px rgba(0,0,0,0.25)';
+      t.style.fontSize = '0.875rem';
+      t.style.fontWeight = '700';
+      t.style.zIndex = '999999';
+      t.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateY(0)';
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(20px)';
+    }, 2800);
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('matcher') === '1' || window.location.hash === '#guidedMatcher') {
+      openGuidedWizard();
+    }
+  });
+</script>
 {% endblock %}

@@ -129,16 +129,34 @@
     .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
+    .col-span-1 { grid-column: span 1 / span 1; }
+    .col-span-2 { grid-column: span 2 / span 2; }
+    .col-span-3 { grid-column: span 3 / span 3; }
+    .col-span-4 { grid-column: span 4 / span 4; }
+    .col-span-full { grid-column: 1 / -1; }
+
     @media (min-width: 640px) {
       .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sm\:col-span-1 { grid-column: span 1 / span 1; }
+      .sm\:col-span-2 { grid-column: span 2 / span 2; }
       .container { padding-left: 1.5rem; padding-right: 1.5rem; }
     }
     @media (min-width: 768px) {
+      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\:col-span-1 { grid-column: span 1 / span 1; }
+      .md\:col-span-2 { grid-column: span 2 / span 2; }
+      .md\:col-span-3 { grid-column: span 3 / span 3; }
       .md\:flex-row { flex-direction: row; }
     }
     @media (min-width: 1024px) {
+      .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .lg\:col-span-1 { grid-column: span 1 / span 1; }
+      .lg\:col-span-2 { grid-column: span 2 / span 2; }
+      .lg\:col-span-3 { grid-column: span 3 / span 3; }
+      .lg\:col-span-4 { grid-column: span 4 / span 4; }
     }
 
     /* Cards & Components */
@@ -737,6 +755,8 @@
       color: #ffffff;
     }
   </style>
+  <link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+  {% block extra_css %}{% endblock %}
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -915,8 +935,11 @@
               <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">
                 <i data-lucide="log-in" style="width: 14px; height: 14px;"></i> Log In
               </a>
-              <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm">
-                <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> Post Requirement
+              <a href="{% url 'accounts:register_tutor' %}" class="btn btn-secondary btn-sm" style="display: none;" id="desktop-become-tutor-btn">
+                <i data-lucide="graduation-cap" style="width: 14px; height: 14px;"></i> Become a Tutor
+              </a>
+              <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm">
+                <i data-lucide="search" style="width: 14px; height: 14px;"></i> Find a Tutor
               </a>
             </div>
           {% endif %}
@@ -936,6 +959,9 @@
     @media (min-width: 992px) {
       .user-menu-wrapper { display: block !important; }
       .desktop-guest-actions { display: inline-flex !important; }
+    }
+    @media (min-width: 1100px) {
+      #desktop-become-tutor-btn { display: inline-flex !important; }
     }
   </style>
 
@@ -1283,6 +1309,7 @@
       lucide.createIcons();
     });
   </script>
+  <script src="{% static 'js/marketplace.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

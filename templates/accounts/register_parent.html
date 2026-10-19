@@ -3,60 +3,101 @@
 {% block title %}Parent Registration — Find Top Tutors — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 540px; padding-top: 3.5rem; padding-bottom: 4rem;">
-  <div class="card">
+<div class="container" style="max-width: 540px; padding-top: 3.5rem; padding-bottom: 5rem;">
+  <div class="card" style="box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08), 0 5px 15px -3px rgba(0, 0, 0, 0.04); border: 1px solid var(--border); overflow: hidden;">
+    
+    <!-- Top Cyan Accent Strip -->
+    <div style="height: 4px; background: linear-gradient(90deg, var(--secondary), var(--primary));"></div>
+
     <div class="card-body" style="padding: 2.25rem;">
       <div style="text-align: center; margin-bottom: 2rem;">
-        <span class="badge badge-primary" style="margin-bottom: 0.75rem;">100% Free For Parents</span>
-        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">Parent / Student Registration</h1>
-        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+        <span class="badge badge-primary" style="margin-bottom: 0.75rem; font-size: 0.775rem;">
+          <i data-lucide="gift" style="width: 13px; height: 13px;"></i> 100% Free For Parents & Students
+        </span>
+        <h1 style="font-size: 1.6rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.35rem;">
+          Parent Registration
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5;">
           Connect directly with verified home tutors & online teachers in your neighborhood
         </p>
+      </div>
+
+      <!-- Value Props -->
+      <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 0.85rem 1rem; margin-bottom: 1.75rem; font-size: 0.825rem; color: var(--text); display: flex; flex-direction: column; gap: 0.35rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="check" style="width: 15px; height: 15px; color: #10b981; flex-shrink: 0;"></i>
+          <span>Zero platform agency commissions or hidden booking fees</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="check" style="width: 15px; height: 15px; color: #10b981; flex-shrink: 0;"></i>
+          <span>1-on-1 trial demo class before committing to regular tuition</span>
+        </div>
       </div>
 
       <form method="post" action="{% url 'accounts:register_parent' %}">
         {% csrf_token %}
         <div class="form-group">
           <label class="form-label" for="full_name">Parent / Guardian Full Name</label>
-          <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Meena Iyer" required>
+          <div style="position: relative;">
+            <input type="text" name="full_name" id="full_name" class="form-control" placeholder="e.g. Meena Iyer" required style="padding-left: 2.25rem;">
+            <i data-lucide="user" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="form-group">
             <label class="form-label" for="email">Email Address</label>
-            <input type="email" name="email" id="email" class="form-control" placeholder="meena@example.com" required>
+            <div style="position: relative;">
+              <input type="email" name="email" id="email" class="form-control" placeholder="meena@example.com" required style="padding-left: 2.25rem;">
+              <i data-lucide="mail" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="phone">Phone / WhatsApp Number</label>
-            <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98860 11998" required>
+            <div style="position: relative;">
+              <input type="tel" name="phone" id="phone" class="form-control" placeholder="+91 98860 11998" required style="padding-left: 2.25rem;">
+              <i data-lucide="phone" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="form-group">
             <label class="form-label" for="city">City</label>
-            <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required>
+            <div style="position: relative;">
+              <input type="text" name="city" id="city" class="form-control" value="Bengaluru" required style="padding-left: 2.25rem;">
+              <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="locality">Locality / Neighborhood</label>
-            <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Whitefield" required>
+            <div style="position: relative;">
+              <input type="text" name="locality" id="locality" class="form-control" placeholder="e.g. Indiranagar, Whitefield" required style="padding-left: 2.25rem;">
+              <i data-lucide="navigation" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="password">Create Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+          <div style="position: relative;">
+            <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters" required minlength="6" style="padding-left: 2.25rem;">
+            <i data-lucide="lock" style="width: 16px; height: 16px; color: var(--text-muted); position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
-          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Create Parent Account
+        <button type="submit" class="btn btn-primary" style="width: 100%; height: 44px; font-weight: 700; margin-top: 0.5rem;">
+          <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i> Create Free Parent Account
         </button>
       </form>
 
-      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-        Already registered? <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 600;">Sign In</a>
+      <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+        Already registered?
+        <a href="{% url 'accounts:login' %}" style="color: var(--primary); font-weight: 700; margin-left: 0.25rem;">Sign In</a>
+        <span style="margin: 0 0.5rem;">•</span>
+        <a href="{% url 'accounts:register_tutor' %}" style="color: var(--primary); font-weight: 700;">Join as Tutor</a>
       </div>
     </div>
   </div>

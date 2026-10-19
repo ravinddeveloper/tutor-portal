@@ -2,12 +2,13 @@ from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.utils import timezone
 
 from apps.tutors.models import (
-    TutorProfile, TutorSubject, TutorQualification, TutorDocument, TutorAvailability
+    TutorProfile, TutorSubject, TutorQualification, TutorDocument, TutorAvailability, SavedTutor
 )
 from apps.leads.models import TuitionRequirement, TutorMatch, LeadUnlock, LeadApplication
 from apps.leads.services import unlock_lead_for_tutor
@@ -16,10 +17,10 @@ from apps.billing.models import ContactCreditWallet, TutorSubscription, Subscrip
 from apps.communication.models import Notification
 
 def directory_view(request):
-    """Public searchable tutor directory with rich multi-faceted filters."""
+    """Public searchable tutor directory with rich multi-faceted filters and explainable matching."""
     qs = TutorProfile.objects.filter(
         verification_status=TutorProfile.VerificationStatus.VERIFIED
-    ).select_related('user').prefetch_related('subjects')
+    ).select_related('user').prefetch_related('subjects', 'qualifications')
 
     # Filters
     subject_q = request.GET.get('subject', '').strip()
@@ -62,6 +63,28 @@ def directory_view(request):
     page_number = request.GET.get('page')
     tutors_page = paginator.get_page(page_number)
 
+    # Fetch saved tutors for the current authenticated user
+    saved_tutor_ids = set()
+    if request.user.is_authenticated:
+        saved_tutor_ids = set(SavedTutor.objects.filter(user=request.user).values_list('tutor_id', flat=True))
+
+    # Compute explainable match reasons for tutors on the current page
+    for t in tutors_page:
+        reasons = []
+        if subject_q and any(subject_q.lower() in s.subject_name.lower() for s in t.subjects.all()):
+            reasons.append(f"Teaches {subject_q}")
+        if city_q and (city_q.lower() in t.primary_city.lower() or city_q.lower() in t.primary_locality.lower()):
+            reasons.append(f"Available in {t.primary_locality or t.primary_city}")
+        if mode_q and t.teaching_mode == mode_q:
+            reasons.append(f"Offers {t.get_teaching_mode_display()}")
+        if t.is_verified:
+            reasons.append("Background Verified")
+        if t.experience_years >= 5:
+            reasons.append(f"{t.experience_years}+ Yrs Experience")
+        if t.average_rating >= 4.8:
+            reasons.append(f"Top Rated ({t.average_rating}★)")
+        t.match_reasons_list = reasons[:3]
+
     context = {
         'tutors': tutors_page,
         'subject_q': subject_q,
@@ -70,6 +93,8 @@ def directory_view(request):
         'gender_q': gender_q,
         'sort_by': sort_by,
         'total_results': paginator.count,
+        'saved_tutor_ids': saved_tutor_ids,
+        'search_query_string': request.GET.urlencode(),
     }
     return render(request, 'tutors/directory.html', context)
 
@@ -80,8 +105,20 @@ def detail_view(request, pk):
         pk=pk
     )
 
+    is_saved = False
+    if request.user.is_authenticated:
+        is_saved = SavedTutor.objects.filter(user=request.user, tutor=tutor).exists()
+
     # Demo request form handling
-    if request.method == 'POST' and request.user.is_authenticated and request.user.is_parent:
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.info(request, "Please log in as a parent or student to schedule a trial demo class.")
+            return redirect(f"/accounts/login/?next=/tutors/{pk}/")
+
+        if not request.user.is_parent:
+            messages.warning(request, "Only registered parents and students can book demo classes.")
+            return redirect('tutors:detail', pk=pk)
+
         sched_date = request.POST.get('scheduled_datetime')
         demo_mode = request.POST.get('mode', DemoClass.Mode.ONLINE)
         req_id = request.POST.get('requirement_id')
@@ -95,7 +132,7 @@ def detail_view(request, pk):
             req_obj = TuitionRequirement.objects.filter(parent=request.user.parent_profile).first()
 
         if not req_obj:
-            messages.warning(request, "Please create a tuition requirement first before scheduling a demo class.")
+            messages.warning(request, "Please post your tuition requirement first before scheduling a demo class.")
             return redirect('leads:post_requirement')
 
         if sched_date:
@@ -108,7 +145,6 @@ def detail_view(request, pk):
                 status=DemoClass.Status.REQUESTED,
                 tutor_notes=notes
             )
-            # Send notification to tutor
             Notification.objects.create(
                 user=tutor.user,
                 title="New Demo Class Request",
@@ -126,8 +162,77 @@ def detail_view(request, pk):
     context = {
         'tutor': tutor,
         'user_requirements': user_requirements,
+        'is_saved': is_saved,
     }
     return render(request, 'tutors/detail.html', context)
+
+@login_required
+def toggle_save_tutor_view(request, pk):
+    """AJAX or standard POST endpoint to toggle saved/shortlist status of a tutor."""
+    tutor = get_object_or_404(TutorProfile, pk=pk)
+    saved_obj = SavedTutor.objects.filter(user=request.user, tutor=tutor).first()
+
+    if saved_obj:
+        saved_obj.delete()
+        is_saved = False
+        msg = f"{tutor.display_name} removed from your saved tutors."
+    else:
+        SavedTutor.objects.create(user=request.user, tutor=tutor)
+        is_saved = True
+        msg = f"{tutor.display_name} saved to your shortlist!"
+
+    total_saved = SavedTutor.objects.filter(user=request.user).count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({
+            'success': True,
+            'saved': is_saved,
+            'message': msg,
+            'total_saved': total_saved
+        })
+
+    messages.success(request, msg)
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('tutors:directory')
+
+@login_required
+def saved_tutors_view(request):
+    """View all shortlisted / bookmarked tutors for the authenticated user."""
+    saved_entries = SavedTutor.objects.filter(user=request.user).select_related(
+        'tutor__user'
+    ).prefetch_related('tutor__subjects', 'tutor__qualifications')
+
+    context = {
+        'saved_entries': saved_entries,
+        'total_saved': saved_entries.count(),
+    }
+    return render(request, 'tutors/saved_tutors.html', context)
+
+def tutor_compare_view(request):
+    """Side-by-side comparative analysis of selected tutors."""
+    raw_ids = request.GET.get('ids', '').split(',')
+    tutor_ids = [int(i.strip()) for i in raw_ids if i.strip().isdigit()][:4]
+
+    tutors = []
+    if tutor_ids:
+        tutors = list(TutorProfile.objects.filter(
+            pk__in=tutor_ids,
+            verification_status=TutorProfile.VerificationStatus.VERIFIED
+        ).select_related('user').prefetch_related('subjects', 'qualifications', 'availabilities'))
+
+    saved_tutor_ids = set()
+    if request.user.is_authenticated:
+        saved_tutor_ids = set(SavedTutor.objects.filter(user=request.user).values_list('tutor_id', flat=True))
+
+    context = {
+        'tutors': tutors,
+        'saved_tutor_ids': saved_tutor_ids,
+        'tutor_ids_str': ','.join(str(t.id) for t in tutors),
+    }
+    return render(request, 'tutors/compare.html', context)
+
 
 @login_required
 def dashboard_view(request):
@@ -162,6 +267,8 @@ def dashboard_view(request):
         tutor=tprofile, status=CommissionRecord.Status.PENDING
     )
 
+    completeness = tprofile.calculate_completeness()
+
     context = {
         'tutor': tprofile,
         'wallet': wallet,
@@ -170,6 +277,7 @@ def dashboard_view(request):
         'upcoming_demos': upcoming_demos,
         'active_engagements': active_engagements,
         'pending_commissions': pending_commissions,
+        'completeness': completeness,
     }
     return render(request, 'tutors/dashboard.html', context)
 

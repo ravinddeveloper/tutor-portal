@@ -4,8 +4,11 @@ from . import views
 app_name = 'tutors'
 
 urlpatterns = [
-    # Public views
+    # Public & Discovery views
     path('', views.directory_view, name='directory'),
+    path('compare/', views.tutor_compare_view, name='compare'),
+    path('saved/', views.saved_tutors_view, name='saved_tutors'),
+    path('save/<int:pk>/', views.toggle_save_tutor_view, name='toggle_save'),
     path('<int:pk>/', views.detail_view, name='detail'),
 
     # Private Tutor Portal

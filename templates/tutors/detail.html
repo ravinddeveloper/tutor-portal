@@ -3,81 +3,130 @@
 {% block title %}{{ tutor.display_name }} — Verified Tutor Profile — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
   
+  <!-- Breadcrumb Navigation -->
+  <div style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+    <a href="{% url 'core:home' %}" style="color: var(--text-muted);">Home</a>
+    <span>/</span>
+    <a href="{% url 'tutors:directory' %}" style="color: var(--text-muted);">Tutors</a>
+    <span>/</span>
+    <span style="color: var(--text); font-weight: 700;">{{ tutor.display_name }}</span>
+  </div>
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     
-    <!-- Left Column: Tutor Profile Header & Highlights -->
-    <div style="grid-column: span 2;">
-      <div class="card" style="padding: 2.25rem; margin-bottom: 2rem;">
-        <div class="flex items-center gap-4" style="margin-bottom: 1.5rem; flex-wrap: wrap;">
-          <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800;">
-            {{ tutor.display_name|slice:":1" }}
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text);">{{ tutor.display_name }}</h1>
-              <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}">
-                <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> {{ tutor.get_verification_status_display }}
-              </span>
+    <!-- Left Column: Tutor Profile Details (Span 2) -->
+    <div class="col-span-1 md:col-span-2">
+      <div class="card" style="padding: 2.25rem; margin-bottom: 2rem; border: 1px solid var(--border);">
+        
+        <!-- Header Banner with Avatar, Key Badges, and Save Toggle -->
+        <div class="flex items-center gap-4" style="margin-bottom: 1.75rem; flex-wrap: wrap;">
+          {% if tutor.user.avatar %}
+            <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          {% else %}
+            <div style="width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25); flex-shrink: 0;">
+              {{ tutor.display_name|slice:":1"|upper }}
             </div>
-            <p style="font-size: 1.05rem; font-weight: 600; color: #475569; margin-top: 0.25rem;">
-              {{ tutor.headline }}
+          {% endif %}
+
+          <div style="flex: 1; min-width: 0;">
+            <div class="flex items-center justify-between gap-2 flex-wrap" style="margin-bottom: 0.25rem;">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h1 style="font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0;">
+                  {{ tutor.display_name }}
+                </h1>
+                {% if tutor.is_verified %}
+                  <span class="badge badge-success" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                    <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> Verified Profile
+                  </span>
+                {% else %}
+                  <span class="badge badge-warning" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                    {{ tutor.get_verification_status_display }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Bookmark / Shortlist Action Button -->
+              <a href="{% url 'tutors:toggle_save' tutor.id %}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.8rem; {% if is_saved %}color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08);{% endif %}">
+                <i data-lucide="heart" style="width: 15px; height: 15px; {% if is_saved %}fill: currentColor;{% endif %}"></i>
+                <span>{% if is_saved %}Saved to Shortlist{% else %}Save Tutor{% endif %}</span>
+              </a>
+            </div>
+
+            <p style="font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; line-height: 1.4;">
+              {{ tutor.headline|default:"Verified Professional Educator" }}
             </p>
-            <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">
-              {{ tutor.highest_qualification }} • {{ tutor.institution_name }}
+            <div style="font-size: 0.875rem; color: var(--text-muted);">
+              {{ tutor.highest_qualification }} {% if tutor.institution_name %}• {{ tutor.institution_name }}{% endif %}
             </div>
           </div>
         </div>
 
-        <!-- Quick Summary Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.75rem;">
+        <!-- Highlights Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; margin-bottom: 2rem;">
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Experience</div>
-            <div style="font-weight: 700; color: var(--text);">{{ tutor.experience_years }} Years</div>
+            <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Experience</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-top: 0.2rem;">{{ tutor.experience_years }} Years</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Teaching Mode</div>
-            <div style="font-weight: 700; color: var(--text);">{{ tutor.get_teaching_mode_display }}</div>
+            <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Teaching Mode</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-top: 0.2rem;">{{ tutor.get_teaching_mode_display }}</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Service Area</div>
-            <div style="font-weight: 700; color: var(--text);">{{ tutor.primary_locality }} ({{ tutor.service_radius_km }}km)</div>
+            <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Service Area</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-top: 0.2rem;">{{ tutor.primary_locality }} ({{ tutor.service_radius_km }}km)</div>
           </div>
           <div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Rating</div>
-            <div style="font-weight: 700; color: var(--accent);">{{ tutor.average_rating }} ★ ({{ tutor.total_reviews }})</div>
+            <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Rating</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--accent); margin-top: 0.2rem;">
+              {{ tutor.average_rating }} ★ ({{ tutor.total_reviews }})
+            </div>
           </div>
         </div>
 
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Teaching Philosophy & Bio</h3>
-        <p style="font-size: 0.95rem; color: #334155; line-height: 1.7; margin-bottom: 1.5rem; white-space: pre-line;">
-          {{ tutor.bio|default:"Dedicated educator committed to fostering conceptual clarity and academic self-confidence in every student." }}
-        </p>
+        <!-- Bio & Teaching Philosophy -->
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem;">
+          About & Teaching Methodology
+        </h2>
+        <div style="font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 2rem; white-space: pre-line;">
+          {{ tutor.bio|default:"Dedicated and results-oriented private educator focused on fundamental clarity, tailored practice sheets, and regular assessment to build student confidence and examination success." }}
+        </div>
 
         <!-- Subjects & Fee Table -->
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Subjects & Classes Offered</h3>
-        <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 0;">Subjects & Classes Offered</h2>
+          <span class="badge badge-secondary" style="font-size: 0.75rem;">{{ tutor.subjects.count }} Specializations</span>
+        </div>
+
+        <div style="overflow-x: auto; margin-bottom: 2rem; border: 1px solid var(--border); border-radius: var(--border-radius);">
           <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
             <thead>
               <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
-                <th style="padding: 0.75rem 1rem;">Subject</th>
-                <th style="padding: 0.75rem 1rem;">Target Classes</th>
-                <th style="padding: 0.75rem 1rem;">Curriculum</th>
-                <th style="padding: 0.75rem 1rem;">Monthly Fee</th>
+                <th style="padding: 0.85rem 1rem;">Subject</th>
+                <th style="padding: 0.85rem 1rem;">Target Classes</th>
+                <th style="padding: 0.85rem 1rem;">Curriculum</th>
+                <th style="padding: 0.85rem 1rem;">Est. Monthly Fee</th>
               </tr>
             </thead>
             <tbody>
               {% for sub in tutor.subjects.all %}
                 <tr style="border-bottom: 1px solid var(--border);">
-                  <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ sub.subject_name }}</td>
-                  <td style="padding: 0.75rem 1rem; color: var(--text-muted);">{{ sub.classes_offered }}</td>
-                  <td style="padding: 0.75rem 1rem; color: var(--text-muted);">{{ sub.curriculum }}</td>
-                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--primary);">{{ company.currency_symbol }}{{ sub.fee_per_month }}</td>
+                  <td style="padding: 0.85rem 1rem; font-weight: 700; color: var(--text);">
+                    <i data-lucide="book" style="width: 14px; height: 14px; display: inline; color: var(--primary); vertical-align: middle; margin-right: 0.25rem;"></i>
+                    {{ sub.subject_name }}
+                  </td>
+                  <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ sub.classes_offered }}</td>
+                  <td style="padding: 0.85rem 1rem; color: var(--text-muted);">{{ sub.curriculum }}</td>
+                  <td style="padding: 0.85rem 1rem; font-weight: 800; color: var(--primary);">
+                    {{ company.currency_symbol }}{{ sub.fee_per_month }}
+                  </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="4" style="padding: 1rem; text-align: center; color: var(--text-muted);">No specific subjects listed yet.</td>
+                  <td colspan="4" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">
+                    General tutoring across major school subjects. Contact tutor for tailored syllabus breakdown.
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -85,118 +134,177 @@
         </div>
 
         <!-- Weekly Availability Slot Summary -->
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">Weekly Availability Schedule</h3>
-        <div class="flex flex-wrap gap-2" style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem;">
+          Weekly Availability Schedule
+        </h2>
+        <div class="flex flex-wrap gap-2" style="margin-bottom: 2rem;">
           {% for slot in tutor.availabilities.all %}
-            <span class="badge badge-secondary" style="padding: 0.45rem 0.75rem; font-size: 0.8rem;">
-              <i data-lucide="check" style="width: 14px; height: 14px; color: #10b981;"></i>
+            <span class="badge badge-secondary" style="padding: 0.5rem 0.85rem; font-size: 0.825rem; font-weight: 600;">
+              <i data-lucide="clock" style="width: 14px; height: 14px; color: var(--primary);"></i>
               {{ slot.get_day_of_week_display }}: {{ slot.get_slot_display }}
             </span>
           {% empty %}
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Schedule coordinated directly during demo booking.</span>
+            <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--text-muted); width: 100%;">
+              <i data-lucide="calendar" style="width: 15px; height: 15px; display: inline; vertical-align: middle; margin-right: 0.35rem;"></i>
+              Flexible schedule coordinated directly with parent upon booking trial demo class.
+            </div>
           {% endfor %}
         </div>
 
+        <!-- Qualifications & Background -->
+        {% if tutor.qualifications.all %}
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 0.75rem;">
+            Educational Qualifications
+          </h2>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem;">
+            {% for qual in tutor.qualifications.all %}
+              <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; background: var(--surface-hover); border-radius: var(--border-radius); border: 1px solid var(--border);">
+                <i data-lucide="graduation-cap" style="width: 20px; height: 20px; color: var(--primary); margin-top: 0.15rem; flex-shrink: 0;"></i>
+                <div>
+                  <div style="font-weight: 700; color: var(--text);">{{ qual.degree_name }} in {{ qual.field_of_study }}</div>
+                  <div style="font-size: 0.825rem; color: var(--text-muted);">{{ qual.institution }} • Graduated {{ qual.year_of_passing }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
         <!-- Verified Reviews Section -->
-        <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 1rem;">Verified Parent Reviews ({{ tutor.reviews.count }})</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+          <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin: 0;">
+            Parent & Student Reviews ({{ tutor.reviews.count }})
+          </h2>
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent);">
+            ★ {{ tutor.average_rating }} Average Rating
+          </span>
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 1rem;">
           {% for rev in tutor.reviews.all %}
-            <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
-              <div class="flex items-center justify-between" style="margin-bottom: 0.35rem;">
-                <div class="flex items-center gap-1" style="color: var(--accent);">
+            <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem;">
+              <div class="flex items-center justify-between" style="margin-bottom: 0.5rem;">
+                <div class="flex items-center gap-1.5" style="color: var(--accent);">
                   {% for i in "12345" %}
                     <i data-lucide="star" style="width: 14px; height: 14px; fill: currentColor;"></i>
                   {% endfor %}
-                  <span style="font-weight: 700; color: var(--text); margin-left: 0.35rem;">{{ rev.title }}</span>
+                  <span style="font-weight: 800; color: var(--text); margin-left: 0.35rem; font-size: 0.95rem;">{{ rev.title }}</span>
                 </div>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">{{ rev.created_at|date:"M Y" }}</span>
+                <span style="font-size: 0.775rem; color: var(--text-muted);">{{ rev.created_at|date:"M Y" }}</span>
               </div>
-              <p style="font-size: 0.9rem; color: #475569; line-height: 1.5;">{{ rev.comment }}</p>
-              <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; margin-top: 0.35rem;">
-                By {{ rev.parent.display_name }} (Verified Booking)
+              <p style="font-size: 0.9rem; color: var(--text); line-height: 1.6; margin: 0 0 0.5rem;">
+                {{ rev.comment }}
+              </p>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">
+                ✓ By {{ rev.parent.display_name }} (Verified Booking)
               </div>
             </div>
           {% empty %}
-            <p style="font-size: 0.875rem; color: var(--text-muted);">No reviews posted yet. Be the first to book a trial demo class!</p>
+            <div style="text-align: center; padding: 2rem; background: var(--surface-hover); border-radius: var(--border-radius); border: 1px dashed var(--border); color: var(--text-muted);">
+              <i data-lucide="message-square" style="width: 32px; height: 32px; margin: 0 auto 0.5rem; opacity: 0.7;"></i>
+              <p style="margin: 0; font-size: 0.9rem;">No reviews posted yet. Be the first to book a trial demo class with {{ tutor.display_name }}!</p>
+            </div>
           {% endfor %}
         </div>
+
       </div>
     </div>
 
-    <!-- Right Column: Demo Booking & Enquiry Card -->
-    <div style="grid-column: span 1;">
-      <div class="card" style="padding: 2rem; position: sticky; top: 90px;">
-        <div style="margin-bottom: 1.5rem; text-align: center;">
-          <div style="font-size: 0.8rem; color: var(--text-muted);">Monthly Fee Estimate</div>
-          <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">
-            {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo
+    <!-- Right Column: Demo Booking & Enquiry Card (Span 1) -->
+    <div class="col-span-1 md:col-span-1">
+      <div class="card" id="bookDemo" style="padding: 2rem; position: sticky; top: 90px; border: 1px solid var(--border); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);">
+        
+        <div style="margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">
+          <div style="font-size: 0.775rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Monthly Tuition Fee</div>
+          <div style="font-size: 2.1rem; font-weight: 900; color: var(--primary); margin: 0.25rem 0;">
+            {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}
+            <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">/mo</span>
           </div>
-          <div style="font-size: 0.85rem; color: #10b981; font-weight: 600; margin-top: 0.25rem;">
-            ✓ Free 1-on-1 Trial Demo Class Available
+          <div style="font-size: 0.825rem; color: #10b981; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+            <i data-lucide="check-circle" style="width: 15px; height: 15px;"></i>
+            Free 1-on-1 Trial Demo Session
           </div>
         </div>
 
         {% if user.is_authenticated and user.is_parent %}
-          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Request Demo Class</h3>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 1rem;">
+            Request a Trial Demo Class
+          </h3>
           <form method="post">
             {% csrf_token %}
             <div class="form-group">
-              <label class="form-label">Preferred Demo Date & Time</label>
+              <label class="form-label" style="font-size: 0.825rem;">Preferred Date & Time</label>
               <input type="datetime-local" name="scheduled_datetime" class="form-control" required>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Demo Mode</label>
+              <label class="form-label" style="font-size: 0.825rem;">Demo Mode</label>
               <select name="mode" class="form-select">
-                <option value="ONLINE">Live Online Demo</option>
-                <option value="HOME">At Student Residence (Home Demo)</option>
+                <option value="ONLINE">Live Online Demo (Interactive)</option>
+                <option value="HOME">At Student Residence (In-Person)</option>
               </select>
             </div>
 
             {% if user_requirements %}
               <div class="form-group">
-                <label class="form-label">Select Tuition Requirement</label>
+                <label class="form-label" style="font-size: 0.825rem;">Associate with Your Requirement</label>
                 <select name="requirement_id" class="form-select">
                   {% for req in user_requirements %}
-                    <option value="{{ req.pk }}">{{ req.lead_id }}: {{ req.student_class }} - {{ req.subjects }}</option>
+                    <option value="{{ req.pk }}">{{ req.lead_id }}: {{ req.student_class }} ({{ req.subjects }})</option>
                   {% endfor %}
                 </select>
               </div>
             {% endif %}
 
             <div class="form-group">
-              <label class="form-label">Notes for Tutor</label>
-              <textarea name="notes" class="form-control" rows="2" placeholder="Mention specific topics or questions..."></textarea>
+              <label class="form-label" style="font-size: 0.825rem;">Notes / Topics to Cover</label>
+              <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Needs help with Class 10 Trigonometry..."></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
-              <i data-lucide="calendar-plus" style="width: 18px; height: 18px;"></i> Book Trial Demo Class
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700;">
+              <i data-lucide="calendar-plus" style="width: 17px; height: 17px;"></i> Book Trial Demo Class
             </button>
           </form>
 
-          <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+          <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
             <a href="{% url 'communication:inbox' %}" class="btn btn-secondary" style="width: 100%;">
               <i data-lucide="message-square" style="width: 16px; height: 16px;"></i> Send Direct Message
+            </a>
+            <a href="{% url 'tutors:compare' %}?ids={{ tutor.id }}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <i data-lucide="columns" style="width: 15px; height: 15px;"></i> Compare with Other Tutors
             </a>
           </div>
 
         {% elif user.is_authenticated and user.is_tutor %}
-          <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
-            You are viewing this profile as an Educator.
+          <div style="background: var(--surface-hover); border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--border-radius); text-align: center; font-size: 0.875rem; color: var(--text-muted);">
+            <i data-lucide="user-check" style="width: 24px; height: 24px; color: var(--primary); margin: 0 auto 0.5rem;"></i>
+            <p style="margin: 0; font-weight: 600;">You are currently logged in as an Educator.</p>
+          </div>
+          <div style="margin-top: 1rem;">
+            <a href="{% url 'tutors:compare' %}?ids={{ tutor.id }}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <i data-lucide="columns" style="width: 15px; height: 15px;"></i> Compare with Other Tutors
+            </a>
           </div>
         {% else %}
           <div style="text-align: center;">
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-              Sign in as a parent or post a tuition requirement to schedule a demo class with {{ tutor.display_name }}.
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+              Create a free parent account or log in to schedule a trial demo class with <strong>{{ tutor.display_name }}</strong>.
             </p>
-            <a href="{% url 'accounts:register_parent' %}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.75rem;">
-              Register as Parent to Book Demo
+            <a href="{% url 'accounts:register_parent' %}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.75rem; font-weight: 700;">
+              <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i> Sign Up Free to Book Demo
             </a>
-            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="width: 100%;">
-              Log In to Existing Account
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="width: 100%; margin-bottom: 0.75rem;">
+              <i data-lucide="log-in" style="width: 16px; height: 16px;"></i> Log In to Existing Account
+            </a>
+            <a href="{% url 'tutors:compare' %}?ids={{ tutor.id }}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <i data-lucide="columns" style="width: 15px; height: 15px;"></i> Compare with Other Tutors
             </a>
           </div>
         {% endif %}
+
+        <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; font-size: 0.775rem; color: var(--text-muted); text-align: center; line-height: 1.5;">
+          🔒 Your contact details are never shared with tutors until you accept a demo.
+        </div>
+
       </div>
     </div>
 

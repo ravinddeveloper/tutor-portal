@@ -52,7 +52,7 @@
   <!-- Leads Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for lead in leads %}
-      <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div class="card animate-on-scroll delay-{{ forloop.counter|default:1 }}00" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border);">
         <div class="card-body">
           <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
             <span class="badge badge-primary">{{ lead.lead_id }}</span>
@@ -63,20 +63,20 @@
             {{ lead.title }}
           </h3>
 
-          <div style="font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
-            <div><strong>Subjects:</strong> {{ lead.subjects }}</div>
-            <div><strong>Class & Board:</strong> {{ lead.student_class }} ({{ lead.board_curriculum }})</div>
-            <div><strong>Location:</strong> {{ lead.locality }}, {{ lead.city }}</div>
-            <div><strong>Mode:</strong> {{ lead.get_tuition_type_display }}</div>
-            <div><strong>Days / Schedule:</strong> {{ lead.days_per_week }} days/wk • {{ lead.preferred_timing }}</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+            <div><strong style="color: var(--text);">Subjects:</strong> {{ lead.subjects }}</div>
+            <div><strong style="color: var(--text);">Class & Board:</strong> {{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+            <div><strong style="color: var(--text);">Location:</strong> {{ lead.locality }}, {{ lead.city }}</div>
+            <div><strong style="color: var(--text);">Mode:</strong> {{ lead.get_tuition_type_display }}</div>
+            <div><strong style="color: var(--text);">Days / Schedule:</strong> {{ lead.days_per_week }} days/wk • {{ lead.preferred_timing }}</div>
           </div>
 
-          <div style="background: rgba(79, 70, 229, 0.04); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.8rem; color: #334155;">
+          <div style="background: var(--surface-hover); border-left: 3px solid var(--primary); padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--text-muted); border-radius: 4px;">
             <i data-lucide="lock" style="width: 12px; height: 12px; display: inline;"></i> Parent Phone: <em>Masked until unlocked</em>
           </div>
         </div>
 
-        <div style="background: #f8fafc; border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+        <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Budget</div>
             <div style="font-size: 1.05rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
@@ -87,7 +87,7 @@
         </div>
       </div>
     {% empty %}
-      <div class="card" style="grid-column: span 3; padding: 3rem; text-align: center; color: var(--text-muted);">
+      <div class="card col-span-full" style="padding: 3rem; text-align: center; color: var(--text-muted);">
         <i data-lucide="clipboard-x" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
         <h3 style="font-size: 1.25rem; font-weight: 700;">No open leads found</h3>
         <p style="font-size: 0.9rem; margin-top: 0.5rem;">

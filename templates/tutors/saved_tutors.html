@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}My Saved & Shortlisted Tutors — {{ company.company_name }}{% endblock %}
+
+{% block content %}
+<section style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2rem; border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <div class="flex items-center gap-2" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+      <a href="{% url 'tutors:directory' %}" style="color: var(--text-muted); font-weight: 600;">← Tutor Directory</a>
+      <span style="color: var(--border);">&rsaquo;</span>
+      <span style="color: var(--primary); font-weight: 700;">My Shortlist</span>
+    </div>
+    <div class="flex justify-between items-center flex-wrap gap-4">
+      <div>
+        <h1 style="font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 900; color: var(--text); letter-spacing: -0.025em; margin: 0 0 0.25rem;">
+          Saved & Shortlisted Educators
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
+          Manage your saved tutor profiles, compare credentials, and schedule trial demo classes.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+          <i data-lucide="search" style="width: 15px; height: 15px;"></i> Find More Tutors
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+
+  {% if saved_entries %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div style="font-weight: 800; font-size: 1rem; color: var(--text);">
+        {{ total_saved }} Saved Educator{{ total_saved|pluralize }}
+      </div>
+      <div id="compareBar" style="display: none; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--primary); padding: 0.5rem 1rem; border-radius: 9999px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);">
+        <span style="font-size: 0.825rem; font-weight: 700; color: var(--text);" id="compareCountText">0 selected</span>
+        <button type="button" class="btn btn-primary btn-sm" onclick="goToComparison()" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">
+          Compare Selected &rarr;
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for entry in saved_entries %}
+        {% with tutor=entry.tutor %}
+          <div class="card tutor-card" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border);">
+            <div class="card-body" style="padding: 1.5rem;">
+              
+              <!-- Header with Avatar, Details, and Remove Action -->
+              <div class="flex items-start gap-3" style="margin-bottom: 1rem;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                  <input type="checkbox" class="compare-checkbox" value="{{ tutor.id }}" onchange="handleCompareCheck(this)" style="accent-color: var(--primary); width: 17px; height: 17px; cursor: pointer;">
+                </label>
+
+                {% if tutor.user.avatar %}
+                  <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); flex-shrink: 0;">
+                {% else %}
+                  <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; flex-shrink: 0;">
+                    {{ tutor.display_name|slice:":1"|upper }}
+                  </div>
+                {% endif %}
+
+                <div style="flex: 1; min-width: 0;">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                      {{ tutor.display_name }}
+                    </h3>
+                    {% if tutor.is_verified %}
+                      <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">
+                        <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> Verified
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div style="font-size: 0.775rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem;">
+                    {{ tutor.highest_qualification }}
+                  </div>
+                </div>
+
+                <!-- Unsave button -->
+                <a href="{% url 'tutors:toggle_save' tutor.id %}" title="Remove from shortlist" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: background 0.15s ease;">
+                  <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                </a>
+              </div>
+
+              <!-- Headline -->
+              <p style="font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.85rem; line-height: 1.4; min-height: 36px;">
+                {{ tutor.headline|default:"Experienced private faculty for school and competitive curricula." }}
+              </p>
+
+              <!-- Subjects -->
+              <div class="flex flex-wrap gap-1.5" style="margin-bottom: 1rem;">
+                {% for sub in tutor.subjects.all|slice:":4" %}
+                  <span class="badge badge-secondary" style="font-size: 0.72rem; font-weight: 600;">{{ sub.subject_name }}</span>
+                {% empty %}
+                  <span class="badge badge-secondary" style="font-size: 0.72rem;">Multi-Subject</span>
+                {% endfor %}
+              </div>
+
+              <!-- Locality & Rating -->
+              <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
+                <div class="flex items-center gap-1.5">
+                  <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--secondary);"></i>
+                  <span>{{ tutor.primary_locality }}, {{ tutor.primary_city }} ({{ tutor.service_radius_km }} km)</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span>{{ tutor.experience_years }} Yrs Exp • {{ tutor.get_teaching_mode_display }}</span>
+                  <span class="flex items-center gap-1" style="font-weight: 700; color: var(--text);">
+                    <i data-lucide="star" style="width: 14px; height: 14px; fill: var(--accent); color: var(--accent);"></i>
+                    {{ tutor.average_rating }}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Bottom Actions -->
+            <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Rate</div>
+                <div style="font-size: 1.05rem; font-weight: 900; color: var(--primary);">
+                  {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <a href="{% url 'tutors:detail' tutor.id %}" class="btn btn-outline-primary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.65rem;">
+                  Profile
+                </a>
+                <a href="{% url 'tutors:detail' tutor.id %}#bookDemo" class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; font-weight: 700;">
+                  Book Demo
+                </a>
+              </div>
+            </div>
+
+          </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="card" style="padding: 4.5rem 2rem; text-align: center; max-width: 580px; margin: 0 auto;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+        <i data-lucide="heart" style="width: 32px; height: 32px;"></i>
+      </div>
+      <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">Your Shortlist is Empty</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.75rem;">
+        You haven't saved any tutor profiles yet. While browsing our verified educator directory, tap the heart icon on any tutor card to save them here for quick comparison and trial booking.
+      </p>
+      <a href="{% url 'tutors:directory' %}" class="btn btn-primary" style="font-weight: 800; padding: 0.75rem 1.5rem;">
+        <i data-lucide="search" style="width: 17px; height: 17px;"></i> Explore Verified Tutors &rarr;
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let selectedTutorIds = new Set();
+
+  function handleCompareCheck(checkbox) {
+    if (checkbox.checked) {
+      if (selectedTutorIds.size >= 4) {
+        checkbox.checked = false;
+        alert("You can compare up to 4 tutors simultaneously.");
+        return;
+      }
+      selectedTutorIds.add(checkbox.value);
+    } else {
+      selectedTutorIds.delete(checkbox.value);
+    }
+    updateCompareBar();
+  }
+
+  function updateCompareBar() {
+    const bar = document.getElementById('compareBar');
+    const text = document.getElementById('compareCountText');
+    if (!bar) return;
+
+    if (selectedTutorIds.size >= 2) {
+      bar.style.display = 'inline-flex';
+      text.innerText = `${selectedTutorIds.size} tutors selected`;
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+
+  function goToComparison() {
+    const ids = Array.from(selectedTutorIds).join(',');
+    window.location.href = `{% url 'tutors:compare' %}?ids=${ids}`;
+  }
+</script>
+{% endblock %}

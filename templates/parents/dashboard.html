@@ -79,7 +79,7 @@
 
   <!-- Requirements & Matches Section -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div style="grid-column: span 2;">
+    <div class="col-span-1 md:col-span-2">
       <div class="card">
         <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
           <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">My Posted Requirements</h3>
@@ -88,7 +88,7 @@
 
         <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
           {% for req in requirements %}
-            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: #ffffff;">
+            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: var(--surface);">
               <div class="flex items-center justify-between" style="margin-bottom: 0.5rem;">
                 <div class="flex items-center gap-2">
                   <span class="badge badge-primary">{{ req.lead_id }}</span>
@@ -103,7 +103,7 @@
                 {{ req.title }}
               </h4>
 
-              <div style="font-size: 0.85rem; color: #475569; margin-bottom: 0.75rem;">
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
                 <div><strong>Subjects:</strong> {{ req.subjects }} • <strong>Class:</strong> {{ req.student_class }} ({{ req.board_curriculum }})</div>
                 <div><strong>Mode:</strong> {{ req.get_tuition_type_display }} • <strong>Budget:</strong> {{ company.currency_symbol }}{{ req.budget_amount }}/mo</div>
               </div>
@@ -136,7 +136,7 @@
     </div>
 
     <!-- Right Column: Scheduled Demos & Ongoing Tuitions -->
-    <div style="grid-column: span 1;">
+    <div class="col-span-1 md:col-span-1">
       <div class="card" style="margin-bottom: 1.5rem;">
         <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
           <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Trial Demo Classes</h3>

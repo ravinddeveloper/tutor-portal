@@ -28,7 +28,7 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, f"Welcome back, {user.display_name}!")
-            next_url = request.GET.get('next')
+            next_url = request.POST.get('next') or request.GET.get('next')
             if next_url:
                 return redirect(next_url)
             return redirect('accounts:dashboard_redirect')

@@ -6,86 +6,158 @@
     display: flex;
     min-height: calc(100vh - 70px);
     background: var(--background);
+    width: 100%;
+    position: relative;
   }
 
-  /* Desktop Admin Sidebar */
+  /* ── Redesigned Modern Admin Sidebar ── */
   .admin-sidebar {
     width: 260px;
-    background: var(--sidebar-bg);
-    color: #cbd5e1;
+    background: var(--surface);
+    color: var(--text);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    position: sticky;
-    top: 70px;
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-  }
-
-  .admin-sidebar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .admin-sidebar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .admin-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 9999px;
-  }
-  .admin-sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    border-right: 1px solid var(--border);
+    position: relative;
+    min-height: 100%;
+    align-self: stretch;
+    transition: background 0.2s ease, border-color 0.2s ease;
   }
 
   .admin-sidebar-header {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
+    background: var(--surface);
+  }
+
+  .admin-nav {
+    flex: 1;
+    padding: 0.65rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
   }
 
   .admin-nav-group {
-    padding: 0.35rem 0;
+    padding: 0.25rem 0;
   }
   .admin-nav-group-title {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #64748b;
-    padding: 0.35rem 1.25rem 0.2rem;
+    color: var(--text-muted);
+    padding: 0.65rem 0.75rem 0.25rem;
   }
 
   .admin-nav-link {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.48rem 1.25rem;
+    gap: 0.75rem;
+    padding: 0.52rem 0.85rem;
     font-size: 0.85rem;
-    font-weight: 600;
-    color: #94a3b8;
+    font-weight: 500;
+    color: #334155;
+    border-radius: 8px;
+    text-decoration: none;
     transition: all 0.15s ease;
-    border-left: 3px solid transparent;
+  }
+  .admin-nav-link i,
+  .admin-nav-link svg {
+    width: 17px;
+    height: 17px;
+    color: #64748b;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
   }
   .admin-nav-link:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary);
+    background: var(--surface-hover);
+    transform: translateX(2px);
+  }
+  .admin-nav-link:hover i,
+  .admin-nav-link:hover svg {
+    color: var(--primary);
   }
   .admin-nav-link.active {
-    color: #ffffff;
-    background: rgba(30, 64, 175, 0.25);
-    border-left-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
     font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--primary);
+  }
+  .admin-nav-link.active i,
+  .admin-nav-link.active svg {
+    color: var(--primary);
   }
 
+  .admin-nav-divider {
+    border-top: 1px solid var(--border);
+    margin: 0.5rem 0.5rem 0.25rem;
+  }
+
+  .admin-sidebar-footer {
+    padding: 0.95rem 1.15rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+  }
+
+  /* Dark mode overrides for Admin Sidebar */
+  html.dark .admin-sidebar {
+    background: var(--surface);
+    border-right-color: var(--border);
+    color: var(--text);
+  }
+  html.dark .admin-sidebar-header {
+    background: var(--surface);
+    border-bottom-color: var(--border);
+  }
+  html.dark .admin-nav-link {
+    color: #cbd5e1;
+  }
+  html.dark .admin-nav-link i,
+  html.dark .admin-nav-link svg {
+    color: #94a3b8;
+  }
+  html.dark .admin-nav-link:hover {
+    color: #ffffff;
+    background: var(--surface-hover);
+  }
+  html.dark .admin-nav-link:hover i,
+  html.dark .admin-nav-link:hover svg {
+    color: #ffffff;
+  }
+  html.dark .admin-nav-link.active {
+    color: #93c5fd;
+    background: rgba(59, 130, 246, 0.16);
+    box-shadow: inset 3px 0 0 #60a5fa;
+  }
+  html.dark .admin-nav-link.active i,
+  html.dark .admin-nav-link.active svg {
+    color: #93c5fd;
+  }
+  html.dark .admin-sidebar-footer {
+    background: var(--surface);
+    border-top-color: var(--border);
+  }
+
+  /* ── Workspace ── */
   .admin-workspace {
     flex: 1;
     min-width: 0;
+    width: 100%;
     padding: 2rem 2.25rem;
     background: var(--background);
+    overflow-x: hidden;
   }
 
   /* Mobile Quick Navigation Bar */
@@ -101,7 +173,7 @@
 
   @media (max-width: 991px) {
     .admin-sidebar {
-      display: none !important; /* Hide inline stacked sidebar on mobile — use mobile drawer instead! */
+      display: none !important; /* Hide desktop sidebar on mobile/tablet — use mobile drawer instead! */
     }
     .admin-workspace {
       padding: 1.25rem 1rem;
@@ -117,76 +189,100 @@
   <!-- Modern Desktop Admin Sidebar (>= 992px) -->
   <aside class="admin-sidebar" aria-label="Admin Navigation Sidebar">
     <div class="admin-sidebar-header">
-      <div style="background: var(--primary); color: white; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);">
-        <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+      <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+        <div style="background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%); color: #ffffff; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35); flex-shrink: 0;">
+          <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
+        </div>
+        <div style="min-width: 0;">
+          <div style="font-weight: 800; font-size: 0.95rem; color: var(--text); line-height: 1.2;">Admin Console</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">{{ user.get_role_display }}</div>
+        </div>
       </div>
-      <div>
-        <div style="font-weight: 800; font-size: 0.95rem; color: #ffffff;">Admin Console</div>
-        <div style="font-size: 0.7rem; color: #94a3b8;">{{ user.get_role_display }}</div>
-      </div>
+      <span style="font-size: 0.625rem; font-weight: 700; padding: 2px 7px; border-radius: 9999px; background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 0.25rem;">
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>
+        Live
+      </span>
     </div>
 
-    <nav style="flex: 1; padding: 0.5rem 0;">
+    <nav class="admin-nav">
       
       <div class="admin-nav-group">
         <div class="admin-nav-group-title">Operations</div>
         <a href="{% url 'custom_admin:dashboard' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-          <i data-lucide="layout-dashboard" style="width: 17px; height: 17px;"></i> Overview Dashboard
+          <i data-lucide="layout-dashboard"></i> <span>Overview Dashboard</span>
         </a>
         <a href="{% url 'custom_admin:leads' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'leads' %}active{% endif %}">
-          <i data-lucide="compass" style="width: 17px; height: 17px;"></i> Leads & Matching
+          <i data-lucide="compass"></i> <span>Leads & Matching</span>
         </a>
         <a href="{% url 'custom_admin:tutors' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'tutors' or request.resolver_match.url_name == 'tutor_detail' %}active{% endif %}">
-          <i data-lucide="user-check" style="width: 17px; height: 17px;"></i> Tutors & Verification
+          <i data-lucide="user-check"></i> <span>Tutors & Verification</span>
         </a>
         <a href="{% url 'custom_admin:parents' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'parents' %}active{% endif %}">
-          <i data-lucide="users" style="width: 17px; height: 17px;"></i> Parents & Students
+          <i data-lucide="users"></i> <span>Parents & Students</span>
         </a>
       </div>
 
       <div class="admin-nav-group">
         <div class="admin-nav-group-title">Revenue & Finance</div>
         <a href="{% url 'custom_admin:commissions' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'commissions' %}active{% endif %}">
-          <i data-lucide="percent" style="width: 17px; height: 17px;"></i> Commission Engine
+          <i data-lucide="percent"></i> <span>Commission Engine</span>
         </a>
         <a href="{% url 'custom_admin:subscriptions' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'subscriptions' %}active{% endif %}">
-          <i data-lucide="credit-card" style="width: 17px; height: 17px;"></i> Plans & Credits
+          <i data-lucide="credit-card"></i> <span>Plans & Credits</span>
         </a>
         <a href="{% url 'custom_admin:financials' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'financials' %}active{% endif %}">
-          <i data-lucide="receipt" style="width: 17px; height: 17px;"></i> Financials & Invoices
+          <i data-lucide="receipt"></i> <span>Financials & Invoices</span>
         </a>
       </div>
 
       <div class="admin-nav-group">
         <div class="admin-nav-group-title">Governance & Trust</div>
         <a href="{% url 'custom_admin:enquiries' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'enquiries' %}active{% endif %}">
-          <i data-lucide="inbox" style="width: 17px; height: 17px;"></i> Customer Enquiries
+          <i data-lucide="inbox"></i> <span>Customer Enquiries</span>
         </a>
         <a href="{% url 'custom_admin:complaints' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'complaints' %}active{% endif %}">
-          <i data-lucide="alert-octagon" style="width: 17px; height: 17px;"></i> Complaints & Disputes
+          <i data-lucide="alert-octagon"></i> <span>Complaints & Disputes</span>
         </a>
         <a href="{% url 'custom_admin:announcements' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'announcements' %}active{% endif %}">
-          <i data-lucide="megaphone" style="width: 17px; height: 17px;"></i> Announcements
+          <i data-lucide="megaphone"></i> <span>Announcements</span>
         </a>
         <a href="{% url 'custom_admin:reports' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
-          <i data-lucide="bar-chart-3" style="width: 17px; height: 17px;"></i> Reports & CSV Export
+          <i data-lucide="bar-chart-3"></i> <span>Reports & CSV Export</span>
         </a>
       </div>
 
-      <div class="admin-nav-group" style="border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 0.75rem;">
+      <div class="admin-nav-divider"></div>
+
+      <div class="admin-nav-group">
         <div class="admin-nav-group-title">Configuration</div>
         <a href="{% url 'custom_admin:branding' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'branding' %}active{% endif %}">
-          <i data-lucide="settings" style="width: 17px; height: 17px;"></i> Company Branding
+          <i data-lucide="settings"></i> <span>Company Branding</span>
         </a>
         <a href="{% url 'custom_admin:theme' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'theme' %}active{% endif %}">
-          <i data-lucide="palette" style="width: 17px; height: 17px;"></i> Theme Customizer
+          <i data-lucide="palette"></i> <span>Theme Customizer</span>
         </a>
         <a href="{% url 'custom_admin:audit_logs' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
-          <i data-lucide="file-text" style="width: 17px; height: 17px;"></i> Audit Trail
+          <i data-lucide="file-text"></i> <span>Audit Trail</span>
         </a>
       </div>
 
     </nav>
+
+    <!-- Admin Sidebar User Footer -->
+    <div class="admin-sidebar-footer">
+      <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--surface-hover); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: var(--primary); border: 1px solid var(--border); flex-shrink: 0;">
+          {{ user.first_name|first|default:"A" }}
+        </div>
+        <div style="min-width: 0;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.get_full_name|default:user.username }}</div>
+          <div style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.email }}</div>
+        </div>
+      </div>
+      <a href="{% url 'accounts:logout' %}" title="Log out" style="color: var(--text-muted); padding: 0.35rem; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.15s ease;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">
+        <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+      </a>
+    </div>
   </aside>
 
   <!-- Admin Main Workspace -->

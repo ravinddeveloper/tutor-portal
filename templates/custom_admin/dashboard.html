@@ -315,7 +315,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" style="margin-bottom: 2rem;">
   
   <!-- CHART 1: Lead Conversion Funnel -->
-  <div class="bi-chart-card">
+  <div class="bi-chart-card" style="min-width: 0; width: 100%;">
     <div>
       <div class="bi-chart-header">
         <div>
@@ -344,27 +344,27 @@
     </div>
 
     <!-- Funnel Stage Milestone Stats Bar -->
-    <div class="bi-funnel-milestones-grid" style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
-      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
-        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">1. Leads Posted</div>
-        <div style="font-size: 1.25rem; font-weight: 900; color: var(--primary);">{{ funnel_leads }}</div>
-        <div style="font-size: 0.68rem; color: var(--text-muted);">Top of Funnel</div>
+    <div class="bi-funnel-milestones-grid" style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; text-align: center;">
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.35rem; border-radius: 0.5rem; min-width: 0; overflow: hidden;">
+        <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1. Leads Posted</div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: var(--primary);">{{ funnel_leads }}</div>
+        <div style="font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Top of Funnel</div>
       </div>
-      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
-        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">2. Demos Scheduled</div>
-        <div style="font-size: 1.25rem; font-weight: 900; color: #d97706;">{{ funnel_demos }}</div>
-        <div style="font-size: 0.68rem; color: #d97706; font-weight: 700;">{{ funnel_lead_to_demo_pct }}% conversion</div>
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.35rem; border-radius: 0.5rem; min-width: 0; overflow: hidden;">
+        <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">2. Demos Scheduled</div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: #d97706;">{{ funnel_demos }}</div>
+        <div style="font-size: 0.65rem; color: #d97706; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_lead_to_demo_pct }}% conv</div>
       </div>
-      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
-        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">3. Confirmed Tuitions</div>
-        <div style="font-size: 1.25rem; font-weight: 900; color: #059669;">{{ funnel_confirmed }}</div>
-        <div style="font-size: 0.68rem; color: #059669; font-weight: 700;">{{ funnel_demo_to_confirmed_pct }}% win rate</div>
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.35rem; border-radius: 0.5rem; min-width: 0; overflow: hidden;">
+        <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">3. Confirmed Tuitions</div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: #059669;">{{ funnel_confirmed }}</div>
+        <div style="font-size: 0.65rem; color: #059669; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_demo_to_confirmed_pct }}% win</div>
       </div>
     </div>
   </div>
 
   <!-- CHART 2: Revenue vs. Commission (Last 30 Days) -->
-  <div class="bi-chart-card">
+  <div class="bi-chart-card" style="min-width: 0; width: 100%;">
     <div>
       <div class="bi-chart-header">
         <div>
@@ -897,169 +897,177 @@
     const textColor = isDark ? '#94a3b8' : '#64748b';
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)';
     const fontFamily = "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif";
+    const currencySymbol = "{{ company.currency_symbol|default:'$'|escapejs }}";
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // 1. Chart 1: Lead Conversion Funnel (Bar Chart)
-    // ──────────────────────────────────────────────────────────────────────────
-    const funnelCtx = document.getElementById('leadFunnelChart');
-    if (funnelCtx) {
-      const funnelLabels = {{ funnel_chart_labels_json|safe }};
-      const funnelValues = {{ funnel_chart_data_json|safe }};
+    if (typeof Chart !== 'undefined') {
+      try {
+        // ──────────────────────────────────────────────────────────────────────────
+        // 1. Chart 1: Lead Conversion Funnel (Bar Chart)
+        // ──────────────────────────────────────────────────────────────────────────
+        const funnelCtx = document.getElementById('leadFunnelChart');
+        if (funnelCtx) {
+          const funnelLabels = {{ funnel_chart_labels_json|safe }};
+          const funnelValues = {{ funnel_chart_data_json|safe }};
 
-      new Chart(funnelCtx, {
-        type: 'bar',
-        data: {
-          labels: funnelLabels,
-          datasets: [{
-            label: 'Students & Inquiries in Stage',
-            data: funnelValues,
-            backgroundColor: [
-              'rgba(79, 70, 229, 0.85)',  // Primary Indigo for Leads Posted
-              'rgba(245, 158, 11, 0.85)', // Amber for Demos Scheduled
-              'rgba(16, 185, 129, 0.85)'  // Emerald for Tuitions Confirmed
-            ],
-            borderColor: [
-              '#4f46e5',
-              '#d97706',
-              '#059669'
-            ],
-            borderWidth: 1.5,
-            borderRadius: 8,
-            borderSkipped: false,
-            barThickness: 44,
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: isDark ? '#1e293b' : '#0f172a',
-              titleFont: { family: fontFamily, size: 13, weight: 'bold' },
-              bodyFont: { family: fontFamily, size: 12 },
-              padding: 10,
-              cornerRadius: 8,
-              callbacks: {
-                label: function(context) {
-                  const val = context.raw;
-                  return ` Volume: ${val} Inquiries`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { color: textColor, font: { family: fontFamily, weight: '600' } }
+          new Chart(funnelCtx, {
+            type: 'bar',
+            data: {
+              labels: funnelLabels,
+              datasets: [{
+                label: 'Students & Inquiries in Stage',
+                data: funnelValues,
+                backgroundColor: [
+                  'rgba(79, 70, 229, 0.85)',  // Primary Indigo for Leads Posted
+                  'rgba(245, 158, 11, 0.85)', // Amber for Demos Scheduled
+                  'rgba(16, 185, 129, 0.85)'  // Emerald for Tuitions Confirmed
+                ],
+                borderColor: [
+                  '#4f46e5',
+                  '#d97706',
+                  '#059669'
+                ],
+                borderWidth: 1.5,
+                borderRadius: 8,
+                borderSkipped: false,
+                barThickness: 44,
+              }]
             },
-            y: {
-              grid: { color: gridColor },
-              ticks: { color: textColor, font: { family: fontFamily } },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    }
-
-    // ──────────────────────────────────────────────────────────────────────────
-    // 2. Chart 2: Revenue vs. Commission (30-Day Line Graph)
-    // ──────────────────────────────────────────────────────────────────────────
-    const revCtx = document.getElementById('revenueCommissionChart');
-    if (revCtx) {
-      const revLabels = {{ revenue_chart_labels_json|safe }};
-      const revValues = {{ revenue_chart_data_json|safe }};
-      const commValues = {{ commission_chart_data_json|safe }};
-
-      // Create subtle gradient for gross revenue line
-      const chartInst = new Chart(revCtx, {
-        type: 'line',
-        data: {
-          labels: revLabels,
-          datasets: [
-            {
-              label: 'Gross Platform Revenue',
-              data: revValues,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              borderWidth: 2.5,
-              tension: 0.35,
-              fill: true,
-              pointRadius: 2.5,
-              pointHoverRadius: 6,
-              pointBackgroundColor: '#10b981',
-            },
-            {
-              label: 'Platform Net Commission',
-              data: commValues,
-              borderColor: '#6366f1',
-              backgroundColor: 'rgba(99, 102, 241, 0.08)',
-              borderWidth: 2,
-              borderDash: [5, 5],
-              tension: 0.35,
-              fill: false,
-              pointRadius: 2.5,
-              pointHoverRadius: 6,
-              pointBackgroundColor: '#6366f1',
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false,
-          },
-          plugins: {
-            legend: {
-              display: true,
-              position: 'top',
-              align: 'end',
-              labels: {
-                boxWidth: 12,
-                color: textColor,
-                font: { family: fontFamily, size: 11, weight: '700' }
-              }
-            },
-            tooltip: {
-              backgroundColor: isDark ? '#1e293b' : '#0f172a',
-              titleFont: { family: fontFamily, size: 12, weight: 'bold' },
-              bodyFont: { family: fontFamily, size: 12 },
-              padding: 10,
-              cornerRadius: 8,
-              callbacks: {
-                label: function(context) {
-                  const val = context.raw;
-                  return ` ${context.dataset.label}: {{ company.currency_symbol }}${val.toLocaleString()}`;
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: {
-                color: textColor,
-                font: { family: fontFamily, size: 10 },
-                maxTicksLimit: 10
-              }
-            },
-            y: {
-              grid: { color: gridColor },
-              ticks: {
-                color: textColor,
-                font: { family: fontFamily },
-                callback: function(value) {
-                  return '{{ company.currency_symbol }}' + value;
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: isDark ? '#1e293b' : '#0f172a',
+                  titleFont: { family: fontFamily, size: 13, weight: 'bold' },
+                  bodyFont: { family: fontFamily, size: 12 },
+                  padding: 10,
+                  cornerRadius: 8,
+                  callbacks: {
+                    label: function(context) {
+                      const val = context.raw;
+                      return ` Volume: ${val} Inquiries`;
+                    }
+                  }
                 }
               },
-              beginAtZero: true
+              scales: {
+                x: {
+                  grid: { display: false },
+                  ticks: { color: textColor, font: { family: fontFamily, weight: '600' } }
+                },
+                y: {
+                  grid: { color: gridColor },
+                  ticks: { color: textColor, font: { family: fontFamily } },
+                  beginAtZero: true
+                }
+              }
             }
-          }
+          });
         }
-      });
+
+        // ──────────────────────────────────────────────────────────────────────────
+        // 2. Chart 2: Revenue vs. Commission (30-Day Line Graph)
+        // ──────────────────────────────────────────────────────────────────────────
+        const revCtx = document.getElementById('revenueCommissionChart');
+        if (revCtx) {
+          const revLabels = {{ revenue_chart_labels_json|safe }};
+          const revValues = {{ revenue_chart_data_json|safe }};
+          const commValues = {{ commission_chart_data_json|safe }};
+
+          new Chart(revCtx, {
+            type: 'line',
+            data: {
+              labels: revLabels,
+              datasets: [
+                {
+                  label: 'Gross Platform Revenue',
+                  data: revValues,
+                  borderColor: '#10b981',
+                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  borderWidth: 2.5,
+                  tension: 0.35,
+                  fill: true,
+                  pointRadius: 2.5,
+                  pointHoverRadius: 6,
+                  pointBackgroundColor: '#10b981',
+                },
+                {
+                  label: 'Platform Net Commission',
+                  data: commValues,
+                  borderColor: '#6366f1',
+                  backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                  borderWidth: 2,
+                  borderDash: [5, 5],
+                  tension: 0.35,
+                  fill: false,
+                  pointRadius: 2.5,
+                  pointHoverRadius: 6,
+                  pointBackgroundColor: '#6366f1',
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: {
+                mode: 'index',
+                intersect: false,
+              },
+              plugins: {
+                legend: {
+                  display: true,
+                  position: 'top',
+                  align: 'end',
+                  labels: {
+                    boxWidth: 12,
+                    color: textColor,
+                    font: { family: fontFamily, size: 11, weight: '700' }
+                  }
+                },
+                tooltip: {
+                  backgroundColor: isDark ? '#1e293b' : '#0f172a',
+                  titleFont: { family: fontFamily, size: 12, weight: 'bold' },
+                  bodyFont: { family: fontFamily, size: 12 },
+                  padding: 10,
+                  cornerRadius: 8,
+                  callbacks: {
+                    label: function(context) {
+                      const val = context.raw;
+                      return ` ${context.dataset.label}: ${currencySymbol}${val.toLocaleString()}`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  grid: { display: false },
+                  ticks: {
+                    color: textColor,
+                    font: { family: fontFamily, size: 10 },
+                    maxTicksLimit: 10
+                  }
+                },
+                y: {
+                  grid: { color: gridColor },
+                  ticks: {
+                    color: textColor,
+                    font: { family: fontFamily },
+                    callback: function(value) {
+                      return currencySymbol + value;
+                    }
+                  },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Error initializing BI charts:', err);
+      }
+    } else {
+      console.warn('Chart.js library not detected.');
     }
 
     // Refresh icons if Lucide is available

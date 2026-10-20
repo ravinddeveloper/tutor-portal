@@ -48,7 +48,7 @@
       --text-muted: #64748b;
       --border: #e2e8f0;
       --border-radius: {{ theme.border_radius|default:"0.75rem" }};
-      --sidebar-bg: {{ theme.sidebar_color|default:"#0f172a" }};
+      --sidebar-bg: {% if theme.dark_mode_enabled %}{{ theme.sidebar_color|default:"#090e21" }}{% else %}var(--surface){% endif %};
       --header-bg: rgba(255, 255, 255, 0.96);
       --table-header-bg: #f8fafc;
       --table-header-color: #475569;
@@ -162,12 +162,16 @@
     .col-span-full { grid-column: 1 / -1; }
 
     @media (min-width: 640px) {
+      .sm\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
       .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .sm\:col-span-1 { grid-column: span 1 / span 1; }
       .sm\:col-span-2 { grid-column: span 2 / span 2; }
       .container { padding-left: 1.5rem; padding-right: 1.5rem; }
     }
     @media (min-width: 768px) {
+      .md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
       .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -176,7 +180,9 @@
       .md\:col-span-3 { grid-column: span 3 / span 3; }
       .md\:flex-row { flex-direction: row; }
     }
-    @media (min-width: 1024px) {
+    @media (min-width: 992px) {
+      .lg\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+      .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .lg\:col-span-1 { grid-column: span 1 / span 1; }
@@ -427,10 +433,17 @@
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: background 0.2s ease, border-color 0.2s ease;
+      width: 100%;
+    }
+
+    .admin-header-container {
+      max-width: 100% !important;
+      padding-left: 1.25rem !important;
+      padding-right: 1.5rem !important;
     }
 
     .header-inner {
@@ -798,11 +811,11 @@
 
   <!-- Main Navigation Header -->
   <header class="site-header">
-    <div class="container">
+    <div class="container {% if request.resolver_match.namespace == 'custom_admin' %}admin-header-container{% endif %}">
       <div class="header-inner">
         
         <!-- Brand Logo & Context Badge -->
-        <a href="{% url 'core:home' %}" class="brand-logo" aria-label="{{ company.company_name }} Home">
+        <a href="{% if request.resolver_match.namespace == 'custom_admin' %}{% url 'custom_admin:dashboard' %}{% else %}{% url 'core:home' %}{% endif %}" class="brand-logo" aria-label="{{ company.company_name }} Home">
           <div class="brand-icon-box">
             <i data-lucide="graduation-cap" style="width: 20px; height: 20px;"></i>
           </div>
@@ -825,19 +838,22 @@
           {% if request.resolver_match.namespace == 'custom_admin' %}
             <!-- Admin Top Shortcuts -->
             <a href="{% url 'custom_admin:dashboard' %}" class="nav-pill {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-              <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i> Admin Dashboard
+              <i data-lucide="layout-dashboard" style="width: 15px; height: 15px;"></i> Overview
             </a>
             <a href="{% url 'custom_admin:leads' %}" class="nav-pill {% if request.resolver_match.url_name == 'leads' %}active{% endif %}">
-              <i data-lucide="compass" style="width: 16px; height: 16px;"></i> Leads
+              <i data-lucide="compass" style="width: 15px; height: 15px;"></i> Leads
             </a>
-            <a href="{% url 'custom_admin:tutors' %}" class="nav-pill {% if request.resolver_match.url_name == 'tutors' %}active{% endif %}">
-              <i data-lucide="user-check" style="width: 16px; height: 16px;"></i> Tutors
+            <a href="{% url 'custom_admin:tutors' %}" class="nav-pill {% if request.resolver_match.url_name == 'tutors' or request.resolver_match.url_name == 'tutor_detail' %}active{% endif %}">
+              <i data-lucide="user-check" style="width: 15px; height: 15px;"></i> Tutors
+            </a>
+            <a href="{% url 'custom_admin:enquiries' %}" class="nav-pill {% if request.resolver_match.url_name == 'enquiries' %}active{% endif %}">
+              <i data-lucide="inbox" style="width: 15px; height: 15px;"></i> Enquiries
             </a>
             <a href="{% url 'custom_admin:commissions' %}" class="nav-pill {% if request.resolver_match.url_name == 'commissions' %}active{% endif %}">
-              <i data-lucide="percent" style="width: 16px; height: 16px;"></i> Commissions
+              <i data-lucide="percent" style="width: 15px; height: 15px;"></i> Commissions
             </a>
             <a href="{% url 'custom_admin:reports' %}" class="nav-pill {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
-              <i data-lucide="bar-chart-3" style="width: 16px; height: 16px;"></i> Reports
+              <i data-lucide="bar-chart-3" style="width: 15px; height: 15px;"></i> Reports
             </a>
           {% else %}
             <!-- Public / Member Navigation -->

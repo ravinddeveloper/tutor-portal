@@ -10,7 +10,7 @@ from django.db.models import Sum, Count, Q
 from django.utils import timezone
 
 from apps.accounts.models import User
-from apps.core.models import CompanySettings, ThemeSettings, Announcement, AuditLog
+from apps.core.models import CompanySettings, ThemeSettings, Announcement, AuditLog, ContactEnquiry
 from apps.tutors.models import TutorProfile, TutorDocument, TutorSubject
 from apps.parents.models import ParentProfile, StudentProfile
 from apps.leads.models import TuitionRequirement, TutorMatch, LeadUnlock, LeadApplication
@@ -151,6 +151,7 @@ def dashboard_view(request):
     alert_stale_leads = max(real_stale_leads, 1)
 
     stale_lead_target = TuitionRequirement.objects.filter(status=TuitionRequirement.Status.OPEN).order_by('created_at').first()
+    alert_pending_enquiries = ContactEnquiry.objects.filter(status=ContactEnquiry.Status.NEW).count()
 
     # ──────────────────────────────────────────────────────────────────────────
     # 5. RECENT TUITION REQUIREMENTS TABLE UPGRADE (with Match Scores)
@@ -226,6 +227,7 @@ def dashboard_view(request):
         'alert_disputes': alert_disputes,
         'alert_stale_leads': alert_stale_leads,
         'stale_lead_target': stale_lead_target,
+        'alert_pending_enquiries': alert_pending_enquiries,
     }
     return render(request, 'custom_admin/dashboard.html', context)
 
@@ -614,3 +616,113 @@ def reports_view(request):
 def audit_logs_view(request):
     logs = AuditLog.objects.select_related('user').order_by('-created_at')[:50]
     return render(request, 'custom_admin/audit_logs.html', {'logs': logs})
+@login_required
+@user_passes_test(is_admin_or_ops)
+def enquiries_list_view(request):
+    """Admin management desk for incoming customer inquiries from About and Contact pages."""
+    if request.method == 'POST':
+        action = request.POST.get('action', 'update_status')
+        enquiry_id = request.POST.get('enquiry_id')
+        enquiry = get_object_or_404(ContactEnquiry, pk=enquiry_id)
+
+        if action == 'update_status':
+            new_status = request.POST.get('status')
+            admin_notes = request.POST.get('admin_notes', '')
+            if new_status in ContactEnquiry.Status.values:
+                old_status = enquiry.status
+                enquiry.status = new_status
+                if admin_notes is not None:
+                    enquiry.admin_notes = admin_notes
+                enquiry.save()
+
+                AuditLog.objects.create(
+                    user=request.user,
+                    action='ENQUIRY_UPDATED',
+                    resource_type='ContactEnquiry',
+                    resource_id=str(enquiry.id),
+                    details=f"Admin {request.user.email} updated enquiry #{enquiry.id} status from {old_status} to {new_status}. Notes: {admin_notes[:100]}",
+                    ip_address=request.META.get('REMOTE_ADDR')
+                )
+                messages.success(request, f"Enquiry #ENQ-{enquiry.id:04d} updated to {enquiry.get_status_display()}.")
+            else:
+                messages.error(request, "Invalid status choice selected.")
+        elif action == 'delete':
+            enquiry_id_num = enquiry.id
+            enquiry.delete()
+            AuditLog.objects.create(
+                user=request.user,
+                action='ENQUIRY_DELETED',
+                resource_type='ContactEnquiry',
+                resource_id=str(enquiry_id_num),
+                details=f"Admin {request.user.email} deleted enquiry #{enquiry_id_num}.",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            messages.success(request, f"Enquiry #ENQ-{enquiry_id_num:04d} was permanently removed.")
+
+        return redirect(request.get_full_path())
+
+    # Export to CSV
+    if request.GET.get('export') == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="customer_enquiries.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Ref ID', 'Date', 'Source Page', 'Name', 'Email', 'Phone', 'Subject', 'Message', 'Status', 'Admin Notes'])
+        for eq in ContactEnquiry.objects.all().order_by('-created_at'):
+            writer.writerow([
+                f"ENQ-{eq.id:04d}",
+                eq.created_at.strftime('%Y-%m-%d %H:%M'),
+                eq.source_page,
+                eq.name,
+                eq.email,
+                eq.phone,
+                eq.subject,
+                eq.message,
+                eq.get_status_display(),
+                eq.admin_notes
+            ])
+        return response
+
+    queryset = ContactEnquiry.objects.all().order_by('-created_at')
+
+    status_filter = request.GET.get('status', '').strip()
+    if status_filter and status_filter in ContactEnquiry.Status.values:
+        queryset = queryset.filter(status=status_filter)
+
+    source_filter = request.GET.get('source', '').strip()
+    if source_filter:
+        queryset = queryset.filter(source_page=source_filter)
+
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        queryset = queryset.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(phone__icontains=search_query) |
+            Q(subject__icontains=search_query) |
+            Q(message__icontains=search_query)
+        )
+
+    # Metrics
+    count_all = ContactEnquiry.objects.count()
+    count_new = ContactEnquiry.objects.filter(status=ContactEnquiry.Status.NEW).count()
+    count_in_progress = ContactEnquiry.objects.filter(status=ContactEnquiry.Status.IN_PROGRESS).count()
+    count_resolved = ContactEnquiry.objects.filter(status=ContactEnquiry.Status.RESOLVED).count()
+    count_spam = ContactEnquiry.objects.filter(status=ContactEnquiry.Status.SPAM).count()
+    count_about = ContactEnquiry.objects.filter(source_page='about').count()
+    count_contact = ContactEnquiry.objects.filter(source_page='contact').count()
+
+    context = {
+        'enquiries': queryset,
+        'status_filter': status_filter,
+        'source_filter': source_filter,
+        'search_query': search_query,
+        'count_all': count_all,
+        'count_new': count_new,
+        'count_in_progress': count_in_progress,
+        'count_resolved': count_resolved,
+        'count_spam': count_spam,
+        'count_about': count_about,
+        'count_contact': count_contact,
+        'status_choices': ContactEnquiry.Status.choices,
+    }
+    return render(request, 'custom_admin/enquiries.html', context)

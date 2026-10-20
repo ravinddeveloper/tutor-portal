@@ -1,25 +1,130 @@
-<div class="card" style="margin-bottom: 1.5rem; background: var(--surface); border: 1px solid var(--border);">
-  <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+<style>
+  /* Parent Subnav Scoped Styles */
+  .parent-subnav-card {
+    margin-bottom: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+  }
+  .parent-subnav-top {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .parent-subnav-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+  }
+  .parent-subnav-avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    flex-shrink: 0;
+  }
+  .parent-subnav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .parent-pills-container {
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .parent-pills-track {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.65rem 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .parent-pills-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile Adjustments (<= 640px) */
+  @media (max-width: 640px) {
+    .parent-subnav-card {
+      margin-bottom: 1.25rem;
+    }
+    .parent-subnav-top {
+      padding: 1rem !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.85rem !important;
+    }
+    .parent-subnav-profile {
+      width: 100% !important;
+    }
+    .parent-subnav-profile h2 {
+      font-size: 1.1rem !important;
+    }
+    .parent-subnav-actions {
+      width: 100% !important;
+    }
+    .parent-subnav-actions a,
+    .parent-subnav-actions button {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.825rem !important;
+      padding: 0.55rem 1rem !important;
+    }
+    .parent-pills-container {
+      margin-bottom: 1.5rem !important;
+      margin-left: -0.25rem;
+      margin-right: -0.25rem;
+    }
+    .parent-pills-track {
+      gap: 0.4rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+    .parent-pills-track .btn {
+      font-size: 0.775rem !important;
+      padding: 0.35rem 0.75rem !important;
+    }
+  }
+</style>
+
+<div class="card parent-subnav-card">
+  <div class="parent-subnav-top">
     
     <!-- Parent Profile Info -->
-    <div class="flex items-center gap-3">
-      <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);">
+    <div class="parent-subnav-profile">
+      <div class="parent-subnav-avatar">
         {{ request.user.first_name|slice:":1"|default:"P" }}
       </div>
-      <div>
+      <div style="min-width: 0; flex: 1;">
         <div class="flex items-center gap-2 flex-wrap">
-          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em;">{{ request.user.display_name }}</h2>
-          <span class="badge badge-primary">
+          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; margin: 0; word-break: break-word;">{{ request.user.display_name }}</h2>
+          <span class="badge badge-primary" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">
             <i data-lucide="user-check" style="width: 12px; height: 12px;"></i> Parent Portal
           </span>
         </div>
-        <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.15rem;">{{ request.user.locality }}, {{ request.user.city }}</p>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0.15rem 0 0; word-break: break-word;">{{ request.user.locality }}, {{ request.user.city }}</p>
       </div>
     </div>
 
     <!-- Quick Action -->
-    <div>
-      <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="border-radius: 9999px;">
+    <div class="parent-subnav-actions">
+      <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="border-radius: 9999px; font-weight: 700;">
         <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Post New Requirement
       </a>
     </div>
@@ -27,8 +132,8 @@
 </div>
 
 <!-- Modern Horizontal Segmented Navigation Pills -->
-<div style="margin-bottom: 2rem;">
-  <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+<div class="parent-pills-container">
+  <div class="parent-pills-track">
     
     <a href="{% url 'parents:dashboard' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'dashboard' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
       <i data-lucide="layout-dashboard" style="width: 15px; height: 15px;"></i> Overview

@@ -15,10 +15,10 @@
     </div>
 
     <!-- Quick filter inputs -->
-    <form method="get" class="flex gap-2">
-      <input type="text" name="subject" value="{{ sub_q }}" class="form-control" placeholder="Filter subject..." style="width: 180px;">
-      <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="Filter city/locality..." style="width: 180px;">
-      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+    <form method="get" class="flex gap-2 flex-wrap" style="width: 100%; max-width: 480px;">
+      <input type="text" name="subject" value="{{ sub_q }}" class="form-control" placeholder="Filter subject..." style="flex: 1 1 140px; min-width: 130px; font-size: 0.85rem;">
+      <input type="text" name="city" value="{{ city_q }}" class="form-control" placeholder="Filter city/locality..." style="flex: 1 1 140px; min-width: 130px; font-size: 0.85rem;">
+      <button type="submit" class="btn btn-secondary btn-sm" style="flex-shrink: 0;">Filter</button>
     </form>
   </div>
 

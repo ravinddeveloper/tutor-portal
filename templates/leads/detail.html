@@ -2,10 +2,31 @@
 
 {% block title %}Lead {{ lead.lead_id }}: {{ lead.title }} — {{ company.company_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  @media (max-width: 768px) {
+    .lead-detail-container {
+      padding-top: 1.5rem !important;
+      padding-bottom: 3.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+    .lead-main-card {
+      padding: 1.25rem 1rem !important;
+    }
+    .lead-sidebar-card {
+      position: static !important;
+      padding: 1.25rem 1rem !important;
+      margin-top: 1rem;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+<div class="container lead-detail-container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
   
-  <div style="margin-bottom: 2rem;">
+  <div style="margin-bottom: 1.5rem;">
     <a href="{% url 'leads:board' %}" style="font-size: 0.875rem; color: var(--primary); font-weight: 600;">
       &larr; Back to Tuition Leads Board
     </a>
@@ -15,7 +36,7 @@
     
     <!-- Lead Details -->
     <div class="col-span-1 md:col-span-2">
-      <div class="card" style="padding: 2.25rem;">
+      <div class="card lead-main-card" style="padding: 2.25rem;">
         <div class="flex items-center justify-between" style="margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
           <div class="flex items-center gap-2">
             <span class="badge badge-primary">{{ lead.lead_id }}</span>
@@ -25,7 +46,7 @@
           <span style="font-size: 0.8rem; color: var(--text-muted);">Posted {{ lead.created_at|date:"M d, Y" }}</span>
         </div>
 
-        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; line-height: 1.35;">
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; line-height: 1.35; word-break: break-word;">
           {{ lead.title }}
         </h1>
 
@@ -58,7 +79,7 @@
         </div>
 
         <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem;">Specific Student Goals & Notes</h3>
-        <p style="font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 1.75rem;">
+        <p style="font-size: 0.95rem; color: var(--text); line-height: 1.7; margin-bottom: 1.75rem; word-break: break-word;">
           {{ lead.learning_goals|default:"Student requires dedicated one-on-one conceptual teaching, homework assistance, and regular doubt clearance." }}
         </p>
 
@@ -110,7 +131,72 @@
 
     <!-- Action Sidebar -->
     <div class="col-span-1 md:col-span-1">
-      <div class="card" style="padding: 1.75rem; position: sticky; top: 90px;">
+      <div class="card lead-sidebar-card" style="padding: 1.75rem; position: sticky; top: 90px;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Lead Unlock Cost</div>
+          <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary);">
+            1 Credit
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Direct phone access • 100% genuine lead
+          </div>
+        </div>
+
+        {% if user.is_authenticated and user.is_tutor %}
+          {% if is_unlocked %}
+            <a href="tel:{{ lead.contact_phone }}" class="btn btn-success" style="width: 100%; margin-bottom: 0.75rem;">
+              <i data-lucide="phone" style="width: 18px; height: 18px;"></i> Call Parent Now
+            </a>
+          {% else %}
+            <form method="post" style="margin-bottom: 1rem;" onsubmit="return confirm('Spend 1 contact credit to unlock parent phone and contact details?');">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="unlock">
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i data-lucide="unlock" style="width: 18px; height: 18px;"></i> Unlock Contact Details
+              </button>
+            </form>
+          {% endif %}
+
+          <!-- Submit Proposal Form -->
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin: 1.25rem 0 0.75rem;">Apply with Fee Proposal</h4>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="apply">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem;">Proposed Fee ({{ company.currency_symbol }}/mo)</label>
+              <input type="number" name="proposed_fee" class="form-control" value="{{ lead.budget_amount }}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.8rem;">Cover Message to Parent</label>
+              <textarea name="cover_note" class="form-control" rows="3" placeholder="Explain your experience with this syllabus..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">
+              Submit Proposal
+            </button>
+          </form>
+
+        {% elif user.is_authenticated and user.is_parent %}
+          <div style="background: var(--surface-hover); border: 1px solid var(--border); padding: 1rem; border-radius: var(--border-radius); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            You are viewing this requirement as a Parent.
+          </div>
+        {% else %}
+          <div style="text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Are you a qualified tutor? Register or sign in to unlock parent contact information.
+            </p>
+            <a href="{% url 'accounts:register_tutor' %}" class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;">
+              Join as Tutor (3 Free Credits)
+            </a>
+            <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm" style="width: 100%;">
+              Sign In
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
         <div style="text-align: center; margin-bottom: 1.5rem;">
           <div style="font-size: 0.8rem; color: var(--text-muted);">Lead Unlock Cost</div>
           <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary);">

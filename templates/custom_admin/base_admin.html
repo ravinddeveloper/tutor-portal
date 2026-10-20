@@ -159,6 +159,9 @@
 
       <div class="admin-nav-group">
         <div class="admin-nav-group-title">Governance & Trust</div>
+        <a href="{% url 'custom_admin:enquiries' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'enquiries' %}active{% endif %}">
+          <i data-lucide="inbox" style="width: 17px; height: 17px;"></i> Customer Enquiries
+        </a>
         <a href="{% url 'custom_admin:complaints' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'complaints' %}active{% endif %}">
           <i data-lucide="alert-octagon" style="width: 17px; height: 17px;"></i> Complaints & Disputes
         </a>

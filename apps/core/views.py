@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import FileResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from apps.core.models import CompanySettings, ThemeSettings, Announcement
+from apps.core.models import CompanySettings, ThemeSettings, Announcement, AuditLog, ContactEnquiry
 from apps.tutors.models import TutorProfile, TutorSubject
 from apps.leads.models import TuitionRequirement
 from apps.billing.models import SubscriptionPlan
@@ -79,12 +79,67 @@ def pricing_view(request):
     return render(request, 'core/pricing.html', {'plans': plans})
 
 def about_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', 'General Inquiry from About Page').strip()
+        message_text = request.POST.get('message', '').strip()
+
+        if name and email and message_text:
+            enquiry = ContactEnquiry.objects.create(
+                name=name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message_text,
+                source_page='about'
+            )
+            AuditLog.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                action='ENQUIRY_SUBMITTED',
+                resource_type='ContactEnquiry',
+                resource_id=str(enquiry.id),
+                details=f"New enquiry submitted from About page by {name} ({email}) - Subject: {subject}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            messages.success(request, f"Thank you, {name}! Your inquiry has been sent to our administrative team (Ref: ENQ-{enquiry.id:04d}). We will get back to you shortly.")
+        else:
+            messages.error(request, "Please fill in all required fields (Name, Email, and Message).")
+        return redirect('core:about')
+
     return render(request, 'core/about.html')
 
 def contact_view(request):
     if request.method == 'POST':
-        messages.success(request, "Thank you! Your message has been received by our support team.")
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        subject = request.POST.get('subject', '').strip() or 'General Support Inquiry'
+        message_text = request.POST.get('message', '').strip()
+
+        if name and email and message_text:
+            enquiry = ContactEnquiry.objects.create(
+                name=name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message_text,
+                source_page='contact'
+            )
+            AuditLog.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                action='ENQUIRY_SUBMITTED',
+                resource_type='ContactEnquiry',
+                resource_id=str(enquiry.id),
+                details=f"New enquiry submitted from Contact page by {name} ({email}) - Subject: {subject}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+            messages.success(request, f"Thank you, {name}! Your inquiry has been logged successfully (Ref: ENQ-{enquiry.id:04d}). Our operations desk will respond promptly.")
+        else:
+            messages.error(request, "Please provide your Name, Email, and Message Details.")
         return redirect('core:contact')
+
     return render(request, 'core/contact.html')
 
 def terms_view(request):
@@ -99,10 +154,15 @@ def serve_dmsans_font(request, *args, **kwargs):
     Serve DMSans-Regular.ttf font to gracefully satisfy requests from
     browser extensions, developer tools, or relative font links without throwing a 404.
     """
-    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'DMSans-Regular.ttf')
-    if os.path.exists(font_path):
-        response = FileResponse(open(font_path, 'rb'), content_type='font/ttf')
-        response['Cache-Control'] = 'public, max-age=31536000'
-        return response
-    raise Http404("Font file not found")
-
+    candidate_paths = [
+        os.path.join(settings.BASE_DIR, 'static', 'fonts', 'DMSans-Regular.ttf'),
+        os.path.join(settings.BASE_DIR, 'static', 'css', 'DMSans-Regular.ttf'),
+        os.path.join(settings.BASE_DIR, 'static', 'DMSans-Regular.ttf'),
+    ]
+    for p in candidate_paths:
+        if os.path.exists(p):
+            return FileResponse(open(p, 'rb'), content_type='font/ttf')
+    
+    # If font file not found, return empty 200 response with font content type
+    from django.http import HttpResponse
+    return HttpResponse(b'', content_type='font/ttf')

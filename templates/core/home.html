@@ -1054,6 +1054,51 @@
     line-height: 1.6;
     background: var(--surface-hover);
   }
+
+  /* ── Mobile Viewport Optimizations (<= 768px & <= 480px) ── */
+  @media (max-width: 768px) {
+    .hero-master-v2 {
+      padding: 2.25rem 0 2.75rem;
+    }
+    .trust-section,
+    .how-it-works-section,
+    .video-carousel-section {
+      padding: 3rem 0;
+    }
+    .hero-typing-container {
+      font-size: 1rem;
+      padding: 0.35rem 0.85rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .video-testimonial-card {
+      min-width: 275px !important;
+      max-width: calc(100vw - 36px) !important;
+    }
+    .hero-search-glass-card {
+      padding: 1.15rem 0.85rem !important;
+    }
+    .hero-mode-pill {
+      padding: 0.45rem 0.85rem !important;
+      font-size: 0.825rem !important;
+    }
+    .how-toggle-btn {
+      padding: 0.5rem 0.95rem !important;
+      font-size: 0.825rem !important;
+    }
+    .urgency-static-badge {
+      padding: 0.35rem 0.65rem !important;
+      font-size: 0.75rem !important;
+      margin-right: 0.5rem !important;
+    }
+    .modal-card-custom {
+      padding: 1.25rem 1rem !important;
+      max-width: calc(100vw - 24px) !important;
+    }
+  }
 </style>
 {% endblock %}
 

@@ -140,3 +140,42 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"[{self.created_at.strftime('%Y-%m-%d %H:%M')}] {self.user} - {self.action} on {self.resource_type}:{self.resource_id}"
+
+
+class ContactEnquiry(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'NEW', _('New / Unread')
+        IN_PROGRESS = 'IN_PROGRESS', _('In Progress')
+        RESOLVED = 'RESOLVED', _('Resolved / Contacted')
+        SPAM = 'SPAM', _('Spam / Closed')
+
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30, blank=True, default='')
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+    source_page = models.CharField(
+        max_length=100, 
+        default='contact', 
+        help_text=_('Origin page where enquiry was submitted (e.g. about, contact, home)')
+    )
+    status = models.CharField(
+        max_length=20, 
+        choices=Status.choices, 
+        default=Status.NEW
+    )
+    admin_notes = models.TextField(
+        blank=True, 
+        default='', 
+        help_text=_('Internal notes regarding resolution or followup calls')
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = _('Contact Enquiry')
+        verbose_name_plural = _('Contact Enquiries')
+
+    def __str__(self):
+        return f"[{self.get_status_display()}] {self.name} - {self.subject}"

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Welcome to EduTutor Pro!</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 24px; line-height: 1.6; }
+    .email-container { max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .header { background: linear-gradient(135deg, #1e40af 0%, #ea580c 100%); padding: 32px 28px; text-align: center; color: #ffffff; }
+    .content { padding: 32px 28px; }
+    .badge { display: inline-block; background-color: #dbeafe; color: #1e40af; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .credit-box { background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%); border: 1.5px dashed #f59e0b; border-radius: 10px; padding: 18px; margin: 20px 0; text-align: center; }
+    .btn { display: inline-block; background-color: #1e40af; color: #ffffff !important; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 8px; margin: 20px 0; font-size: 15px; }
+    .btn-green { background-color: #10b981; }
+    .footer { padding: 20px 28px; background: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1 style="margin: 0; font-size: 24px; font-weight: 800;">EduTutor Pro</h1>
+      <p style="margin: 6px 0 0; opacity: 0.92; font-size: 14px;">Welcome to India's Verified Home & Online Tuition Platform</p>
+    </div>
+
+    <div class="content">
+      <span class="badge">Registration Confirmed</span>
+      <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 12px; margin-bottom: 16px;">
+        Welcome to EduTutor Pro!
+      </h2>
+
+      <p>Hello <strong>{{ user.get_full_name|default:user.username }}</strong>,</p>
+
+      {% if role == 'tutor' %}
+        <p>Thank you for registering as an educator on <strong>EduTutor Pro</strong>. We are thrilled to partner with you in connecting with motivated students across top school boards (CBSE, ICSE, IGCSE, State) and competitive entrance tests.</p>
+        
+        <div class="credit-box">
+          <div style="font-size: 22px; font-weight: 900; color: #b45309; margin-bottom: 4px;">🎁 3 Free Contact Credits Added!</div>
+          <div style="font-size: 14px; font-weight: bold; color: #78350f;">
+            Claim your 3 free credits by completing your profile.
+          </div>
+          <p style="font-size: 12px; color: #92400e; margin: 8px 0 0;">
+            Upload your degree certificate, government ID, and demo intro video to earn the Verified badge and start receiving high-intent student leads in your locality.
+          </p>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="{{ profile_url|default:dashboard_url }}" class="btn">
+            Complete Your Profile &rarr;
+          </a>
+        </div>
+      {% else %}
+        <p>Thank you for joining <strong>EduTutor Pro</strong> as a parent. Your account is active and ready to help you find background-checked, qualified home tutors and online educators tailored to your child's curriculum and learning pace.</p>
+
+        <p>You can now:</p>
+        <ul style="color: #334155; line-height: 1.8;">
+          <li>Post tuition requirements with customized budgets and timings</li>
+          <li>Browse our verified faculty directory and compare educator profiles</li>
+          <li>Request 1-click free trial demo classes before confirming lessons</li>
+          <li>Track lesson attendance and academic progress reports in real time</li>
+        </ul>
+
+        <div style="text-align: center;">
+          <a href="{{ dashboard_url }}" class="btn">
+            Access Parent Dashboard &rarr;
+          </a>
+        </div>
+      {% endif %}
+
+      <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+        If you have any questions or require personalized matching assistance, our academic concierge team is here to help at <a href="mailto:{{ company.support_email|default:'support@edututorpro.com' }}" style="color: #1e40af;">{{ company.support_email|default:'support@edututorpro.com' }}</a>.
+      </p>
+
+      <p style="margin-bottom: 0; font-size: 14px; font-weight: 600; color: #0f172a;">
+        Happy Teaching & Learning,<br>
+        The EduTutor Pro Team
+      </p>
+    </div>
+
+    <div class="footer">
+      &copy; {{ company.company_name|default:"EduTutor Pro" }}. All rights reserved.<br>
+      You are receiving this transactional notification because you registered on EduTutor Pro.
+    </div>
+  </div>
+</body>
+</html>

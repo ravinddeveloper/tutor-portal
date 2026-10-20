@@ -6,8 +6,13 @@
 {% block extra_css %}
 <style>
   /* ==========================================================================
-     TUTOR PORTAL GAMIFICATION, RADAR & KANBAN STYLES
+     TUTOR PORTAL GAMIFICATION, RADAR & KANBAN STYLES (MOBILE-FIRST RESPONSIVE)
      ========================================================================== */
+
+  .tutor-dashboard-container {
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+  }
 
   /* ── Header Gamification Badges ── */
   .tutor-header-card {
@@ -23,10 +28,45 @@
     flex-wrap: wrap;
     gap: 1.25rem;
   }
+  .tutor-header-profile {
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    min-width: 0;
+  }
+  .tutor-header-avatar {
+    position: relative;
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    flex-shrink: 0;
+  }
+  .tutor-header-info {
+    min-width: 0;
+    flex: 1;
+  }
+  .tutor-header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tutor-header-title {
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--text);
+    margin: 0;
+    word-break: break-word;
+  }
+  .tutor-header-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
   .gamification-badge-strip {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
     flex-wrap: wrap;
     margin-top: 0.4rem;
   }
@@ -69,14 +109,28 @@
 
   /* ── Smart Lead Radar Feature ── */
   .radar-alert-card {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+    background: radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0.06) 55%, var(--surface) 100%);
     border: 2px solid #10b981;
     border-radius: var(--border-radius);
     padding: 1.5rem 1.75rem;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.25), 0 0 18px rgba(16, 185, 129, 0.12);
     position: relative;
     overflow: hidden;
+  }
+  .radar-alert-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+  .radar-alert-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    min-width: 0;
+    flex: 1;
   }
   .radar-sweep-icon {
     width: 48px;
@@ -100,6 +154,29 @@
   @keyframes radarPulse {
     0% { transform: scale(0.85); opacity: 1; }
     100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  @keyframes pulseUnlockBtn {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+    50% {
+      transform: scale(1.03);
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+    }
+  }
+  .btn-unlock-pulse {
+    animation: pulseUnlockBtn 2s infinite ease-in-out;
+  }
+
+  .radar-alert-details {
+    min-width: 0;
+    flex: 1;
+  }
+  .radar-alert-action {
+    align-self: center;
+    flex-shrink: 0;
   }
 
   /* ── Interactive Radar Toast Notification ── */
@@ -126,6 +203,26 @@
     opacity: 1;
   }
 
+  /* ── Overview Stats Grid ── */
+  .tutor-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .tutor-stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--card-shadow);
+  }
+  .tutor-stat-num {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-top: 0.25rem;
+  }
+
   /* ── Profile Strength Meter ── */
   .profile-strength-box {
     background: var(--surface);
@@ -146,8 +243,25 @@
   .strength-meter-bar {
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    background: linear-gradient(90deg, #4f46e5 0%, #10b981 100%);
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .profile-checklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+  .profile-checklist-label {
+    font-weight: 700;
+    color: var(--text);
+    min-width: 0;
+    flex: 1;
+    word-break: break-word;
+    line-height: 1.3;
   }
 
   /* ── Kanban Demo Pipeline Board ── */
@@ -161,6 +275,49 @@
     margin-bottom: 1.25rem;
     flex-wrap: wrap;
     gap: 0.75rem;
+  }
+  .kanban-mobile-tabs {
+    display: none;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.65rem;
+    margin-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .kanban-mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .kanban-tab-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    border-radius: 9999px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    user-select: none;
+  }
+  .kanban-tab-btn.is-active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+  }
+  .kanban-mobile-swipe-hint {
+    display: none;
+    font-size: 0.725rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    align-items: center;
+    gap: 0.35rem;
   }
   .kanban-board-grid {
     display: grid;
@@ -222,7 +379,7 @@
   }
   .kanban-lead-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
     border-color: rgba(79, 70, 229, 0.4);
   }
   .kanban-lead-card.is-dragging {
@@ -240,11 +397,261 @@
     margin-top: auto;
     margin-bottom: auto;
   }
+  .kanban-mobile-stage-bar {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border);
+  }
+  .kanban-mobile-stage-select {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.45rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+  }
+
+  /* ── Matched Leads Feed ── */
+  .matched-lead-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .matched-lead-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE MEDIA QUERIES (TABLETS & MOBILE DEVICES)
+     ========================================================================== */
+
+  @media (max-width: 1024px) {
+    .tutor-stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ── Tablet & Mobile Kanban Swipe & Native Stage Changer (<= 768px) ── */
+  @media (max-width: 768px) {
+    .kanban-mobile-tabs {
+      display: flex;
+    }
+    .kanban-mobile-swipe-hint {
+      display: flex;
+    }
+    .kanban-board-grid {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      scroll-snap-type: x mandatory !important;
+      gap: 0.85rem !important;
+      padding: 0.25rem 0.25rem 1rem 0.25rem !important;
+      margin-left: -0.25rem !important;
+      margin-right: -0.25rem !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: thin !important;
+    }
+    .kanban-column {
+      flex: 0 0 84vw !important;
+      min-width: 270px !important;
+      max-width: 320px !important;
+      scroll-snap-align: center !important;
+      min-height: 320px !important;
+      border-radius: 1rem !important;
+    }
+    .kanban-mobile-stage-bar {
+      display: flex;
+    }
+  }
+
+  /* ── Full Mobile Experience Enhancements (<= 640px) ── */
+  @media (max-width: 640px) {
+    .tutor-dashboard-container {
+      padding-top: 1rem !important;
+      padding-bottom: 3.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+
+    /* 1. Header Card on Mobile */
+    .tutor-header-card {
+      padding: 1.15rem 1rem !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 1rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+    .tutor-header-profile {
+      width: 100% !important;
+      gap: 0.75rem !important;
+    }
+    .tutor-header-avatar {
+      width: 52px !important;
+      height: 52px !important;
+      min-width: 52px !important;
+    }
+    .tutor-header-title {
+      font-size: 1.2rem !important;
+    }
+    .gamification-badge-strip {
+      gap: 0.35rem !important;
+      margin-top: 0.35rem !important;
+    }
+    .badge-rank-tier, .badge-fast-speed, .badge-verified-tutor {
+      font-size: 0.72rem !important;
+      padding: 0.2rem 0.55rem !important;
+    }
+    .tutor-header-actions {
+      width: 100% !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    .tutor-header-actions .btn {
+      flex: 1 !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.775rem !important;
+      padding: 0.5rem 0.6rem !important;
+    }
+
+    /* 2. Smart Lead Radar Alert Card on Mobile */
+    .radar-alert-card {
+      padding: 1.15rem 1rem !important;
+      margin-bottom: 1.25rem !important;
+    }
+    .radar-alert-inner {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.85rem !important;
+    }
+    .radar-alert-main {
+      width: 100% !important;
+      gap: 0.75rem !important;
+    }
+    .radar-sweep-icon {
+      width: 42px !important;
+      height: 42px !important;
+      min-width: 42px !important;
+    }
+    .radar-alert-details h3 {
+      font-size: 1.05rem !important;
+    }
+    .radar-alert-action {
+      width: 100% !important;
+      align-self: stretch !important;
+    }
+    .radar-alert-action form,
+    .radar-alert-action button {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.875rem !important;
+      padding: 0.65rem 1rem !important;
+    }
+
+    /* 3. Mobile Push Toast */
+    .radar-toast-container {
+      left: 12px !important;
+      right: 12px !important;
+      bottom: 16px !important;
+      max-width: calc(100vw - 24px) !important;
+      box-sizing: border-box !important;
+      padding: 0.85rem 1rem !important;
+    }
+
+    /* 4. Overview Stats 2x2 Grid */
+    .tutor-stats-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.65rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+    .tutor-stat-card {
+      padding: 0.85rem 0.95rem !important;
+    }
+    .tutor-stat-card .tutor-stat-num {
+      font-size: 1.35rem !important;
+    }
+    .tutor-stat-card .stat-icon-wrap {
+      width: 36px !important;
+      height: 36px !important;
+    }
+    .tutor-stat-card .stat-icon-wrap i {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    /* 5. Kanban Header on Mobile */
+    .kanban-header-bar {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.65rem !important;
+    }
+    .kanban-header-bar .kanban-header-actions {
+      width: 100% !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+
+    /* 6. Matched Leads Card on Mobile */
+    .matched-lead-footer {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.65rem !important;
+    }
+    .matched-lead-actions {
+      width: 100% !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    .matched-lead-actions a,
+    .matched-lead-actions form,
+    .matched-lead-actions button {
+      flex: 1 !important;
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.775rem !important;
+      padding: 0.5rem 0.6rem !important;
+      white-space: nowrap !important;
+    }
+
+    /* 7. Profile Strength Box on Mobile */
+    .profile-strength-box {
+      padding: 1.15rem 1rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+    .profile-checklist-item {
+      padding: 0.45rem 0.55rem !important;
+      gap: 0.45rem !important;
+    }
+    .profile-checklist-label {
+      font-size: 0.75rem !important;
+      line-height: 1.25 !important;
+    }
+    .profile-checklist-btn {
+      font-size: 0.7rem !important;
+      padding: 0.25rem 0.5rem !important;
+      flex-shrink: 0 !important;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
+<div class="container tutor-dashboard-container">
   
   {% include "tutors/_tutor_nav.html" %}
 
@@ -252,8 +659,8 @@
        1. TUTOR PROFILE GAMIFICATION & RANKING HEADER
   ═══════════════════════════════════════════════════════════════════════════ -->
   <div class="tutor-header-card">
-    <div style="display: flex; align-items: center; gap: 1.15rem;">
-      <div style="position: relative; width: 62px; height: 62px;">
+    <div class="tutor-header-profile">
+      <div class="tutor-header-avatar">
         {% if user.avatar %}
           <img src="{{ user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--primary);">
         {% else %}
@@ -264,9 +671,9 @@
         <span style="position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; background: #10b981; border: 2px solid var(--surface);" title="Active Online"></span>
       </div>
 
-      <div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-          <h1 style="font-size: 1.45rem; font-weight: 900; color: var(--text); margin: 0;">
+      <div class="tutor-header-info">
+        <div class="tutor-header-title-row">
+          <h1 class="tutor-header-title">
             Welcome back, {{ tutor.display_name }}!
           </h1>
           <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">(ID: TUT-{{ tutor.pk }})</span>
@@ -275,7 +682,7 @@
         <!-- Gamification & Ranking Badges -->
         <div class="gamification-badge-strip">
           <span class="badge-rank-tier">
-            <i data-lucide="award" style="width: 14px; height: 14px;"></i> {{ ranking_badge }}
+            <i data-lucide="award" style="width: 13px; height: 13px;"></i> {{ ranking_badge }}
           </span>
 
           {% if is_fast_responder %}
@@ -298,7 +705,7 @@
     </div>
 
     <!-- Quick Action -->
-    <div class="flex gap-2">
+    <div class="tutor-header-actions">
       <a href="{% url 'tutors:profile_edit' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
         <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i> Edit Profile
       </a>
@@ -313,49 +720,49 @@
   ═══════════════════════════════════════════════════════════════════════════ -->
   {% if radar_alert %}
     <div class="radar-alert-card">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+      <div class="radar-alert-inner">
         
-        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+        <div class="radar-alert-main">
           <!-- Radar Pulse Icon -->
           <div class="radar-sweep-icon">
             <span class="radar-pulse-ring"></span>
-            <i data-lucide="radio" style="width: 24px; height: 24px;"></i>
+            <i data-lucide="radio" style="width: 22px; height: 22px;"></i>
           </div>
 
-          <div>
+          <div class="radar-alert-details">
             <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
               <span class="badge badge-success" style="font-size: 0.75rem; font-weight: 800;">
-                <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> SMART LEAD RADAR MATCH: {{ radar_alert.match_score }}%
+                <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> SMART LEAD RADAR: {{ radar_alert.match_score }}%
               </span>
               <span style="font-size: 0.75rem; color: #059669; font-weight: 700;">
-                <i data-lucide="map-pin" style="width: 12px; height: 12px; display: inline;"></i> In your area (< 5 km)
+                <i data-lucide="map-pin" style="width: 12px; height: 12px; display: inline;"></i> In your area (&lt; 5 km)
               </span>
             </div>
 
-            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 0.35rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 0.35rem; word-break: break-word;">
               {{ radar_alert.title }}
             </h3>
 
-            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; word-break: break-word;">
               <strong>Subjects:</strong> {{ radar_alert.subjects }} • 
               <strong>Class:</strong> {{ radar_alert.student_class }} ({{ radar_alert.board_curriculum }}) • 
               <strong>Locality:</strong> {{ radar_alert.locality }}, {{ radar_alert.city }}
             </div>
 
-            <div style="font-size: 0.825rem; color: #065f46; font-weight: 700; margin-top: 0.35rem;">
+            <div style="font-size: 0.825rem; color: #065f46; font-weight: 700; margin-top: 0.35rem; word-break: break-word;">
               <strong>Parent Budget:</strong> {{ company.currency_symbol }}{{ radar_alert.budget_amount|floatformat:0 }}/mo • 
-              <strong>Match Engine Reason:</strong> {{ radar_alert.match_reasons|truncatewords:15 }}
+              <strong>Match Reason:</strong> {{ radar_alert.match_reasons|truncatewords:12 }}
             </div>
           </div>
         </div>
 
         <!-- 1-Click Action to Unlock -->
-        <div style="align-self: center;">
-          <form method="post" action="{% url 'tutors:leads_browse' %}" style="display: inline-block;">
+        <div class="radar-alert-action">
+          <form method="post" action="{% url 'tutors:leads_browse' %}">
             {% csrf_token %}
             <input type="hidden" name="action" value="unlock">
             <input type="hidden" name="lead_id" value="{{ radar_alert.lead_id }}">
-            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: 800; padding: 0.65rem 1.4rem; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);">
+            <button type="submit" class="btn btn-primary btn-unlock-pulse" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: 800; padding: 0.65rem 1.4rem;">
               <i data-lucide="unlock" style="width: 16px; height: 16px;"></i> Unlock Lead Now (1 Credit)
             </button>
           </form>
@@ -373,7 +780,7 @@
         <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem;">
           ⚡ Lead Radar Alert
         </div>
-        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); line-height: 1.35; margin-bottom: 0.5rem;">
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); line-height: 1.35; margin-bottom: 0.5rem; word-break: break-word;">
           {{ radar_alert.toast_message }}
         </div>
         <div class="flex gap-2">
@@ -394,80 +801,80 @@
   {% endif %}
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       OVERVIEW STATS CARDS
+       OVERVIEW STATS CARDS (RESPONSIVE 4-COL / 2X2 GRID)
   ═══════════════════════════════════════════════════════════════════════════ -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
-    <div class="card" style="padding: 1.25rem;">
+  <div class="tutor-stats-grid">
+    <div class="tutor-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Contact Credits</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Contact Credits</div>
+          <div class="tutor-stat-num" style="color: var(--primary);">
             {{ wallet.total_balance }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="coins" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #10b981; font-weight: 600;">
+      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: #10b981; font-weight: 600;">
         <a href="{% url 'tutors:billing' %}" style="text-decoration: underline;">Recharge Credits &rarr;</a>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="tutor-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Pipeline Opportunities</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: #10b981; margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Pipeline Leads</div>
+          <div class="tutor-stat-num" style="color: #10b981;">
             {{ total_pipeline_count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="kanban" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
-        Est. Value: <strong>{{ company.currency_symbol }}{{ total_pipeline_value|floatformat:0 }}</strong>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: var(--text-muted);">
+        Est: <strong>{{ company.currency_symbol }}{{ total_pipeline_value|floatformat:0 }}</strong>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="tutor-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Scheduled Demos</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--secondary); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Scheduled Demos</div>
+          <div class="tutor-stat-num" style="color: var(--secondary);">
             {{ upcoming_demos.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="calendar" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
-        <a href="{% url 'tutors:demos' %}" style="text-decoration: underline;">Review Time Slots &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: var(--text-muted);">
+        <a href="{% url 'tutors:demos' %}" style="text-decoration: underline;">Time Slots &rarr;</a>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="tutor-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Active Tuitions</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Active Tuitions</div>
+          <div class="tutor-stat-num" style="color: var(--text);">
             {{ active_engagements.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="book-open" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
-        <a href="{% url 'tutors:engagements' %}" style="text-decoration: underline;">Manage Student Lessons &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: var(--text-muted);">
+        <a href="{% url 'tutors:engagements' %}" style="text-decoration: underline;">Manage Lessons &rarr;</a>
       </div>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       3. DEMO CLASS PIPELINE (KANBAN-STYLE DRAG & DROP BOARD)
+       3. DEMO CLASS PIPELINE (KANBAN-STYLE DRAG & DROP + SWIPEABLE ON MOBILE)
        Columns: Applied -> Demo Scheduled -> Demo Completed -> Won -> Lost
   ═══════════════════════════════════════════════════════════════════════════ -->
   <div class="kanban-section">
@@ -477,16 +884,16 @@
           <span class="badge badge-primary" style="font-size: 0.75rem;">
             <i data-lucide="kanban" style="width: 12px; height: 12px;"></i> Interactive Sales Pipeline
           </span>
-          <span style="font-size: 0.8rem; color: var(--text-muted);">Drag & drop leads between stages</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" class="hidden sm:inline">Drag & drop leads between stages</span>
         </div>
-        <h2 style="font-size: 1.5rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0;">
+        <h2 style="font-size: 1.45rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0;">
           Demo Class & Tuition Pipeline
         </h2>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="kanban-header-actions flex items-center gap-3">
         <span style="font-size: 0.85rem; font-weight: 800; color: var(--primary);">
-          Total Pipeline Value: {{ company.currency_symbol }}{{ total_pipeline_value|floatformat:0 }}
+          Total: {{ company.currency_symbol }}{{ total_pipeline_value|floatformat:0 }}
         </span>
         <a href="{% url 'tutors:leads_browse' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
           <i data-lucide="plus" style="width: 14px; height: 14px;"></i> Add Opportunities
@@ -494,11 +901,41 @@
       </div>
     </div>
 
-    <!-- 5-Column Kanban Board Grid -->
-    <div class="kanban-board-grid">
+    <!-- Mobile Stage Indicator Tabs (Visible on screens <= 768px) -->
+    <div class="kanban-mobile-tabs" id="kanbanMobileTabs">
+      <button type="button" class="kanban-tab-btn is-active" data-stage="APPLIED" onclick="scrollKanbanTo('APPLIED', this)">
+        <span>Applied</span>
+        <span class="badge badge-secondary" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">{{ pipeline_applied|length }}</span>
+      </button>
+      <button type="button" class="kanban-tab-btn" data-stage="DEMO_SCHEDULED" onclick="scrollKanbanTo('DEMO_SCHEDULED', this)">
+        <span>Scheduled</span>
+        <span class="badge badge-secondary" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">{{ pipeline_demo_scheduled|length }}</span>
+      </button>
+      <button type="button" class="kanban-tab-btn" data-stage="DEMO_COMPLETED" onclick="scrollKanbanTo('DEMO_COMPLETED', this)">
+        <span>Completed</span>
+        <span class="badge badge-secondary" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">{{ pipeline_demo_completed|length }}</span>
+      </button>
+      <button type="button" class="kanban-tab-btn" data-stage="WON" onclick="scrollKanbanTo('WON', this)">
+        <span>Won</span>
+        <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">{{ pipeline_won|length }}</span>
+      </button>
+      <button type="button" class="kanban-tab-btn" data-stage="LOST" onclick="scrollKanbanTo('LOST', this)">
+        <span>Lost</span>
+        <span class="badge badge-secondary" style="font-size: 0.65rem; padding: 0.15rem 0.4rem;">{{ pipeline_lost|length }}</span>
+      </button>
+    </div>
+
+    <!-- Mobile Swipe Hint -->
+    <div class="kanban-mobile-swipe-hint">
+      <i data-lucide="arrow-left-right" style="width: 14px; height: 14px; color: var(--primary);"></i>
+      <span>Swipe horizontally or tap stage tabs above to navigate pipeline</span>
+    </div>
+
+    <!-- 5-Column Kanban Board Grid (Swipeable Snap-Track on Mobile) -->
+    <div class="kanban-board-grid" id="kanbanBoardGrid">
       
       <!-- COLUMN 1: APPLIED / UNLOCKED -->
-      <div class="kanban-column" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'APPLIED')">
+      <div class="kanban-column" id="kanban-col-APPLIED" data-stage="APPLIED" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'APPLIED')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
             <i data-lucide="file-text" style="width: 14px; height: 14px; color: var(--primary);"></i> Applied
@@ -511,13 +948,28 @@
             <div class="kanban-lead-card" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
-                <span style="font-size: 0.75rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
+                </div>
               </div>
               <div style="font-weight: 800; font-size: 0.85rem; color: var(--text); margin-bottom: 0.25rem;">
                 {{ card.requirement.subjects }}
               </div>
               <div style="font-size: 0.725rem; color: var(--text-muted); line-height: 1.35;">
                 {{ card.requirement.student_class }} • {{ card.requirement.locality }}
+              </div>
+              
+              <!-- Touch Screen Quick Stage Changer for Mobile -->
+              <div class="kanban-mobile-stage-bar">
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">Stage:</span>
+                <select class="kanban-mobile-stage-select" onchange="onMobileStageChange(this, '{{ card.id }}')">
+                  <option value="APPLIED" selected>Applied</option>
+                  <option value="DEMO_SCHEDULED">Demo Scheduled</option>
+                  <option value="DEMO_COMPLETED">Demo Completed</option>
+                  <option value="WON">Won (Active)</option>
+                  <option value="LOST">Lost</option>
+                </select>
               </div>
             </div>
           {% empty %}
@@ -527,7 +979,7 @@
       </div>
 
       <!-- COLUMN 2: DEMO SCHEDULED -->
-      <div class="kanban-column" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_SCHEDULED')">
+      <div class="kanban-column" id="kanban-col-DEMO_SCHEDULED" data-stage="DEMO_SCHEDULED" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_SCHEDULED')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
             <i data-lucide="calendar" style="width: 14px; height: 14px; color: #0891b2;"></i> Demo Scheduled
@@ -540,13 +992,28 @@
             <div class="kanban-lead-card" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
-                <span style="font-size: 0.75rem; font-weight: 800; color: #0891b2;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #0891b2;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
+                </div>
               </div>
               <div style="font-weight: 800; font-size: 0.85rem; color: var(--text); margin-bottom: 0.25rem;">
                 {{ card.requirement.subjects }}
               </div>
               <div style="font-size: 0.725rem; color: var(--text-muted); line-height: 1.35;">
                 {{ card.requirement.student_class }} • {{ card.requirement.locality }}
+              </div>
+
+              <!-- Touch Screen Quick Stage Changer for Mobile -->
+              <div class="kanban-mobile-stage-bar">
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">Stage:</span>
+                <select class="kanban-mobile-stage-select" onchange="onMobileStageChange(this, '{{ card.id }}')">
+                  <option value="APPLIED">Applied</option>
+                  <option value="DEMO_SCHEDULED" selected>Demo Scheduled</option>
+                  <option value="DEMO_COMPLETED">Demo Completed</option>
+                  <option value="WON">Won (Active)</option>
+                  <option value="LOST">Lost</option>
+                </select>
               </div>
             </div>
           {% empty %}
@@ -556,7 +1023,7 @@
       </div>
 
       <!-- COLUMN 3: DEMO COMPLETED -->
-      <div class="kanban-column" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_COMPLETED')">
+      <div class="kanban-column" id="kanban-col-DEMO_COMPLETED" data-stage="DEMO_COMPLETED" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_COMPLETED')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
             <i data-lucide="check-square" style="width: 14px; height: 14px; color: #d97706;"></i> Demo Completed
@@ -569,13 +1036,28 @@
             <div class="kanban-lead-card" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
-                <span style="font-size: 0.75rem; font-weight: 800; color: #d97706;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #d97706;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
+                </div>
               </div>
               <div style="font-weight: 800; font-size: 0.85rem; color: var(--text); margin-bottom: 0.25rem;">
                 {{ card.requirement.subjects }}
               </div>
               <div style="font-size: 0.725rem; color: var(--text-muted); line-height: 1.35;">
                 {{ card.requirement.student_class }} • {{ card.requirement.locality }}
+              </div>
+
+              <!-- Touch Screen Quick Stage Changer for Mobile -->
+              <div class="kanban-mobile-stage-bar">
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">Stage:</span>
+                <select class="kanban-mobile-stage-select" onchange="onMobileStageChange(this, '{{ card.id }}')">
+                  <option value="APPLIED">Applied</option>
+                  <option value="DEMO_SCHEDULED">Demo Scheduled</option>
+                  <option value="DEMO_COMPLETED" selected>Demo Completed</option>
+                  <option value="WON">Won (Active)</option>
+                  <option value="LOST">Lost</option>
+                </select>
               </div>
             </div>
           {% empty %}
@@ -585,7 +1067,7 @@
       </div>
 
       <!-- COLUMN 4: WON (TUITION ACTIVE) -->
-      <div class="kanban-column" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'WON')">
+      <div class="kanban-column" id="kanban-col-WON" data-stage="WON" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'WON')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
             <i data-lucide="trophy" style="width: 14px; height: 14px; color: #10b981;"></i> Won (Active)
@@ -598,13 +1080,28 @@
             <div class="kanban-lead-card" style="border-left: 3px solid #10b981;" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-success" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
-                <span style="font-size: 0.75rem; font-weight: 800; color: #10b981;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #10b981;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
+                </div>
               </div>
               <div style="font-weight: 800; font-size: 0.85rem; color: var(--text); margin-bottom: 0.25rem;">
                 {{ card.requirement.subjects }}
               </div>
               <div style="font-size: 0.725rem; color: var(--text-muted); line-height: 1.35;">
                 Regular Active Tuition
+              </div>
+
+              <!-- Touch Screen Quick Stage Changer for Mobile -->
+              <div class="kanban-mobile-stage-bar">
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">Stage:</span>
+                <select class="kanban-mobile-stage-select" onchange="onMobileStageChange(this, '{{ card.id }}')">
+                  <option value="APPLIED">Applied</option>
+                  <option value="DEMO_SCHEDULED">Demo Scheduled</option>
+                  <option value="DEMO_COMPLETED">Demo Completed</option>
+                  <option value="WON" selected>Won (Active)</option>
+                  <option value="LOST">Lost</option>
+                </select>
               </div>
             </div>
           {% empty %}
@@ -614,7 +1111,7 @@
       </div>
 
       <!-- COLUMN 5: LOST / INACTIVE -->
-      <div class="kanban-column" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'LOST')">
+      <div class="kanban-column" id="kanban-col-LOST" data-stage="LOST" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'LOST')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
             <i data-lucide="x-circle" style="width: 14px; height: 14px; color: #ef4444;"></i> Lost
@@ -627,13 +1124,28 @@
             <div class="kanban-lead-card" style="opacity: 0.75;" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Inactive</span>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">Inactive</span>
+                  <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
+                </div>
               </div>
               <div style="font-weight: 800; font-size: 0.85rem; color: var(--text); margin-bottom: 0.25rem;">
                 {{ card.requirement.subjects }}
               </div>
               <div style="font-size: 0.725rem; color: var(--text-muted);">
                 Parent chose another tutor
+              </div>
+
+              <!-- Touch Screen Quick Stage Changer for Mobile -->
+              <div class="kanban-mobile-stage-bar">
+                <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">Stage:</span>
+                <select class="kanban-mobile-stage-select" onchange="onMobileStageChange(this, '{{ card.id }}')">
+                  <option value="APPLIED">Applied</option>
+                  <option value="DEMO_SCHEDULED">Demo Scheduled</option>
+                  <option value="DEMO_COMPLETED">Demo Completed</option>
+                  <option value="WON">Won (Active)</option>
+                  <option value="LOST" selected>Lost</option>
+                </select>
               </div>
             </div>
           {% empty %}
@@ -653,7 +1165,7 @@
     <!-- AI Matched Leads Feed (2 Columns) -->
     <div class="col-span-1 md:col-span-2">
       <div class="card">
-        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
           <div>
             <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 0.15rem;">Matched Tuition Leads For You</h3>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Calculated using your subjects, locality, and availability</p>
@@ -672,26 +1184,26 @@
                   </span>
                 </div>
 
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem;">
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; word-break: break-word;">
                   {{ match.requirement.title }}
                 </h4>
 
-                <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.5rem; line-height: 1.45;">
+                <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.5rem; line-height: 1.45; word-break: break-word;">
                   <div><strong>Subjects:</strong> {{ match.requirement.subjects }} • <strong>Class:</strong> {{ match.requirement.student_class }} ({{ match.requirement.board_curriculum }})</div>
                   <div><strong>Location:</strong> {{ match.requirement.locality }}, {{ match.requirement.city }} • <strong>Mode:</strong> {{ match.requirement.get_tuition_type_display }}</div>
                   <div><strong>Parent Budget:</strong> {{ company.currency_symbol }}{{ match.requirement.budget_amount|floatformat:0 }}/mo</div>
                 </div>
 
-                <div style="background: var(--primary-light); border-left: 3px solid var(--primary); padding: 0.45rem 0.75rem; font-size: 0.775rem; color: var(--text); margin-bottom: 0.75rem; border-radius: 0 4px 4px 0;">
+                <div style="background: var(--primary-light); border-left: 3px solid var(--primary); padding: 0.45rem 0.75rem; font-size: 0.775rem; color: var(--text); margin-bottom: 0.75rem; border-radius: 0 4px 4px 0; word-break: break-word;">
                   <strong>Why You Match:</strong> {{ match.match_reasons|linebreaksbr }}
                 </div>
               </div>
 
-              <div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 0.75rem;">
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Posted {{ match.requirement.created_at|timesince }} ago</span>
-                <div class="flex gap-2">
+              <div class="matched-lead-footer">
+                <span class="matched-lead-time" style="font-size: 0.75rem; color: var(--text-muted);">Posted {{ match.requirement.created_at|timesince }} ago</span>
+                <div class="matched-lead-actions">
                   <a href="{% url 'leads:detail' match.requirement.lead_id %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">View Details</a>
-                  <form method="post" action="{% url 'tutors:leads_browse' %}" style="display: inline;">
+                  <form method="post" action="{% url 'tutors:leads_browse' %}" style="display: inline; margin: 0;">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="unlock">
                     <input type="hidden" name="lead_id" value="{{ match.requirement.lead_id }}">
@@ -717,17 +1229,24 @@
       
       <!-- PROFILE STRENGTH METER ('GAMIFICATION' & RANKING) -->
       <div class="profile-strength-box">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">
           <div>
-            <h4 style="font-size: 1.1rem; font-weight: 900; color: var(--text); margin: 0; display: flex; align-items: center; gap: 0.4rem;">
-              <i data-lucide="gauge" style="width: 18px; height: 18px; color: var(--primary);"></i>
-              Profile Strength Meter
-            </h4>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <h4 style="font-size: 1.1rem; font-weight: 900; color: var(--text); margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+                <i data-lucide="gauge" style="width: 18px; height: 18px; color: var(--primary);"></i>
+                Profile Strength
+              </h4>
+              {% if completeness.score == 100 or completeness.is_complete %}
+                <span class="badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; font-weight: 800; font-size: 0.725rem; padding: 0.2rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3); display: inline-flex; align-items: center; gap: 0.25rem;">
+                  <i data-lucide="crown" style="width: 12px; height: 12px;"></i> 100% Elite
+                </span>
+              {% endif %}
+            </div>
             <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
               Higher strength = Top ranking in parent search
             </div>
           </div>
-          <span class="badge {% if completeness.is_complete %}badge-success{% else %}badge-primary{% endif %}" style="font-size: 0.95rem; font-weight: 900; padding: 0.3rem 0.75rem;">
+          <span class="badge {% if completeness.is_complete %}badge-success{% else %}badge-primary{% endif %}" style="font-size: 0.95rem; font-weight: 900; padding: 0.3rem 0.75rem; flex-shrink: 0;">
             {{ completeness.score }}%
           </span>
         </div>
@@ -766,27 +1285,27 @@
         <!-- Actionable Checklist Items -->
         <div style="display: flex; flex-direction: column; gap: 0.65rem;">
           {% for item in completeness.checklist %}
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.65rem; padding: 0.5rem 0.65rem; border-radius: 6px; background: {% if item.completed %}rgba(16, 185, 129, 0.05){% else %}var(--surface-hover){% endif %}; border: 1px solid {% if item.completed %}rgba(16, 185, 129, 0.2){% else %}var(--border){% endif %}; font-size: 0.8rem;">
-              <div style="display: flex; align-items: center; gap: 0.45rem; min-width: 0;">
+            <div class="profile-checklist-item" style="background: {% if item.completed %}rgba(16, 185, 129, 0.05){% else %}var(--surface-hover){% endif %}; border: 1px solid {% if item.completed %}rgba(16, 185, 129, 0.2){% else %}var(--border){% endif %};">
+              <div style="display: flex; align-items: center; gap: 0.45rem; min-width: 0; flex: 1;">
                 {% if item.completed %}
                   <div style="width: 18px; height: 18px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                     <i data-lucide="check" style="width: 12px; height: 12px;"></i>
                   </div>
-                  <span style="font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span class="profile-checklist-label">
                     {{ item.label }}
                   </span>
                 {% else %}
                   <div style="width: 18px; height: 18px; border-radius: 50%; border: 1.5px dashed var(--primary); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.65rem; font-weight: 800;">
                     +{{ item.points }}
                   </div>
-                  <span style="font-weight: 600; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <span class="profile-checklist-label" style="color: var(--text-muted); font-weight: 600;">
                     {{ item.label }}
                   </span>
                 {% endif %}
               </div>
 
               {% if not item.completed %}
-                <a href="{% url item.url_name %}" class="btn btn-secondary btn-sm" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; flex-shrink: 0; font-weight: 700;">
+                <a href="{% url item.url_name %}" class="btn btn-secondary btn-sm profile-checklist-btn" style="font-weight: 700;">
                   {{ item.action_label }} &rarr;
                 </a>
               {% endif %}
@@ -795,15 +1314,15 @@
         </div>
 
         <!-- Ranking Impact Info -->
-        <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem;">
+        <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
           <i data-lucide="award" style="width: 16px; height: 16px; color: #f59e0b; flex-shrink: 0;"></i>
-          <span>Profiles with 100% Strength and Demo Videos receive <strong>4.2x more demo requests</strong>.</span>
+          <span>Profiles with 100% Strength receive <strong>4.2x more demo requests</strong>.</span>
         </div>
       </div>
 
       <!-- Quick Demos Reminder Card -->
       <div class="card" style="padding: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
           <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0;">Scheduled Demo Sessions</h4>
           <a href="{% url 'tutors:demos' %}" style="font-size: 0.775rem; color: var(--primary); font-weight: 700;">All Demos &rarr;</a>
         </div>
@@ -811,12 +1330,12 @@
         <div style="display: flex; flex-direction: column; gap: 0.85rem;">
           {% for demo in upcoming_demos %}
             <div style="border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
-              <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center flex-wrap gap-1">
                 <span class="badge badge-warning" style="font-size: 0.65rem;">{{ demo.get_status_display }}</span>
                 <span style="font-size: 0.75rem; color: var(--text-muted);">{{ demo.scheduled_datetime|date:"M d, h:i A" }}</span>
               </div>
-              <h5 style="font-size: 0.9rem; font-weight: 700; margin-top: 0.25rem;">With {{ demo.parent.display_name }}</h5>
-              <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0;">{{ demo.requirement.subjects }} ({{ demo.get_mode_display }})</p>
+              <h5 style="font-size: 0.9rem; font-weight: 700; margin-top: 0.25rem; word-break: break-word;">With {{ demo.parent.display_name }}</h5>
+              <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0; word-break: break-word;">{{ demo.requirement.subjects }} ({{ demo.get_mode_display }})</p>
             </div>
           {% empty %}
             <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 1rem 0;">No demo classes pending.</p>
@@ -849,7 +1368,104 @@
     }
   }
 
-  // ── 2. HTML5 Drag & Drop Kanban Pipeline Controls ──
+  // ── 2. Mobile Kanban Stage Tab Switcher & Scroll Tracking ──
+  function scrollKanbanTo(stage, btnEl) {
+    const col = document.getElementById('kanban-col-' + stage);
+    if (col) {
+      col.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+    // Update active tab button style
+    document.querySelectorAll('.kanban-tab-btn').forEach(btn => btn.classList.remove('is-active'));
+    if (btnEl) {
+      btnEl.classList.add('is-active');
+    }
+  }
+
+  // Listen to horizontal scroll on mobile Kanban board to sync active tab indicator
+  const kanbanGrid = document.getElementById('kanbanBoardGrid');
+  if (kanbanGrid) {
+    let scrollTimeout;
+    kanbanGrid.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function() {
+        const columns = kanbanGrid.querySelectorAll('.kanban-column');
+        const gridRect = kanbanGrid.getBoundingClientRect();
+        const gridCenter = gridRect.left + gridRect.width / 2;
+
+        let closestCol = null;
+        let minDiff = Infinity;
+
+        columns.forEach(col => {
+          const colRect = col.getBoundingClientRect();
+          const colCenter = colRect.left + colRect.width / 2;
+          const diff = Math.abs(gridCenter - colCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestCol = col;
+          }
+        });
+
+        if (closestCol) {
+          const stage = closestCol.getAttribute('data-stage');
+          document.querySelectorAll('.kanban-tab-btn').forEach(btn => {
+            if (btn.getAttribute('data-stage') === stage) {
+              btn.classList.add('is-active');
+              btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } else {
+              btn.classList.remove('is-active');
+            }
+          });
+        }
+      }, 80);
+    });
+  }
+
+  // ── 3. Touch Screen Mobile Stage Changer ──
+  function onMobileStageChange(selectEl, cardId) {
+    const newStage = selectEl.value;
+    if (!newStage || !cardId) return;
+
+    const cardEl = document.querySelector(`[data-card-id="${cardId}"]`);
+    const targetCol = document.getElementById(`kanban-col-${newStage}`);
+
+    if (cardEl && targetCol) {
+      const container = targetCol.querySelector('.kanban-cards-container');
+      if (container) {
+        const emptyHint = container.querySelector('.kanban-empty-hint');
+        if (emptyHint) emptyHint.remove();
+
+        container.appendChild(cardEl);
+        updateKanbanCounts();
+      }
+    }
+
+    // Submit AJAX request to backend
+    const formData = new FormData();
+    formData.append('card_id', cardId);
+    formData.append('stage', newStage);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch("{% url 'tutors:pipeline_update' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showPipelineToast(data.message, 'success');
+      } else {
+        showPipelineToast(data.error || 'Failed to update pipeline stage', 'error');
+      }
+    })
+    .catch(err => {
+      showPipelineToast('Error updating stage', 'error');
+    });
+  }
+
+  // ── 4. HTML5 Drag & Drop Kanban Pipeline Controls ──
   let draggedCard = null;
 
   function onDragStart(e) {
@@ -897,6 +1513,13 @@
       if (emptyHint) emptyHint.remove();
 
       container.appendChild(cardEl);
+
+      // Sync mobile select inside this card if present
+      const selectInside = cardEl.querySelector('.kanban-mobile-stage-select');
+      if (selectInside) {
+        selectInside.value = targetStage;
+      }
+
       updateKanbanCounts();
     }
 
@@ -935,6 +1558,11 @@
         const count = cont.querySelectorAll('.kanban-lead-card').length;
         badge.textContent = count;
       }
+      // Also update the mobile tab badge if present
+      const mobileBtn = document.querySelector(`.kanban-tab-btn[data-stage="${st}"] .badge`);
+      if (mobileBtn && cont) {
+        mobileBtn.textContent = cont.querySelectorAll('.kanban-lead-card').length;
+      }
     });
   }
 
@@ -953,8 +1581,25 @@
       toast.style.zIndex = '99999';
       toast.style.transition = 'all 0.3s ease';
       toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+      toast.style.maxWidth = 'calc(100vw - 32px)';
       document.body.appendChild(toast);
     }
+
+    // Check if on small viewport to center the toast
+    if (window.innerWidth <= 640) {
+      toast.style.left = '16px';
+      toast.style.right = '16px';
+      toast.style.bottom = '16px';
+      toast.style.textAlign = 'center';
+      toast.style.borderRadius = '12px';
+    } else {
+      toast.style.left = '24px';
+      toast.style.right = 'auto';
+      toast.style.bottom = '24px';
+      toast.style.textAlign = 'left';
+      toast.style.borderRadius = '9999px';
+    }
+
     toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
     toast.style.color = '#ffffff';
     toast.textContent = message;

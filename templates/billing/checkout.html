@@ -85,10 +85,10 @@
     color: var(--text);
   }
 
-  /* Payment Method Tabs (Responsive Segmented Control) */
+  /* Payment Method Tabs (Responsive Segmented Control: UPI | Credit/Debit Card | Netbanking) */
   .method-tab-nav {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     background: var(--surface-hover);
     padding: 0.35rem;
     border-radius: 0.85rem;
@@ -97,9 +97,9 @@
     border: 1px solid var(--border);
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     .method-tab-nav {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 0.35rem;
     }
   }
@@ -169,18 +169,41 @@
   /* QR Frame */
   .qr-frame-box {
     background: #ffffff !important;
-    padding: 1rem;
+    padding: 1.25rem;
     border-radius: 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
     margin: 0.75rem auto 1rem;
     position: relative;
-    border: 2px solid #e2e8f0;
+    border: 2px dashed #94a3b8;
     max-width: 220px;
     width: 100%;
     box-sizing: border-box;
+  }
+
+  /* Coupon Applied Green Flash Animation */
+  @keyframes priceFlashGreen {
+    0% {
+      color: #10b981;
+      transform: scale(1.1);
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+      color: #10b981;
+      transform: scale(1.05);
+      text-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+    }
+    100% {
+      color: var(--primary);
+      transform: scale(1);
+      text-shadow: none;
+    }
+  }
+  .price-flash-active {
+    display: inline-block;
+    animation: priceFlashGreen 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .qr-code-img {
@@ -412,23 +435,19 @@
         </p>
       </div>
 
-      <!-- Payment Method Navigation Tabs -->
+      <!-- Payment Method Navigation Tabs (UPI | Credit/Debit Card | Netbanking) -->
       <div class="method-tab-nav" role="tablist">
         <button type="button" class="method-tab-btn active" data-tab="upi" onclick="switchMethod('UPI')">
           <i data-lucide="qr-code" style="width: 16px; height: 16px;"></i>
-          <span>UPI / QR</span>
+          <span>UPI</span>
         </button>
         <button type="button" class="method-tab-btn" data-tab="card" onclick="switchMethod('CARD')">
           <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i>
-          <span>Cards</span>
+          <span>Credit/Debit Card</span>
         </button>
         <button type="button" class="method-tab-btn" data-tab="netbanking" onclick="switchMethod('NET_BANKING')">
           <i data-lucide="landmark" style="width: 16px; height: 16px;"></i>
-          <span>Net Banking</span>
-        </button>
-        <button type="button" class="method-tab-btn" data-tab="wallet" onclick="switchMethod('WALLET')">
-          <i data-lucide="wallet" style="width: 16px; height: 16px;"></i>
-          <span>Wallets</span>
+          <span>Netbanking</span>
         </button>
       </div>
 
@@ -498,11 +517,11 @@
             </div>
 
             <!-- Official Merchant VPA & Copy Action -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.65rem; flex-wrap: wrap;">
-              <span style="font-size: 0.825rem; color: var(--text-muted);">UPI ID / VPA:</span>
-              <code id="merchantUpiVpa" style="background: var(--surface); padding: 0.25rem 0.65rem; border-radius: 6px; font-weight: 700; color: var(--text); border: 1px solid var(--border); font-family: monospace;">{{ upi_pa }}</code>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="copyUpiId('{{ upi_pa }}')" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">
-                <i data-lucide="copy" style="width: 13px; height: 13px;"></i> Copy
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.6rem; margin-top: 0.75rem; flex-wrap: wrap;">
+              <span style="font-size: 0.825rem; color: var(--text-muted); font-weight: 600;">UPI ID:</span>
+              <code id="merchantUpiVpa" style="background: var(--surface); padding: 0.3rem 0.75rem; border-radius: 8px; font-weight: 800; color: var(--text); border: 1px solid var(--border); font-family: monospace; font-size: 0.85rem;">{{ upi_pa }}</code>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="copyUpiId('{{ upi_pa }}')" style="padding: 0.3rem 0.75rem; font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+                <i data-lucide="copy" style="width: 13px; height: 13px;"></i> Copy UPI ID
               </button>
             </div>
 
@@ -1004,7 +1023,7 @@
   function copyUpiId(upiId) {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(upiId).then(() => {
-        showCheckoutToast('UPI ID copied to clipboard: ' + upiId);
+        showCheckoutToast('Copied!');
       });
     } else {
       const tempInput = document.createElement('input');
@@ -1013,7 +1032,7 @@
       tempInput.select();
       document.execCommand('copy');
       document.body.removeChild(tempInput);
-      showCheckoutToast('UPI ID copied to clipboard: ' + upiId);
+      showCheckoutToast('Copied!');
     }
   }
 
@@ -1112,9 +1131,12 @@
         document.getElementById('displayCgst').innerText = cgst.toFixed(2);
         document.getElementById('displaySgst').innerText = cgst.toFixed(2);
 
-        // Update all total labels
+        // Update all total labels and trigger green flash transition
         document.querySelectorAll('.total-display').forEach(el => {
           el.innerText = `${currencySymbol}${data.total_payable.toFixed(2)}`;
+          el.classList.remove('price-flash-active');
+          void el.offsetWidth;
+          el.classList.add('price-flash-active');
         });
 
         // Update QR Code Image & Direct Link if new QR returned

@@ -2,11 +2,31 @@
 
 {% block title %}{{ tutor.display_name }} — Verified Tutor Profile — {{ company.company_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  @media (max-width: 768px) {
+    .tutor-detail-container {
+      padding-top: 1.5rem !important;
+      padding-bottom: 3.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+    .tutor-profile-main-card {
+      padding: 1.25rem 1rem !important;
+    }
+    .tutor-booking-sidebar {
+      position: static !important;
+      padding: 1.25rem 1rem !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+<div class="container tutor-detail-container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
   
   <!-- Breadcrumb Navigation -->
-  <div style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+  <div style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
     <a href="{% url 'core:home' %}" style="color: var(--text-muted);">Home</a>
     <span>/</span>
     <a href="{% url 'tutors:directory' %}" style="color: var(--text-muted);">Tutors</a>
@@ -18,7 +38,7 @@
     
     <!-- Left Column: Tutor Profile Details (Span 2) -->
     <div class="col-span-1 md:col-span-2">
-      <div class="card" style="padding: 2.25rem; margin-bottom: 2rem; border: 1px solid var(--border);">
+      <div class="card tutor-profile-main-card" style="padding: 2.25rem; margin-bottom: 2rem; border: 1px solid var(--border);">
         
         <!-- Header Banner with Avatar, Key Badges, and Save Toggle -->
         <div class="flex items-center gap-4" style="margin-bottom: 1.75rem; flex-wrap: wrap;">
@@ -211,7 +231,7 @@
 
     <!-- Right Column: Demo Booking & Enquiry Card (Span 1) -->
     <div class="col-span-1 md:col-span-1">
-      <div class="card" id="bookDemo" style="padding: 2rem; position: sticky; top: 90px; border: 1px solid var(--border); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);">
+      <div class="card tutor-booking-sidebar" id="bookDemo" style="padding: 2rem; position: sticky; top: 90px; border: 1px solid var(--border); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06);">
         
         <div style="margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">
           <div style="font-size: 0.775rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Monthly Tuition Fee</div>

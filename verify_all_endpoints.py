@@ -42,6 +42,7 @@ admin_endpoints = [
     ('/admin-portal/subscriptions/', 200, "Subscriptions"),
     ('/admin-portal/financials/', 200, "Financials"),
     ('/admin-portal/complaints/', 200, "Complaints"),
+    ('/admin-portal/enquiries/', 200, "Enquiries Desk"),
     ('/admin-portal/announcements/', 200, "Announcements"),
     ('/admin-portal/branding/', 200, "Branding Settings"),
     ('/admin-portal/theme/', 200, "Theme Customizer"),

@@ -781,6 +781,7 @@
       color: #ffffff;
     }
   </style>
+  <link rel="stylesheet" href="{% static 'css/base_utils.css' %}">
   <link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
   {% block extra_css %}{% endblock %}
   {% block extra_head %}{% endblock %}
@@ -789,9 +790,9 @@
 
   <!-- Top Announcement Bar: ONLY visible on public marketing pages -->
   {% if request.path == '/' or request.path == '/how-it-works/' or request.path == '/pricing/' or request.path == '/about/' or request.path == '/contact/' %}
-  <div style="background: linear-gradient(90deg, var(--primary), var(--secondary)); color: white; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 600; text-align: center;">
+  <div class="top-announcement-bar">
     <span>⚡ Need a Verified Home or Online Tutor? Post your requirements in 60 seconds — No platform fees for parents!</span>
-    <a href="{% url 'leads:post_requirement' %}" style="text-decoration: underline; margin-left: 0.5rem; color: #fef08a; font-weight: 700;">Post Requirement &rarr;</a>
+    <a href="{% url 'leads:post_requirement' %}" class="top-announcement-link">Post Requirement &rarr;</a>
   </div>
   {% endif %}
 
@@ -873,7 +874,7 @@
             <a href="{% url 'communication:notifications' %}" class="icon-btn" title="Notifications" aria-label="Notifications">
               <i data-lucide="bell" style="width: 17px; height: 17px;"></i>
               {% if unread_notifications_count > 0 %}
-                <span class="icon-badge">{{ unread_notifications_count }}</span>
+                <span class="icon-badge has-unread">{{ unread_notifications_count }}</span>
               {% endif %}
             </a>
 
@@ -1060,6 +1061,9 @@
         </a>
 
         <div class="drawer-section-title">Trust & Administration</div>
+        <a href="{% url 'custom_admin:enquiries' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'enquiries' %}active{% endif %}">
+          <span class="flex items-center gap-2"><i data-lucide="inbox" style="width: 17px; height: 17px; color: var(--primary);"></i> Customer Enquiries</span>
+        </a>
         <a href="{% url 'custom_admin:complaints' %}" class="drawer-nav-item {% if request.resolver_match.url_name == 'complaints' %}active{% endif %}">
           <span class="flex items-center gap-2"><i data-lucide="alert-octagon" style="width: 17px; height: 17px; color: var(--danger);"></i> Complaints & Disputes</span>
         </a>

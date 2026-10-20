@@ -50,7 +50,7 @@
             View Tutor Profile
           </a>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-wrap">
             {% if demo.status == 'PROPOSED' or demo.status == 'REQUESTED' %}
               <form method="post" style="display: inline;">
                 {% csrf_token %}

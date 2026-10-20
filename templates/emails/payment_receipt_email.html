@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Payment Receipt — {{ payment_id }}</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 24px; line-height: 1.6; }
+    .email-container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 32px 28px; text-align: center; color: #ffffff; }
+    .content { padding: 32px 28px; }
+    .receipt-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 14px; }
+    .receipt-row:last-child { border-bottom: none; }
+    .total-row { font-size: 18px; font-weight: 800; color: #10b981; border-top: 2px solid #e2e8f0; margin-top: 8px; padding-top: 12px; }
+    .btn { display: inline-block; background-color: #1e40af; color: #ffffff !important; text-decoration: none; font-weight: bold; padding: 12px 28px; border-radius: 8px; margin: 20px 0; font-size: 15px; }
+    .footer { padding: 20px 28px; background: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <div style="font-size: 38px; margin-bottom: 8px;">✓</div>
+      <h1 style="margin: 0; font-size: 24px; font-weight: 800;">Payment Successful</h1>
+      <p style="margin: 6px 0 0; opacity: 0.92; font-size: 14px;">Official Tax Invoice & Transaction Receipt</p>
+    </div>
+
+    <div class="content">
+      <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 0; margin-bottom: 12px;">
+        Thank you for your payment, {{ user.get_full_name|default:user.username }}!
+      </h2>
+      <p style="color: #475569; font-size: 14px;">
+        Your transaction has been securely processed and confirmed. Your account benefits, credits, and memberships have been updated in real-time.
+      </p>
+
+      <div class="receipt-box">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;">Transaction Reference ID:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 700; font-family: monospace; color: #0f172a;">{{ payment_id }}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;">Tax Invoice Number:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #1e40af;">#{{ invoice_number }}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;">Item Description:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">{{ line_item_description }}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;">Payment Method:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">{{ payment_method }}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b;">Transaction Date:</td>
+            <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">{{ created_at|date:"M d, Y h:i A" }}</td>
+          </tr>
+          <tr style="border-top: 2px dashed #cbd5e1;">
+            <td style="padding: 12px 0 4px; font-size: 16px; font-weight: 800; color: #0f172a;">Total Amount Paid:</td>
+            <td style="padding: 12px 0 4px; text-align: right; font-size: 20px; font-weight: 900; color: #10b981;">
+              {{ company.currency_symbol|default:"₹" }}{{ amount_paid }}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="text-align: center; margin: 24px 0 16px;">
+        <a href="{{ invoice_url }}" class="btn">
+          View & Download Official Invoice &rarr;
+        </a>
+      </div>
+
+      <p style="font-size: 13px; color: #64748b; text-align: center;">
+        Direct link: <a href="{{ invoice_url }}" style="color: #1e40af; word-break: break-all;">{{ invoice_url }}</a>
+      </p>
+
+      <p style="margin-top: 28px; font-size: 13px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+        Need help with your billing or invoice? Contact our finance desk at <a href="mailto:{{ company.billing_email|default:'billing@edututorpro.com' }}" style="color: #1e40af;">{{ company.billing_email|default:'billing@edututorpro.com' }}</a>.
+      </p>
+    </div>
+
+    <div class="footer">
+      &copy; {{ company.company_name|default:"EduTutor Pro" }}. All rights reserved.<br>
+      This is an automated payment confirmation and receipt for your records.
+    </div>
+  </div>
+</body>
+</html>

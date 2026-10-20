@@ -2,8 +2,24 @@
 
 {% block title %}Post Tuition Requirement — Find Top Tutors — {{ company.company_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  @media (max-width: 640px) {
+    .post-req-container {
+      padding-top: 1.5rem !important;
+      padding-bottom: 3.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+    .post-req-card-body {
+      padding: 1.25rem 1rem !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 780px;">
+<div class="container post-req-container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 780px;">
   <div style="text-align: center; margin-bottom: 2.5rem;">
     <span class="badge badge-primary" style="margin-bottom: 0.5rem;">100% Free For Parents</span>
     <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--text);">Post a Tuition Requirement</h1>
@@ -13,7 +29,7 @@
   </div>
 
   <div class="card" style="box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
-    <div class="card-body" style="padding: 2.5rem;">
+    <div class="card-body post-req-card-body" style="padding: 2.5rem;">
       <form method="post" action="{% url 'leads:post_requirement' %}">
         {% csrf_token %}
 

@@ -1,0 +1,372 @@
+{% extends "custom_admin/base_admin.html" %}
+
+{% block title %}Customer Enquiries Desk — {{ company.company_name }}{% endblock %}
+
+{% block admin_content %}
+<!-- Header -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;">
+      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin: 0;">Customer Enquiries Desk</h1>
+      {% if count_new > 0 %}
+        <span class="badge badge-danger" style="animation: pulse 2s infinite; font-weight: 800; font-size: 0.75rem;">
+          {{ count_new }} Unread
+        </span>
+      {% endif %}
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+      Centralized inquiry pipeline managing submissions from the <strong>About Us</strong> and <strong>Contact Us</strong> pages.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <a href="?export=csv{% if status_filter %}&status={{ status_filter }}{% endif %}{% if source_filter %}&source={{ source_filter }}{% endif %}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+      <i data-lucide="download" style="width: 15px; height: 15px;"></i> Export to CSV
+    </a>
+  </div>
+</div>
+
+<!-- KPI Mini Summary Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
+  <a href="{% url 'custom_admin:enquiries' %}" style="text-decoration: none;">
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid var(--primary); transition: transform 0.15s ease; cursor: pointer;">
+      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Total Submissions</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: var(--text); margin-top: 0.35rem;">{{ count_all }}</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">All time enquiries</div>
+    </div>
+  </a>
+
+  <a href="{% url 'custom_admin:enquiries' %}?status=NEW" style="text-decoration: none;">
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid #ef4444; background: {% if status_filter == 'NEW' %}rgba(239, 68, 68, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #ef4444; letter-spacing: 0.05em;">New / Unread</span>
+        {% if count_new > 0 %}<span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span>{% endif %}
+      </div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: #ef4444; margin-top: 0.35rem;">{{ count_new }}</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Requires initial triage</div>
+    </div>
+  </a>
+
+  <a href="{% url 'custom_admin:enquiries' %}?status=IN_PROGRESS" style="text-decoration: none;">
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid #f59e0b; background: {% if status_filter == 'IN_PROGRESS' %}rgba(245, 158, 11, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #f59e0b; letter-spacing: 0.05em;">In Progress</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: #f59e0b; margin-top: 0.35rem;">{{ count_in_progress }}</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Follow-up underway</div>
+    </div>
+  </a>
+
+  <a href="{% url 'custom_admin:enquiries' %}?status=RESOLVED" style="text-decoration: none;">
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid #10b981; background: {% if status_filter == 'RESOLVED' %}rgba(16, 185, 129, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #10b981; letter-spacing: 0.05em;">Resolved / Closed</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: #10b981; margin-top: 0.35rem;">{{ count_resolved }}</div>
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Successfully addressed</div>
+    </div>
+  </a>
+</div>
+
+<!-- Filter Bar -->
+<div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+  <form method="get" action="{% url 'custom_admin:enquiries' %}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+    <!-- Search Query -->
+    <div style="flex: 1; min-width: 240px;">
+      <label class="form-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Search Enquiries</label>
+      <div style="position: relative;">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search by name, email, phone, or keyword..." class="form-control" style="padding-left: 2.25rem;">
+        <i data-lucide="search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted);"></i>
+      </div>
+    </div>
+
+    <!-- Status Filter -->
+    <div style="min-width: 170px;">
+      <label class="form-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Status</label>
+      <select name="status" class="form-select">
+        <option value="">All Statuses ({{ count_all }})</option>
+        <option value="NEW" {% if status_filter == 'NEW' %}selected{% endif %}>New / Unread ({{ count_new }})</option>
+        <option value="IN_PROGRESS" {% if status_filter == 'IN_PROGRESS' %}selected{% endif %}>In Progress ({{ count_in_progress }})</option>
+        <option value="RESOLVED" {% if status_filter == 'RESOLVED' %}selected{% endif %}>Resolved ({{ count_resolved }})</option>
+        <option value="SPAM" {% if status_filter == 'SPAM' %}selected{% endif %}>Spam / Dismissed ({{ count_spam }})</option>
+      </select>
+    </div>
+
+    <!-- Source Origin Filter -->
+    <div style="min-width: 160px;">
+      <label class="form-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem;">Origin Page</label>
+      <select name="source" class="form-select">
+        <option value="">All Origins</option>
+        <option value="about" {% if source_filter == 'about' %}selected{% endif %}>About Page ({{ count_about }})</option>
+        <option value="contact" {% if source_filter == 'contact' %}selected{% endif %}>Contact Page ({{ count_contact }})</option>
+      </select>
+    </div>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="submit" class="btn btn-primary" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+        <i data-lucide="filter" style="width: 15px; height: 15px;"></i> Filter
+      </button>
+      {% if status_filter or source_filter or search_query %}
+        <a href="{% url 'custom_admin:enquiries' %}" class="btn btn-secondary" style="font-weight: 700;">Reset</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Enquiries List Table Card -->
+<div class="card" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden;">
+  <div style="padding: 1rem 1.25rem; background: var(--table-header-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="font-size: 0.875rem; font-weight: 800; color: var(--text);">
+      Showing {{ enquiries|length }} Customer Enquir{{ enquiries|length|pluralize:"y,ies" }}
+    </div>
+    <div style="display: flex; gap: 0.5rem; font-size: 0.75rem;">
+      <span class="badge badge-secondary">About Origin: {{ count_about }}</span>
+      <span class="badge badge-secondary">Contact Origin: {{ count_contact }}</span>
+    </div>
+  </div>
+
+  <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 820px;">
+      <thead>
+        <tr style="background: var(--surface-hover); border-bottom: 1px solid var(--border); text-align: left;">
+          <th style="padding: 0.85rem 1rem; width: 110px;">Ref ID</th>
+          <th style="padding: 0.85rem 1rem; width: 140px;">Origin & Date</th>
+          <th style="padding: 0.85rem 1rem; width: 220px;">Contact Person</th>
+          <th style="padding: 0.85rem 1rem;">Subject & Message</th>
+          <th style="padding: 0.85rem 1rem; width: 130px;">Status</th>
+          <th style="padding: 0.85rem 1rem; width: 120px; text-align: right;">Manage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for eq in enquiries %}
+          <tr style="border-bottom: 1px solid var(--border); transition: background-color 0.15s ease;" onmouseover="this.style.backgroundColor='var(--surface-hover)'" onmouseout="this.style.backgroundColor='transparent'">
+            <!-- Ref ID -->
+            <td style="padding: 1rem; vertical-align: top;">
+              <span style="font-family: monospace; font-weight: 800; font-size: 0.8rem; color: var(--primary);">
+                #ENQ-{{ eq.id|stringformat:"04d" }}
+              </span>
+            </td>
+
+            <!-- Origin & Date -->
+            <td style="padding: 1rem; vertical-align: top;">
+              <div>
+                {% if eq.source_page == 'about' %}
+                  <span class="badge" style="background: rgba(124, 58, 237, 0.12); color: #7c3aed; border: 1px solid rgba(124, 58, 237, 0.2); font-size: 0.7rem; font-weight: 700;">
+                    <i data-lucide="info" style="width: 11px; height: 11px; vertical-align: middle;"></i> About Page
+                  </span>
+                {% elif eq.source_page == 'contact' %}
+                  <span class="badge" style="background: rgba(6, 182, 212, 0.12); color: #0891b2; border: 1px solid rgba(6, 182, 212, 0.2); font-size: 0.7rem; font-weight: 700;">
+                    <i data-lucide="mail" style="width: 11px; height: 11px; vertical-align: middle;"></i> Contact Us
+                  </span>
+                {% else %}
+                  <span class="badge badge-secondary" style="font-size: 0.7rem;">{{ eq.source_page|title }}</span>
+                {% endif %}
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem;">
+                {{ eq.created_at|date:"M d, Y" }}<br>
+                {{ eq.created_at|date:"h:i A" }}
+              </div>
+            </td>
+
+            <!-- Contact Person -->
+            <td style="padding: 1rem; vertical-align: top;">
+              <div style="font-weight: 800; color: var(--text); font-size: 0.9rem;">
+                {{ eq.name }}
+              </div>
+              <div style="margin-top: 0.25rem;">
+                <a href="mailto:{{ eq.email }}?subject=Re: {{ eq.subject }} (Ref: ENQ-{{ eq.id|stringformat:'04d' }})" style="font-size: 0.78rem; color: var(--primary); display: inline-flex; align-items: center; gap: 0.3rem;">
+                  <i data-lucide="mail" style="width: 13px; height: 13px;"></i> {{ eq.email }}
+                </a>
+              </div>
+              {% if eq.phone %}
+                <div style="margin-top: 0.2rem;">
+                  <a href="tel:{{ eq.phone }}" style="font-size: 0.78rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <i data-lucide="phone" style="width: 13px; height: 13px;"></i> {{ eq.phone }}
+                  </a>
+                </div>
+              {% endif %}
+            </td>
+
+            <!-- Subject & Message -->
+            <td style="padding: 1rem; vertical-align: top;">
+              <div style="font-weight: 700; color: var(--text); font-size: 0.88rem; margin-bottom: 0.25rem;">
+                {{ eq.subject }}
+              </div>
+              <div style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.5; max-height: 4.5rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                {{ eq.message }}
+              </div>
+
+              {% if eq.admin_notes %}
+                <div style="margin-top: 0.5rem; background: var(--surface-hover); border-left: 3px solid #10b981; padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.75rem; color: var(--text);">
+                  <strong>Admin Note:</strong> {{ eq.admin_notes }}
+                </div>
+              {% endif %}
+            </td>
+
+            <!-- Status -->
+            <td style="padding: 1rem; vertical-align: top;">
+              {% if eq.status == 'NEW' %}
+                <span class="badge badge-danger" style="font-weight: 800; font-size: 0.72rem; padding: 0.3rem 0.6rem;">
+                  ● New / Unread
+                </span>
+              {% elif eq.status == 'IN_PROGRESS' %}
+                <span class="badge badge-warning" style="font-weight: 800; font-size: 0.72rem; padding: 0.3rem 0.6rem;">
+                  ● In Progress
+                </span>
+              {% elif eq.status == 'RESOLVED' %}
+                <span class="badge badge-success" style="font-weight: 800; font-size: 0.72rem; padding: 0.3rem 0.6rem;">
+                  ✓ Resolved
+                </span>
+              {% else %}
+                <span class="badge badge-secondary" style="font-weight: 700; font-size: 0.72rem; padding: 0.3rem 0.6rem;">
+                  Spam / Closed
+                </span>
+              {% endif %}
+            </td>
+
+            <!-- Action Button -->
+            <td style="padding: 1rem; vertical-align: top; text-align: right;">
+              <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; white-space: nowrap;" onclick="openEnquiryModal('enquiry-modal-{{ eq.id }}')">
+                <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> Review
+              </button>
+            </td>
+          </tr>
+
+          <!-- Review & Update Modal for this Enquiry -->
+          <div id="enquiry-modal-{{ eq.id }}" class="modal-backdrop-custom" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center; padding: 1.25rem;">
+            <div class="card" style="max-width: 580px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1.5px solid var(--border);">
+              <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
+                <div>
+                  <div style="font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase;">
+                    Enquiry #ENQ-{{ eq.id|stringformat:"04d" }} • Origin: {{ eq.source_page|title }} Page
+                  </div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0.15rem 0 0 0;">
+                    {{ eq.subject }}
+                  </h3>
+                </div>
+                <button type="button" onclick="closeEnquiryModal('enquiry-modal-{{ eq.id }}')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+              </div>
+
+              <div style="padding: 1.5rem;">
+                <!-- Sender Contact Details Card -->
+                <div style="background: var(--surface-hover); padding: 1rem; border-radius: var(--border-radius); margin-bottom: 1.25rem; font-size: 0.85rem;">
+                  <div style="font-weight: 800; color: var(--text); font-size: 0.95rem;">{{ eq.name }}</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem;">
+                    <div>
+                      <span style="color: var(--text-muted);">Email:</span>
+                      <a href="mailto:{{ eq.email }}?subject=Re: {{ eq.subject }} (Ref: ENQ-{{ eq.id|stringformat:'04d' }})" style="color: var(--primary); font-weight: 600; margin-left: 0.25rem;">
+                        {{ eq.email }}
+                      </a>
+                    </div>
+                    {% if eq.phone %}
+                      <div>
+                        <span style="color: var(--text-muted);">Phone:</span>
+                        <a href="tel:{{ eq.phone }}" style="color: var(--text); font-weight: 600; margin-left: 0.25rem;">
+                          {{ eq.phone }}
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">
+                    Submitted on: {{ eq.created_at|date:"F d, Y at h:i A" }}
+                  </div>
+                </div>
+
+                <!-- Full Enquiry Message -->
+                <div style="margin-bottom: 1.5rem;">
+                  <label class="form-label" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted);">Full Message Content</label>
+                  <div style="background: var(--background); border: 1px solid var(--border); padding: 1rem; border-radius: var(--border-radius); font-size: 0.9rem; line-height: 1.6; color: var(--text); white-space: pre-wrap;">{{ eq.message }}</div>
+                </div>
+
+                <!-- Status Update Form -->
+                <form method="post" action="{% url 'custom_admin:enquiries' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="update_status">
+                  <input type="hidden" name="enquiry_id" value="{{ eq.id }}">
+
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label" style="font-size: 0.8rem; font-weight: 700;">Update Status</label>
+                    <select name="status" class="form-select" required>
+                      <option value="NEW" {% if eq.status == 'NEW' %}selected{% endif %}>New / Unread</option>
+                      <option value="IN_PROGRESS" {% if eq.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress (Triage / Contacted)</option>
+                      <option value="RESOLVED" {% if eq.status == 'RESOLVED' %}selected{% endif %}>Resolved (Closed)</option>
+                      <option value="SPAM" {% if eq.status == 'SPAM' %}selected{% endif %}>Spam / Discard</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label" style="font-size: 0.8rem; font-weight: 700;">Internal Admin Follow-up Notes</label>
+                    <textarea name="admin_notes" class="form-control" rows="3" placeholder="Log counselor response, phone discussion summary, or resolution details...">{{ eq.admin_notes }}</textarea>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">Internal notes visible only to platform administrators.</span>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <a href="mailto:{{ eq.email }}?subject=Re: {{ eq.subject }} (Ref: ENQ-{{ eq.id|stringformat:'04d' }})" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <i data-lucide="send" style="width: 14px; height: 14px;"></i> Reply via Email
+                    </a>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button type="button" class="btn btn-secondary btn-sm" onclick="closeEnquiryModal('enquiry-modal-{{ eq.id }}')">
+                        Cancel
+                      </button>
+                      <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 700;">
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <tr>
+            <td colspan="6" style="padding: 3.5rem 1rem; text-align: center;">
+              <div style="max-width: 380px; margin: 0 auto;">
+                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--surface-hover); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--text-muted);">
+                  <i data-lucide="inbox" style="width: 26px; height: 26px;"></i>
+                </div>
+                <h4 style="font-weight: 800; font-size: 1.05rem; color: var(--text); margin-bottom: 0.35rem;">No Customer Enquiries Found</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                  {% if status_filter or source_filter or search_query %}
+                    No enquiries matched your search/filter criteria.
+                  {% else %}
+                    Inquiries submitted from the About and Contact forms will immediately show up here.
+                  {% endif %}
+                </p>
+                {% if status_filter or source_filter or search_query %}
+                  <a href="{% url 'custom_admin:enquiries' %}" class="btn btn-secondary btn-sm">Clear Filters</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function openEnquiryModal(modalId) {
+    const el = document.getElementById(modalId);
+    if (el) {
+      el.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+  }
+
+  function closeEnquiryModal(modalId) {
+    const el = document.getElementById(modalId);
+    if (el) {
+      el.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Close when clicking backdrop
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-backdrop-custom')) {
+      e.target.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+</script>
+{% endblock %}

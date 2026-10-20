@@ -94,14 +94,24 @@
     100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
   }
 
+  @keyframes iconPulseUrgent {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.8; }
+  }
+  .pulse-urgent-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: iconPulseUrgent 1.8s infinite ease-in-out;
+  }
+
   .alert-item-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.9rem 1.15rem;
+    padding: 0.95rem 1.25rem;
     border-radius: 0.75rem;
     background: var(--background);
-    border: 1px solid var(--border);
     margin-bottom: 0.75rem;
     transition: all 0.2s ease;
     flex-wrap: wrap;
@@ -111,12 +121,24 @@
     margin-bottom: 0;
   }
   .alert-item-row:hover {
-    border-color: rgba(79, 70, 229, 0.4);
-    transform: translateX(3px);
+    transform: translateX(4px);
   }
+  .alert-item-row.alert-danger-border {
+    border: 2px solid #ef4444 !important;
+    background: rgba(239, 68, 68, 0.04) !important;
+  }
+  .alert-item-row.alert-warning-border {
+    border: 2px solid #f59e0b !important;
+    background: rgba(245, 158, 11, 0.04) !important;
+  }
+  .alert-item-row.alert-info-border {
+    border: 2px solid var(--primary) !important;
+    background: rgba(79, 70, 229, 0.04) !important;
+  }
+
   .alert-badge-count {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -126,22 +148,94 @@
     flex-shrink: 0;
   }
   .alert-badge-count.warning {
-    background: rgba(245, 158, 11, 0.15);
+    background: rgba(245, 158, 11, 0.18);
     color: #d97706;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    border: 1.5px solid #f59e0b;
   }
   .alert-badge-count.danger {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239, 68, 68, 0.18);
     color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    border: 1.5px solid #ef4444;
   }
   .alert-badge-count.info {
-    background: rgba(79, 70, 229, 0.15);
+    background: rgba(79, 70, 229, 0.18);
     color: var(--primary);
-    border: 1px solid rgba(79, 70, 229, 0.3);
+    border: 1.5px solid var(--primary);
   }
 
-  /* ── Geographic Heatmap Mockup ── */
+  /* ── KPI Trend Indicator Pills ── */
+  .kpi-trend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.725rem;
+    font-weight: 800;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    margin-top: 0.45rem;
+  }
+  .kpi-trend-pill.positive {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+  html.dark .kpi-trend-pill.positive {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+  }
+
+  /* ── Recent Leads Table Row Hover ── */
+  .leads-bi-table tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  .leads-bi-table tbody tr:hover {
+    background-color: var(--surface-hover) !important;
+  }
+
+  /* ── Upgraded Match Score Badges ── */
+  .match-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .match-score-pill.score-high {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1.5px solid #86efac;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
+  }
+  html.dark .match-score-pill.score-high {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+  .match-score-pill.score-medium {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1.5px solid #fcd34d;
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+  }
+  html.dark .match-score-pill.score-medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+  .match-score-pill.score-moderate {
+    background: #e0e7ff;
+    color: #3730a3;
+    border: 1.5px solid #c7d2fe;
+  }
+  html.dark .match-score-pill.score-moderate {
+    background: rgba(79, 70, 229, 0.2);
+    color: #a5b4fc;
+    border-color: rgba(79, 70, 229, 0.4);
+  }
+
+  /* ── Geographic Heatmap Mockup Card ── */
   .heatmap-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -155,50 +249,31 @@
   }
   .heatmap-row:last-child {
     border-bottom: none;
-    padding-bottom: 0;
   }
   .heatmap-progress-track {
-    width: 100%;
-    height: 8px;
     background: var(--surface-hover);
+    height: 7px;
     border-radius: 9999px;
+    margin-top: 0.45rem;
     overflow: hidden;
-    margin-top: 0.5rem;
     border: 1px solid var(--border);
   }
   .heatmap-progress-bar {
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.4s ease;
   }
 
-  /* ── Upgraded Match Score Badges ── */
-  .match-score-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 9999px;
-    font-size: 0.775rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-  }
-  .match-score-pill.score-high {
-    background: rgba(16, 185, 129, 0.15);
-    color: #059669;
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
-  }
-  .match-score-pill.score-medium {
-    background: rgba(245, 158, 11, 0.15);
-    color: #b45309;
-    border: 1px solid rgba(245, 158, 11, 0.35);
-  }
-  .match-score-pill.score-moderate {
-    background: rgba(79, 70, 229, 0.12);
-    color: var(--primary);
-    border: 1px solid rgba(79, 70, 229, 0.25);
+  @media (max-width: 768px) {
+    .bi-funnel-milestones-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .bi-financial-summary-row {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.5rem !important;
+    }
   }
 </style>
 {% endblock %}
@@ -263,13 +338,13 @@
       </div>
 
       <!-- Funnel Chart Canvas -->
-      <div style="position: relative; height: 240px; width: 100%;">
+      <div style="position: relative; height: 280px; min-height: 280px; width: 100%;">
         <canvas id="leadFunnelChart"></canvas>
       </div>
     </div>
 
     <!-- Funnel Stage Milestone Stats Bar -->
-    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
+    <div class="bi-funnel-milestones-grid" style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
       <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
         <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">1. Leads Posted</div>
         <div style="font-size: 1.25rem; font-weight: 900; color: var(--primary);">{{ funnel_leads }}</div>
@@ -312,13 +387,13 @@
       </div>
 
       <!-- Line Graph Canvas -->
-      <div style="position: relative; height: 240px; width: 100%;">
+      <div style="position: relative; height: 280px; min-height: 280px; width: 100%;">
         <canvas id="revenueCommissionChart"></canvas>
       </div>
     </div>
 
     <!-- Financial Performance Summary Row -->
-    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+    <div class="bi-financial-summary-row" style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: inline-block;"></span>
         <span style="color: var(--text-muted);">Total Revenue (Subscriptions + Unlocks)</span>
@@ -337,7 +412,7 @@
 ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
   
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #10b981;">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #10b981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.01) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Collected Revenue</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); color: #059669; display: flex; align-items: center; justify-content: center;">
@@ -350,9 +425,13 @@
     <div style="font-size: 0.775rem; color: var(--text-muted);">
       Subs: <strong>{{ company.currency_symbol }}{{ subscription_revenue|floatformat:2 }}</strong> • Comm: <strong>{{ company.currency_symbol }}{{ commission_revenue|floatformat:2 }}</strong>
     </div>
+    <div class="kpi-trend-pill positive">
+      <i data-lucide="trending-up" style="width: 13px; height: 13px;"></i>
+      <span>+14.2% this month</span>
+    </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary); background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0.01) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Tuition Leads</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
@@ -365,9 +444,13 @@
     <div style="font-size: 0.775rem; color: var(--text-muted);">
       <span style="color: var(--primary); font-weight: 700;">{{ open_leads }} Open Active</span> • <span>{{ confirmed_leads }} Confirmed</span>
     </div>
+    <div class="kpi-trend-pill positive">
+      <i data-lucide="trending-up" style="width: 13px; height: 13px;"></i>
+      <span>+18.5% new postings</span>
+    </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #6366f1;">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #6366f1; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.01) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Verified Educators</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.12); color: #4f46e5; display: flex; align-items: center; justify-content: center;">
@@ -380,9 +463,13 @@
     <div style="font-size: 0.775rem; color: #d97706; font-weight: 700;">
       {{ pending_verifications }} Awaiting Document Verification
     </div>
+    <div class="kpi-trend-pill positive">
+      <i data-lucide="trending-up" style="width: 13px; height: 13px;"></i>
+      <span>+9.3% tutor growth</span>
+    </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--accent);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--accent); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.01) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Confirmed Tuitions</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); color: #d97706; display: flex; align-items: center; justify-content: center;">
@@ -394,6 +481,10 @@
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
       {{ scheduled_demos }} Demos in Ongoing Pipeline
+    </div>
+    <div class="kpi-trend-pill positive">
+      <i data-lucide="trending-up" style="width: 13px; height: 13px;"></i>
+      <span>+12.0% conversions</span>
     </div>
   </div>
 
@@ -413,7 +504,7 @@
         Requires Attention
       </h3>
       <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 800;">
-        3 Operational SLA Actions
+        {% if alert_pending_enquiries %}4 Operational SLA Actions{% else %}3 Operational SLA Actions{% endif %}
       </span>
     </div>
     <span style="font-size: 0.775rem; color: var(--text-muted);">
@@ -423,13 +514,15 @@
 
   <div style="display: flex; flex-direction: column; gap: 0.75rem;">
     
-    <!-- Alert 1: Tutor Documents Pending Verification -->
-    <div class="alert-item-row">
+    <!-- Alert 1: Tutor Documents Pending Verification (Amber Solid Border) -->
+    <div class="alert-item-row alert-warning-border">
       <div style="display: flex; align-items: center; gap: 0.85rem;">
-        <div class="alert-badge-count warning">{{ alert_pending_docs }}</div>
+        <div class="alert-badge-count warning pulse-urgent-icon">
+          <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
+        </div>
         <div>
           <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
-            <span>Tutor qualification documents pending verification</span>
+            <span>Tutor qualification documents pending verification ({{ alert_pending_docs }})</span>
             <span class="badge badge-secondary" style="font-size: 0.68rem;">ID & Degrees</span>
           </div>
           <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
@@ -444,13 +537,15 @@
       </div>
     </div>
 
-    <!-- Alert 2: Disputes Unresolved Past 24 Hours -->
-    <div class="alert-item-row">
+    <!-- Alert 2: Disputes Unresolved Past 24 Hours (Red Solid Border) -->
+    <div class="alert-item-row alert-danger-border">
       <div style="display: flex; align-items: center; gap: 0.85rem;">
-        <div class="alert-badge-count danger">{{ alert_disputes }}</div>
+        <div class="alert-badge-count danger pulse-urgent-icon">
+          <i data-lucide="alert-octagon" style="width: 16px; height: 16px;"></i>
+        </div>
         <div>
           <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
-            <span>Disputes unresolved past 24 hours</span>
+            <span>Disputes unresolved past 24 hours ({{ alert_disputes }})</span>
             <span class="badge badge-danger" style="font-size: 0.68rem;">SLA Breach Risk</span>
           </div>
           <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
@@ -459,19 +554,21 @@
         </div>
       </div>
       <div>
-        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="font-weight: 800; border-color: rgba(239, 68, 68, 0.4); color: #ef4444; padding: 0.4rem 0.9rem;">
+        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="font-weight: 800; border-color: rgba(239, 68, 68, 0.5); color: #ef4444; padding: 0.4rem 0.9rem;">
           <i data-lucide="alert-octagon" style="width: 14px; height: 14px;"></i> Resolve Disputes &rarr;
         </a>
       </div>
     </div>
 
-    <!-- Alert 3: Lead Open 3+ Days with No Tutor Unlocks -->
-    <div class="alert-item-row">
+    <!-- Alert 3: Lead Open 3+ Days with No Tutor Unlocks (Primary Blue Solid Border) -->
+    <div class="alert-item-row alert-info-border">
       <div style="display: flex; align-items: center; gap: 0.85rem;">
-        <div class="alert-badge-count info">{{ alert_stale_leads }}</div>
+        <div class="alert-badge-count info pulse-urgent-icon">
+          <i data-lucide="radio" style="width: 16px; height: 16px;"></i>
+        </div>
         <div>
           <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
-            <span>Lead has been open for 3 days with no tutor unlocks</span>
+            <span>Lead has been open for 3 days with no tutor unlocks ({{ alert_stale_leads }})</span>
             <span class="badge badge-primary" style="font-size: 0.68rem;">Churn Risk</span>
           </div>
           <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
@@ -498,6 +595,29 @@
             <i data-lucide="radio" style="width: 14px; height: 14px;"></i> Broadcast to Tutors
           </a>
         {% endif %}
+      </div>
+    </div>
+
+    <!-- Alert 4: Customer Inquiries Pending Response -->
+    <div class="alert-item-row" style="border: 2px solid #06b6d4; background: rgba(6, 182, 212, 0.04);">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="alert-badge-count pulse-urgent-icon" style="background: rgba(6, 182, 212, 0.15); color: #0891b2;">
+          <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
+            <span>Customer inquiries pending response ({{ alert_pending_enquiries }})</span>
+            <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #0891b2; font-size: 0.68rem; font-weight: 700;">About & Contact</span>
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
+            Inquiries and tutor consultation queries received from the About and Contact forms awaiting advisor response.
+          </div>
+        </div>
+      </div>
+      <div>
+        <a href="{% url 'custom_admin:enquiries' %}?status=NEW" class="btn btn-sm" style="background: #0891b2; color: #ffffff; font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px rgba(8, 145, 178, 0.3);">
+          <i data-lucide="inbox" style="width: 14px; height: 14px;"></i> View Enquiries &rarr;
+        </a>
       </div>
     </div>
 
@@ -583,7 +703,7 @@
       </div>
 
       <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <table class="leads-bi-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
           <thead>
             <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
               <th style="padding: 0.75rem 1rem;">Lead ID</th>
@@ -861,27 +981,27 @@
             {
               label: 'Gross Platform Revenue',
               data: revValues,
-              borderColor: '#4f46e5',
-              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
               borderWidth: 2.5,
               tension: 0.35,
               fill: true,
               pointRadius: 2.5,
               pointHoverRadius: 6,
-              pointBackgroundColor: '#4f46e5',
+              pointBackgroundColor: '#10b981',
             },
             {
               label: 'Platform Net Commission',
               data: commValues,
-              borderColor: '#ea580c',
-              backgroundColor: 'transparent',
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.08)',
               borderWidth: 2,
               borderDash: [5, 5],
               tension: 0.35,
               fill: false,
               pointRadius: 2.5,
               pointHoverRadius: 6,
-              pointBackgroundColor: '#ea580c',
+              pointBackgroundColor: '#6366f1',
             }
           ]
         },

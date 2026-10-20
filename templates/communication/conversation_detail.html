@@ -2,25 +2,51 @@
 
 {% block title %}Chat with {{ other_user.display_name }} — {{ company.company_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  @media (max-width: 640px) {
+    .chat-container {
+      padding-top: 1.25rem !important;
+      padding-bottom: 3rem !important;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    .chat-card {
+      height: calc(100vh - 190px) !important;
+      min-height: 440px !important;
+      border-radius: 0.75rem !important;
+    }
+    .chat-bubble {
+      max-width: 88% !important;
+      font-size: 0.85rem !important;
+      padding: 0.65rem 0.85rem !important;
+    }
+    .chat-input-bar {
+      padding: 0.75rem 0.85rem !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem; max-width: 800px;">
+<div class="container chat-container" style="padding-top: 2.5rem; padding-bottom: 5rem; max-width: 800px;">
   
-  <div style="margin-bottom: 1.5rem;">
+  <div style="margin-bottom: 1rem;">
     <a href="{% url 'communication:inbox' %}" style="color: var(--primary); font-weight: 600; font-size: 0.875rem;">
       &larr; Back to Inbox
     </a>
   </div>
 
-  <div class="card" style="display: flex; flex-direction: column; height: 600px;">
+  <div class="card chat-card" style="display: flex; flex-direction: column; height: 600px;">
     <!-- Chat Header -->
-    <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: #f8fafc;">
-      <div class="flex items-center gap-3">
-        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800;">
+    <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface-hover);">
+      <div class="flex items-center gap-2.5">
+        <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">
           {{ other_user.first_name|slice:":1" }}
         </div>
         <div>
-          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text);">{{ other_user.display_name }}</h3>
-          <span class="badge badge-secondary" style="font-size: 0.7rem;">{{ other_user.get_role_display }}</span>
+          <h3 style="font-size: 1rem; font-weight: 800; color: var(--text); margin: 0;">{{ other_user.display_name }}</h3>
+          <span class="badge badge-secondary" style="font-size: 0.68rem;">{{ other_user.get_role_display }}</span>
         </div>
       </div>
       <div>
@@ -31,10 +57,10 @@
     </div>
 
     <!-- Message Bubble Stream -->
-    <div style="flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: #fafafa;">
+    <div style="flex: 1; padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: var(--background);">
       {% for msg in messages_list %}
         <div style="display: flex; flex-direction: column; {% if msg.sender == user %}align-items: flex-end;{% else %}align-items: flex-start;{% endif %}">
-          <div style="max-width: 75%; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.9rem; line-height: 1.4; {% if msg.sender == user %}background: var(--primary); color: white; border-bottom-right-radius: 0.2rem;{% else %}background: #ffffff; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 0.2rem;{% endif %}">
+          <div class="chat-bubble" style="max-width: 75%; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.9rem; line-height: 1.4; word-break: break-word; {% if msg.sender == user %}background: var(--primary); color: white; border-bottom-right-radius: 0.2rem;{% else %}background: var(--surface); color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 0.2rem;{% endif %}">
             {{ msg.body }}
           </div>
           <span style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.2rem; padding: 0 0.25rem;">
@@ -49,12 +75,12 @@
     </div>
 
     <!-- Message Input Bar -->
-    <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: #ffffff;">
+    <div class="chat-input-bar" style="padding: 1rem 1.25rem; border-top: 1px solid var(--border); background: var(--surface);">
       <form method="post" class="flex gap-2">
         {% csrf_token %}
         <input type="text" name="body" class="form-control" placeholder="Type a message..." required autofocus style="flex: 1;">
-        <button type="submit" class="btn btn-primary">
-          <i data-lucide="send" style="width: 16px; height: 16px;"></i> Send
+        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+          <i data-lucide="send" style="width: 15px; height: 15px;"></i> <span class="hidden sm:inline">Send</span>
         </button>
       </form>
     </div>

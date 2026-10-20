@@ -6,7 +6,7 @@
 <div class="container" style="padding-top: 2rem; padding-bottom: 5rem; max-width: 960px;">
   {% include "parents/_parent_nav.html" %}
 
-  <div class="flex items-center justify-between" style="margin-bottom: 1.5rem;">
+  <div class="flex items-center justify-between flex-wrap gap-3" style="margin-bottom: 1.5rem;">
     <div>
       <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text);">My Tuition Requirements ({{ requirements.count }})</h2>
       <p style="color: var(--text-muted); font-size: 0.875rem;">Manage your posted requirements, review tutor applications, and confirm tuitions</p>
@@ -48,7 +48,7 @@
             <strong>{{ req.applications.count }}</strong> applications received • <strong>{{ req.total_unlocks }}</strong> tutors viewed contact details
           </div>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-wrap">
             <a href="{% url 'parents:matches' req.lead_id %}" class="btn btn-primary btn-sm">
               <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> View Matched Tutors & Proposals
             </a>

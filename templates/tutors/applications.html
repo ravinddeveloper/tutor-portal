@@ -67,6 +67,18 @@
   .app-timeline-label.active {
     color: var(--primary);
   }
+
+  @media (max-width: 640px) {
+    .app-timeline-label {
+      font-size: 0.68rem;
+      word-break: break-word;
+    }
+    .app-proposal-badge-box {
+      text-align: left !important;
+      width: 100% !important;
+      margin-top: 0.5rem;
+    }
+  }
 </style>
 {% endblock %}
 
@@ -116,7 +128,7 @@
             </div>
           </div>
 
-          <div style="text-align: right; flex-shrink: 0;">
+          <div class="app-proposal-badge-box" style="text-align: right; flex-shrink: 0;">
             <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Your Proposal</div>
             <div style="font-size: 1.35rem; font-weight: 900; color: #059669;">
               {{ company.currency_symbol }}{{ app.proposed_fee }}<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/mo</span>

@@ -1,25 +1,131 @@
-<div class="card" style="margin-bottom: 1.5rem; background: var(--surface); border: 1px solid var(--border);">
-  <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+<style>
+  /* Tutor Nav Scoped Styles */
+  .tutor-subnav-card {
+    margin-bottom: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+  }
+  .tutor-subnav-top {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .tutor-subnav-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+  }
+  .tutor-subnav-avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+  }
+  .tutor-subnav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tutor-pills-container {
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .tutor-pills-track {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.65rem 0.25rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .tutor-pills-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile Adjustments */
+  @media (max-width: 640px) {
+    .tutor-subnav-card {
+      margin-bottom: 1.25rem;
+    }
+    .tutor-subnav-top {
+      padding: 1rem !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.85rem !important;
+    }
+    .tutor-subnav-profile {
+      width: 100% !important;
+    }
+    .tutor-subnav-profile h2 {
+      font-size: 1.1rem !important;
+    }
+    .tutor-subnav-actions {
+      width: 100% !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    .tutor-subnav-actions a {
+      flex: 1 !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.775rem !important;
+      padding: 0.45rem 0.6rem !important;
+      white-space: nowrap !important;
+    }
+    .tutor-pills-container {
+      margin-bottom: 1.5rem !important;
+      margin-left: -0.25rem;
+      margin-right: -0.25rem;
+    }
+    .tutor-pills-track {
+      gap: 0.4rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+    .tutor-pills-track .btn {
+      font-size: 0.775rem !important;
+      padding: 0.35rem 0.75rem !important;
+    }
+  }
+</style>
+
+<div class="card tutor-subnav-card">
+  <div class="tutor-subnav-top">
     
     <!-- Profile Info -->
-    <div class="flex items-center gap-3">
-      <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.15rem; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);">
+    <div class="tutor-subnav-profile">
+      <div class="tutor-subnav-avatar">
         {{ request.user.first_name|slice:":1"|default:"T" }}
       </div>
-      <div>
+      <div style="min-width: 0; flex: 1;">
         <div class="flex items-center gap-2 flex-wrap">
-          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em;">{{ tutor.display_name }}</h2>
-          <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}">
+          <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; margin: 0; word-break: break-word;">{{ tutor.display_name }}</h2>
+          <span class="badge {% if tutor.is_verified %}badge-success{% else %}badge-warning{% endif %}" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;">
             <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
             {{ tutor.get_verification_status_display }}
           </span>
         </div>
-        <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.15rem;">{{ tutor.headline|default:"Verified Educator & Tutor" }}</p>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0.15rem 0 0; word-break: break-word;">{{ tutor.headline|default:"Verified Educator & Tutor" }}</p>
       </div>
     </div>
 
     <!-- Right Quick Actions: Credits & Public Profile -->
-    <div class="flex items-center gap-2 flex-wrap">
+    <div class="tutor-subnav-actions">
       <a href="{% url 'tutors:billing' %}" class="btn btn-secondary btn-sm" style="border-radius: 9999px; font-weight: 700; color: var(--primary);" title="Available Contact Credits">
         <i data-lucide="zap" style="width: 14px; height: 14px; fill: var(--primary);"></i>
         <span>{{ tutor.credit_wallet.total_balance|default:0 }} Credits</span>
@@ -32,8 +138,8 @@
 </div>
 
 <!-- Modern Horizontal Segmented Navigation Pills -->
-<div style="margin-bottom: 2rem;">
-  <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+<div class="tutor-pills-container">
+  <div class="tutor-pills-track">
     
     <a href="{% url 'tutors:dashboard' %}" class="btn btn-sm {% if request.resolver_match.url_name == 'dashboard' %}btn-primary{% else %}btn-secondary{% endif %}" style="border-radius: 9999px; white-space: nowrap;">
       <i data-lucide="layout-dashboard" style="width: 15px; height: 15px;"></i> Overview

@@ -6,6 +6,7 @@ from apps.tutors.models import TutorProfile
 from apps.billing.models import ContactCreditWallet, TutorSubscription
 from apps.communication.models import Notification
 
+
 def unlock_lead_for_tutor(requirement: TuitionRequirement, tutor: TutorProfile) -> Tuple[bool, str, Dict[str, Any]]:
     """
     Atomically unlocks a tuition lead's confidential contact details for a tutor:
@@ -14,6 +15,7 @@ def unlock_lead_for_tutor(requirement: TuitionRequirement, tutor: TutorProfile) 
     - Row-level locking on wallet prevents double spending race conditions
     - Increments lead's total_unlocks counter
     - Sends an in-app alert to the parent
+    - Sends an email alert to the parent
     - Returns parent contact phone, email, full address, and parent contact name
     """
     if LeadUnlock.objects.filter(requirement=requirement, tutor=tutor).exists():
@@ -60,7 +62,7 @@ def unlock_lead_for_tutor(requirement: TuitionRequirement, tutor: TutorProfile) 
         requirement.total_unlocks += 1
         requirement.save(update_fields=['total_unlocks'])
 
-        # Notify parent that a tutor unlocked their contact details
+        # 1. Notify parent that a tutor unlocked their contact details (In-App)
         try:
             Notification.objects.create(
                 user=requirement.parent.user,
@@ -69,6 +71,34 @@ def unlock_lead_for_tutor(requirement: TuitionRequirement, tutor: TutorProfile) 
                 notification_type=Notification.Type.LEAD_ALERT,
                 action_url=f"/tutors/{tutor.pk}/"
             )
+        except Exception:
+            pass
+
+        # 2. Email Parent Lead Alert using Django's send_mail
+        try:
+            from django.core.mail import send_mail
+            from django.conf import settings
+
+            parent_email = requirement.contact_email or (requirement.parent.user.email if hasattr(requirement.parent, 'user') else None)
+            if parent_email:
+                subject = f"Good news! Tutor {tutor.display_name} viewed your tuition requirement"
+                message_body = (
+                    f"Hello,\n\n"
+                    f"Good news! {tutor.display_name} has viewed your tuition requirement for {requirement.subjects} and may contact you shortly.\n\n"
+                    f"Tutor Profile: {tutor.display_name} ({tutor.highest_qualification})\n"
+                    f"Experience: {tutor.experience_years} Years\n"
+                    f"Requirement: {requirement.title} ({requirement.student_class})\n\n"
+                    f"View Tutor Full Profile: /tutors/{tutor.pk}/\n\n"
+                    f"Best regards,\n"
+                    f"The EduTutor Pro Team"
+                )
+                send_mail(
+                    subject=subject,
+                    message=message_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[parent_email],
+                    fail_silently=True
+                )
         except Exception:
             pass
 

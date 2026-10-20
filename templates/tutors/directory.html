@@ -12,12 +12,13 @@
     border: 1px solid var(--border);
     border-radius: var(--border-radius);
     background: var(--surface);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   }
   .tutor-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow-hover);
-    border-color: rgba(79, 70, 229, 0.35);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.12), 0 6px 14px -3px rgba(0, 0, 0, 0.06);
+    border-color: rgba(79, 70, 229, 0.4);
+    z-index: 3;
   }
 
   .bookmark-btn {
@@ -77,17 +78,17 @@
     transform: translateX(-50%);
     background: var(--surface);
     border: 2px solid var(--primary);
-    padding: 0.65rem 1.25rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 9999px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.28), 0 0 20px rgba(79, 70, 229, 0.2);
     z-index: 9999;
     align-items: center;
-    gap: 1.25rem;
-    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 1.5rem;
+    animation: stickySlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  @keyframes slideUp {
-    from { opacity: 0; transform: translate(-50%, 20px); }
+  @keyframes stickySlideUp {
+    from { opacity: 0; transform: translate(-50%, 30px); }
     to { opacity: 1; transform: translate(-50%, 0); }
   }
 
@@ -102,6 +103,14 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .directory-filter-card {
+      position: static !important;
+      top: auto !important;
+      margin-bottom: 1.5rem;
+    }
   }
 </style>
 {% endblock %}
@@ -144,7 +153,7 @@
     
     <!-- Filter Sidebar (Column 1) -->
     <div class="col-span-1 md:col-span-1">
-      <div class="card" style="padding: 1.5rem; position: sticky; top: 90px; border: 1px solid var(--border);">
+      <div class="card directory-filter-card" style="padding: 1.5rem; position: sticky; top: 90px; border: 1px solid var(--border);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.5rem; margin: 0;">
             <i data-lucide="filter" style="width: 17px; height: 17px; color: var(--primary);"></i>
@@ -262,10 +271,15 @@
                       {{ tutor.display_name }}
                     </h3>
                     {% if tutor.is_verified %}
-                      <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">
-                        <i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> Verified
+                      <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.675rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <i data-lucide="check-circle" style="width: 12px; height: 12px; color: #10b981;"></i> Verified
                       </span>
                     {% endif %}
+                    <span style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                      <i data-lucide="star" style="width: 12px; height: 12px; fill: #f59e0b; color: #f59e0b;"></i>
+                      <span>{{ tutor.average_rating }}</span>
+                      <span style="font-weight: 600; opacity: 0.75;">({{ tutor.total_reviews }})</span>
+                    </span>
                   </div>
                   <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem;">{{ tutor.highest_qualification }}</div>
                 </div>
@@ -337,16 +351,21 @@
             </div>
 
             <!-- Card Bottom Bar -->
-            <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+            <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
               <div>
-                <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Monthly Estimate</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Monthly Estimate</div>
                 <div style="font-size: 1.1rem; font-weight: 900; color: var(--primary);">
                   {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}/mo
                 </div>
               </div>
-              <a href="{% url 'tutors:detail' tutor.pk %}?{{ search_query_string }}" class="btn btn-primary btn-sm">
-                View Full Profile &rarr;
-              </a>
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <a href="{% url 'tutors:detail' tutor.pk %}?action=book_demo" class="btn btn-primary btn-sm" style="background: var(--primary); color: #ffffff; font-weight: 800; font-size: 0.775rem; border: none; padding: 0.45rem 0.85rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+                  <i data-lucide="calendar-check" style="width: 13px; height: 13px;"></i> Book Free Demo
+                </a>
+                <a href="{% url 'tutors:detail' tutor.pk %}?{{ search_query_string }}" class="btn btn-secondary btn-sm" style="font-size: 0.775rem; font-weight: 700; padding: 0.45rem 0.7rem;" title="View Full Profile">
+                  Profile &rarr;
+                </a>
+              </div>
             </div>
           </div>
         {% empty %}
@@ -389,11 +408,11 @@
     <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
       <i data-lucide="scale" style="width: 16px; height: 16px;"></i>
     </div>
-    <span style="font-size: 0.875rem; font-weight: 800; color: var(--text);" id="compareBarLabel">2 tutors selected</span>
+    <span style="font-size: 0.875rem; font-weight: 800; color: var(--text);" id="compareBarLabel">2 Tutors Selected</span>
   </div>
   <div class="flex items-center gap-2">
     <button type="button" class="btn btn-secondary btn-sm" onclick="clearAllCompare()" style="font-size: 0.75rem;">Clear</button>
-    <button type="button" class="btn btn-primary btn-sm" onclick="launchComparison()" style="font-weight: 800; font-size: 0.8rem;">
+    <button type="button" class="btn btn-primary btn-sm" onclick="launchComparison()" style="font-weight: 800; font-size: 0.8rem; background: var(--primary); color: #ffffff;">
       Compare Now &rarr;
     </button>
   </div>
@@ -485,7 +504,7 @@
 
     if (compareSet.size >= 2) {
       bar.style.display = 'flex';
-      label.innerText = `${compareSet.size} tutors selected`;
+      label.innerText = `${compareSet.size} Tutors Selected`;
     } else {
       bar.style.display = 'none';
     }

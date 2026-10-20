@@ -1,96 +1,561 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Parent Portal Dashboard — {{ company.company_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+  /* ==========================================================================
+     PARENT PORTAL DASHBOARD (MOBILE-FIRST RESPONSIVE STYLES)
+     ========================================================================== */
+
+  .parent-dashboard-container {
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+  }
+
+  /* ── 1. KPI Summary Cards ── */
+  .parent-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .parent-stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--card-shadow);
+  }
+  .parent-stat-num {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-top: 0.25rem;
+    line-height: 1.2;
+  }
+  .parent-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── 2. Academic Progress & Tuition Tracker ── */
+  .tracker-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .parent-tracker-card {
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .parent-tracker-card-header {
+    padding: 1rem 1.5rem;
+    background: var(--surface-hover);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .parent-tracker-educator {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+    flex: 1;
+  }
+  .parent-tracker-avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .parent-tracker-whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.775rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 9999px;
+    background: #25D366;
+    color: #ffffff !important;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .parent-tracker-whatsapp-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+  }
+  .engagement-tracker-body {
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .tracker-subbox {
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* ── 3. Requirements & Matches Section ── */
+  .parent-req-item {
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    background: var(--surface);
+  }
+  .parent-req-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .parent-req-stats {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+  }
+  .parent-req-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* ── 4. Scheduled Demos Card ── */
+  .parent-demo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+  }
+  .parent-demo-item {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE BREAKPOINTS (TABLETS & MOBILE DEVICES)
+     ========================================================================== */
+
+  @media (max-width: 1024px) {
+    .parent-stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ── Mobile Devices (<= 640px) ── */
+  @media (max-width: 640px) {
+    .parent-dashboard-container {
+      padding-top: 1rem !important;
+      padding-bottom: 3.5rem !important;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+
+    /* 1. Compact 2x2 Stats Grid */
+    .parent-stats-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.65rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+    .parent-stat-card {
+      padding: 0.85rem 0.95rem !important;
+    }
+    .parent-stat-num {
+      font-size: 1.35rem !important;
+    }
+    .parent-stat-icon {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 10px !important;
+    }
+    .parent-stat-icon i {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    /* 2. Academic Progress Section Header on Mobile */
+    .tracker-section-header {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.65rem !important;
+    }
+    .tracker-section-header .tracker-header-btn {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.8rem !important;
+      padding: 0.45rem 0.75rem !important;
+    }
+
+    /* 3. Academic Tracker Card Header on Mobile */
+    .parent-tracker-card-header {
+      padding: 1rem !important;
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.75rem !important;
+    }
+    .parent-tracker-educator {
+      width: 100% !important;
+      gap: 0.75rem !important;
+    }
+    .parent-tracker-avatar {
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+    }
+    .parent-tracker-whatsapp-btn {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      padding: 0.55rem 1rem !important;
+      font-size: 0.825rem !important;
+      border-radius: 8px !important;
+    }
+
+    /* 4. Academic Tracker 3-Box Body Stacking on Mobile */
+    .engagement-tracker-body {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.75rem !important;
+      padding: 0.85rem !important;
+    }
+    .tracker-subbox {
+      padding: 0.95rem !important;
+    }
+
+    /* 5. Requirements List on Mobile */
+    .parent-req-item {
+      padding: 1rem !important;
+    }
+    .parent-req-footer {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 0.65rem !important;
+    }
+    .parent-req-stats {
+      font-size: 0.775rem !important;
+    }
+    .parent-req-actions {
+      width: 100% !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    .parent-req-actions a {
+      flex: 1 !important;
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.775rem !important;
+      padding: 0.5rem 0.6rem !important;
+      white-space: nowrap !important;
+    }
+
+    /* 6. Trial Demos on Mobile */
+    .parent-demo-card {
+      margin-bottom: 1.25rem !important;
+    }
+    .parent-demo-item .btn {
+      width: 100% !important;
+      justify-content: center !important;
+      text-align: center !important;
+      font-size: 0.775rem !important;
+      padding: 0.45rem 0.65rem !important;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container" style="padding-top: 2rem; padding-bottom: 5rem;">
+<div class="container parent-dashboard-container">
   {% include "parents/_parent_nav.html" %}
 
-  <!-- KPI Summary Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
-    <div class="card" style="padding: 1.25rem;">
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       1. KPI SUMMARY CARDS (RESPONSIVE 4-COL / 2X2 MOBILE GRID)
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="parent-stats-grid">
+    <div class="parent-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Posted Requirements</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Posted Requirements</div>
+          <div class="parent-stat-num" style="color: var(--primary);">
             {{ requirements.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+        <div class="parent-stat-icon" style="background: var(--primary-light); color: var(--primary);">
           <i data-lucide="clipboard-list" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:requirements' %}" style="text-decoration: underline; color: var(--primary);">View Requirements &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem;">
+        <a href="{% url 'parents:requirements' %}" style="text-decoration: underline; color: var(--primary); font-weight: 600;">View Requirements &rarr;</a>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="parent-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Demo Classes</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--secondary); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Demo Classes</div>
+          <div class="parent-stat-num" style="color: var(--secondary);">
             {{ demos.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center;">
+        <div class="parent-stat-icon" style="background: rgba(6, 182, 212, 0.12); color: var(--secondary);">
           <i data-lucide="calendar" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:demos' %}" style="text-decoration: underline; color: var(--secondary);">Review Demos &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem;">
+        <a href="{% url 'parents:demos' %}" style="text-decoration: underline; color: var(--secondary); font-weight: 600;">Review Demos &rarr;</a>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="parent-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Active Tuitions</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: #10b981; margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Active Tuitions</div>
+          <div class="parent-stat-num" style="color: #10b981;">
             {{ engagements.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center;">
+        <div class="parent-stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
           <i data-lucide="check-circle" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:tuitions' %}" style="text-decoration: underline; color: #10b981;">Track Lessons & Progress &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem;">
+        <a href="{% url 'parents:tuitions' %}" style="text-decoration: underline; color: #10b981; font-weight: 600;">Lessons & Progress &rarr;</a>
       </div>
     </div>
 
-    <div class="card" style="padding: 1.25rem;">
+    <div class="parent-stat-card">
       <div class="flex items-center justify-between">
         <div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Student Profiles</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent); margin-top: 0.25rem;">
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Student Profiles</div>
+          <div class="parent-stat-num" style="color: var(--accent);">
             {{ students.count }}
           </div>
         </div>
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center;">
+        <div class="parent-stat-icon" style="background: #fef3c7; color: #d97706;">
           <i data-lucide="users" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.75rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:students' %}" style="text-decoration: underline; color: #d97706;">Manage Children &rarr;</a>
+      <div style="margin-top: 0.65rem; font-size: 0.75rem;">
+        <a href="{% url 'parents:students' %}" style="text-decoration: underline; color: #d97706; font-weight: 600;">Manage Children &rarr;</a>
       </div>
     </div>
   </div>
 
-  <!-- Requirements & Matches Section -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       2. ACADEMIC PROGRESS & TUITION TRACKER (CONFIRMED TUITIONS)
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  {% if engagement_trackers %}
+    <div style="margin-bottom: 2.5rem;">
+      <div class="tracker-section-header">
+        <div>
+          <div class="flex items-center gap-2 flex-wrap" style="margin-bottom: 0.25rem;">
+            <span class="badge badge-success" style="font-size: 0.75rem; font-weight: 800;">
+              <i data-lucide="activity" style="width: 12px; height: 12px;"></i> Live Updates
+            </span>
+            <h2 style="font-size: 1.35rem; font-weight: 900; color: var(--text); letter-spacing: -0.01em; margin: 0; word-break: break-word;">
+              Academic Progress & Tuition Tracker
+            </h2>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0; word-break: break-word;">
+            Track real-time lesson attendance, upcoming scheduled classes, and educator evaluation reports.
+          </p>
+        </div>
+        <a href="{% url 'parents:tuitions' %}" class="btn btn-secondary btn-sm tracker-header-btn" style="font-weight: 700; white-space: nowrap;">
+          <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> View All Tuitions ({{ engagement_trackers|length }})
+        </a>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        {% for tracker in engagement_trackers %}
+          <div class="parent-tracker-card">
+            <!-- Header bar -->
+            <div class="parent-tracker-card-header">
+              <div class="parent-tracker-educator">
+                <div class="parent-tracker-avatar">
+                  {{ tracker.engagement.tutor.display_name|slice:":1"|upper }}
+                </div>
+                <div style="min-width: 0; flex: 1;">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0; word-break: break-word;">
+                      {{ tracker.engagement.agreed_subjects }}
+                    </h3>
+                    <span class="badge badge-primary" style="font-size: 0.7rem;">{{ tracker.engagement.engagement_id }}</span>
+                    <span class="badge badge-success" style="font-size: 0.7rem;">{{ tracker.engagement.get_status_display }}</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; word-break: break-word; line-height: 1.35;">
+                    Educator: <strong>{{ tracker.engagement.tutor.display_name }}</strong> ({{ tracker.engagement.tutor.highest_qualification }}) • Student: <strong>{{ tracker.engagement.student.student_name|default:parent.display_name }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <a href="https://wa.me/{{ tracker.engagement.tutor.user.phone_number|default:'919876543210' }}?text=Hi%20{{ tracker.engagement.tutor.display_name }},%20checking%20in%20regarding%20{{ tracker.engagement.agreed_subjects }}." target="_blank" class="parent-tracker-whatsapp-btn">
+                  <i data-lucide="message-circle" style="width: 14px; height: 14px;"></i> WhatsApp Tutor
+                </a>
+              </div>
+            </div>
+
+            <!-- 3-Column Tracker Body -->
+            <div class="engagement-tracker-body">
+              
+              <!-- Column 1: Attendance Percentage Gauge -->
+              <div class="tracker-subbox">
+                <div>
+                  <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Attendance Reliability</span>
+                    <span class="badge badge-success" style="font-size: 0.7rem;">On Track</span>
+                  </div>
+                  <div class="flex items-center gap-3" style="margin-bottom: 0.75rem;">
+                    <div style="font-size: 2.15rem; font-weight: 900; color: #10b981; line-height: 1;">
+                      {{ tracker.attendance_pct }}%
+                    </div>
+                    <div style="font-size: 0.785rem; color: var(--text-muted); line-height: 1.35;">
+                      <div><strong>{{ tracker.total_conducted }}</strong> Sessions Completed</div>
+                      <div>{{ tracker.absences_count }} Absences recorded</div>
+                    </div>
+                  </div>
+                  <!-- Progress Bar -->
+                  <div style="width: 100%; height: 8px; background: var(--surface-hover); border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem; border: 1px solid var(--border);">
+                    <div style="width: {{ tracker.attendance_pct }}%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 9999px;"></div>
+                  </div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; word-break: break-word;">
+                  Schedule: <strong>{{ tracker.engagement.schedule_summary }}</strong>
+                </div>
+              </div>
+
+              <!-- Column 2: Upcoming Scheduled Lessons -->
+              <div class="tracker-subbox">
+                <div>
+                  <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Upcoming Lesson</span>
+                    <span class="badge badge-primary" style="font-size: 0.7rem;">Scheduled</span>
+                  </div>
+                  {% if tracker.next_lesson %}
+                    <div style="margin-bottom: 0.75rem;">
+                      <div class="flex items-center gap-2" style="font-size: 0.925rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem; word-break: break-word;">
+                        <i data-lucide="clock" style="width: 16px; height: 16px; color: var(--primary); flex-shrink: 0;"></i>
+                        <span>{{ tracker.next_lesson.scheduled_datetime|date:"l, M d • h:i A" }}</span>
+                      </div>
+                      <div style="font-size: 0.825rem; color: var(--text); line-height: 1.4; word-break: break-word;">
+                        {{ tracker.next_lesson.title }}
+                      </div>
+                      {% if tracker.next_lesson.meeting_link %}
+                        <div style="margin-top: 0.6rem;">
+                          <a href="{{ tracker.next_lesson.meeting_link }}" target="_blank" class="btn btn-outline-primary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; width: 100%; justify-content: center;">
+                            <i data-lucide="video" style="width: 13px; height: 13px;"></i> Join Online Class
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div style="padding: 0.5rem 0; color: var(--text-muted); font-size: 0.825rem;">
+                      <p style="margin: 0 0 0.25rem;">Next regular session per schedule:</p>
+                      <strong>{{ tracker.engagement.schedule_summary }}</strong>
+                    </div>
+                  {% endif %}
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px dashed var(--border); padding-top: 0.5rem;">
+                  Duration: 60 mins • Regular weekly cycle
+                </div>
+              </div>
+
+              <!-- Column 3: Latest Student Progress Report -->
+              <div class="tracker-subbox">
+                <div>
+                  <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">Progress Report</span>
+                    {% if tracker.latest_report and tracker.latest_report.test_score_or_grade %}
+                      <span class="badge badge-success" style="font-size: 0.7rem; font-weight: 800;">
+                        {{ tracker.latest_report.test_score_or_grade }}
+                      </span>
+                    {% endif %}
+                  </div>
+                  {% if tracker.latest_report %}
+                    <div>
+                      <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text); margin: 0 0 0.25rem; word-break: break-word;">
+                        {{ tracker.latest_report.report_period }} Evaluation
+                      </h4>
+                      <p style="font-size: 0.825rem; color: var(--text-muted); line-height: 1.4; margin: 0 0 0.65rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
+                        "{{ tracker.latest_report.student_strengths|truncatewords:14 }}"
+                      </p>
+                    </div>
+                  {% else %}
+                    <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0.25rem 0 0.75rem; line-height: 1.4;">
+                      The tutor will publish the first monthly academic progress report following unit tests.
+                    </p>
+                  {% endif %}
+                </div>
+
+                <div>
+                  {% if tracker.latest_report %}
+                    <a href="{% url 'parents:progress_report_detail' tracker.latest_report.id %}" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center; font-weight: 700; font-size: 0.8rem; padding: 0.45rem 0.75rem;">
+                      <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> View Report Card &rarr;
+                    </a>
+                  {% else %}
+                    <a href="{% url 'parents:tuitions' %}" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 0.8rem;">
+                      View Tuition Details
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       3. REQUIREMENTS & MATCHES (DUAL COLUMN DESKTOP / STACKED MOBILE)
+  ═══════════════════════════════════════════════════════════════════════════ -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
     <div class="col-span-1 md:col-span-2">
       <div class="card">
-        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text);">My Posted Requirements</h3>
-          <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm">+ Post New</a>
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">My Posted Requirements</h3>
+          <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">+ Post New</a>
         </div>
 
         <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
           {% for req in requirements %}
-            <div style="border: 1px solid var(--border); border-radius: var(--border-radius); padding: 1.25rem; background: var(--surface);">
-              <div class="flex items-center justify-between" style="margin-bottom: 0.5rem;">
-                <div class="flex items-center gap-2">
+            <div class="parent-req-item">
+              <div class="flex items-center justify-between flex-wrap gap-1" style="margin-bottom: 0.5rem;">
+                <div class="flex items-center gap-2 flex-wrap">
                   <span class="badge badge-primary">{{ req.lead_id }}</span>
                   <span class="badge {% if req.status == 'CONFIRMED' %}badge-success{% else %}badge-warning{% endif %}">
                     {{ req.get_status_display }}
@@ -99,35 +564,36 @@
                 <span style="font-size: 0.75rem; color: var(--text-muted);">{{ req.created_at|date:"M d, Y" }}</span>
               </div>
 
-              <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem;">
+              <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; word-break: break-word;">
                 {{ req.title }}
               </h4>
 
-              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.45; word-break: break-word;">
                 <div><strong>Subjects:</strong> {{ req.subjects }} • <strong>Class:</strong> {{ req.student_class }} ({{ req.board_curriculum }})</div>
                 <div><strong>Mode:</strong> {{ req.get_tuition_type_display }} • <strong>Budget:</strong> {{ company.currency_symbol }}{{ req.budget_amount }}/mo</div>
               </div>
 
-              <div class="flex items-center justify-between" style="border-top: 1px solid var(--border); padding-top: 0.75rem; font-size: 0.825rem;">
-                <span style="color: var(--text-muted);">
-                  {{ req.total_unlocks }} Tutors Unlocked • {{ req.applications.count }} Applications Received
+              <div class="parent-req-footer">
+                <span class="parent-req-stats">
+                  <i data-lucide="users" style="width: 13px; height: 13px; display: inline;"></i>
+                  {{ req.total_unlocks }} Tutors Unlocked • {{ req.applications.count }} Applications
                 </span>
-                <div class="flex gap-2">
-                  <a href="{% url 'parents:matches' req.lead_id %}" class="btn btn-primary btn-sm">
+                <div class="parent-req-actions">
+                  <a href="{% url 'parents:matches' req.lead_id %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
                     <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> View Matched Tutors
                   </a>
-                  <a href="{% url 'leads:detail' req.lead_id %}" class="btn btn-secondary btn-sm" target="_blank">
+                  <a href="{% url 'leads:detail' req.lead_id %}" class="btn btn-secondary btn-sm" target="_blank" style="font-weight: 600;">
                     Public View
                   </a>
                 </div>
               </div>
             </div>
           {% empty %}
-            <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
-              <i data-lucide="clipboard-list" style="width: 40px; height: 40px; margin-bottom: 0.5rem;"></i>
-              <p>You haven't posted any tuition requirements yet.</p>
-              <div style="margin-top: 1rem;">
-                <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm">Post Requirement Now</a>
+            <div style="text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted);">
+              <i data-lucide="clipboard-list" style="width: 40px; height: 40px; margin-bottom: 0.5rem; color: var(--text-muted);"></i>
+              <p style="font-size: 0.9rem; margin-bottom: 1rem;">You haven't posted any tuition requirements yet.</p>
+              <div>
+                <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">Post Requirement Now</a>
               </div>
             </div>
           {% endfor %}
@@ -137,27 +603,28 @@
 
     <!-- Right Column: Scheduled Demos & Ongoing Tuitions -->
     <div class="col-span-1 md:col-span-1">
-      <div class="card" style="margin-bottom: 1.5rem;">
-        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);">
-          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Trial Demo Classes</h3>
+      <div class="parent-demo-card">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0;">Trial Demo Classes</h3>
+          <a href="{% url 'parents:demos' %}" style="font-size: 0.775rem; color: var(--primary); font-weight: 700;">All Demos &rarr;</a>
         </div>
         <div style="padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.85rem;">
           {% for demo in demos %}
-            <div style="border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
-              <div class="flex justify-between items-center">
+            <div class="parent-demo-item">
+              <div class="flex justify-between items-center flex-wrap gap-1">
                 <span class="badge {% if demo.status == 'COMPLETED' %}badge-success{% else %}badge-warning{% endif %}" style="font-size: 0.65rem;">
                   {{ demo.get_status_display }}
                 </span>
                 <span style="font-size: 0.75rem; color: var(--text-muted);">{{ demo.scheduled_datetime|date:"M d, h:i A" }}</span>
               </div>
-              <h5 style="font-size: 0.9rem; font-weight: 700; margin-top: 0.25rem;">Tutor: {{ demo.tutor.display_name }}</h5>
-              <p style="font-size: 0.775rem; color: var(--text-muted);">{{ demo.requirement.subjects }} ({{ demo.get_mode_display }})</p>
-              <div style="margin-top: 0.5rem;">
-                <a href="{% url 'parents:demos' %}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Review Demo</a>
+              <h5 style="font-size: 0.9rem; font-weight: 700; margin-top: 0.35rem; margin-bottom: 0.15rem; word-break: break-word;">Tutor: {{ demo.tutor.display_name }}</h5>
+              <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0 0 0.5rem; word-break: break-word;">{{ demo.requirement.subjects }} ({{ demo.get_mode_display }})</p>
+              <div>
+                <a href="{% url 'parents:demos' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">Review Demo</a>
               </div>
             </div>
           {% empty %}
-            <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 1rem;">No demo classes requested yet.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; padding: 1.5rem 0;">No demo classes requested yet.</p>
           {% endfor %}
         </div>
       </div>
@@ -165,4 +632,15 @@
 
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Refresh Lucide icons
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  });
+</script>
 {% endblock %}

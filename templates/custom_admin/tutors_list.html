@@ -13,16 +13,16 @@
     </div>
 
     <!-- Search & Filter Controls -->
-    <form method="get" class="flex gap-2">
-      <input type="text" name="q" value="{{ search_q }}" class="form-control" placeholder="Search name or city..." style="width: 200px; font-size: 0.85rem;">
-      <select name="status" class="form-select" style="width: 170px; font-size: 0.85rem;">
+    <form method="get" class="flex gap-2 flex-wrap" style="width: 100%; max-width: 480px;">
+      <input type="text" name="q" value="{{ search_q }}" class="form-control" placeholder="Search name or city..." style="flex: 1 1 150px; min-width: 140px; font-size: 0.85rem;">
+      <select name="status" class="form-select" style="flex: 1 1 150px; min-width: 140px; font-size: 0.85rem;">
         <option value="">All Statuses</option>
         <option value="SUBMITTED" {% if status_filter == 'SUBMITTED' %}selected{% endif %}>Pending Review</option>
         <option value="VERIFIED" {% if status_filter == 'VERIFIED' %}selected{% endif %}>Verified</option>
         <option value="REJECTED" {% if status_filter == 'REJECTED' %}selected{% endif %}>Rejected</option>
         <option value="SUSPENDED" {% if status_filter == 'SUSPENDED' %}selected{% endif %}>Suspended</option>
       </select>
-      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+      <button type="submit" class="btn btn-secondary btn-sm" style="flex-shrink: 0;">Filter</button>
     </form>
   </div>
 </div>

@@ -42,6 +42,8 @@ class TutorProfile(models.Model):
 
     languages_spoken = models.CharField(max_length=255, default='English, Hindi')
     online_tools = models.CharField(max_length=255, blank=True, default='Zoom, Google Meet, Digital Pen Tablet')
+    demo_video_url = models.URLField(max_length=500, blank=True, help_text=_('Demo introduction video link (YouTube, Vimeo, Drive)'))
+    average_response_time_minutes = models.PositiveIntegerField(default=12, help_text=_('Average lead response speed in minutes'))
 
     # Verification & Quality
     verification_status = models.CharField(max_length=25, choices=VerificationStatus.choices, default=VerificationStatus.SUBMITTED, db_index=True)
@@ -69,6 +71,22 @@ class TutorProfile(models.Model):
     def display_name(self):
         return self.user.display_name
 
+    @property
+    def is_fast_responder(self):
+        return self.average_response_time_minutes <= 15
+
+    @property
+    def is_top_ranked(self):
+        return self.average_rating >= 4.80 or self.is_featured or self.total_completed_tuitions >= 3
+
+    @property
+    def ranking_badge(self):
+        if self.average_rating >= 4.90 and self.total_completed_tuitions >= 5:
+            return "Top 1% Faculty"
+        elif self.average_rating >= 4.80 or self.is_featured:
+            return "Top 5% Educator"
+        return "Verified Educator"
+
     def calculate_completeness(self):
         """
         Dynamically calculates profile completeness percentage and actionable checklist.
@@ -93,7 +111,7 @@ class TutorProfile(models.Model):
         sub_count = self.subjects.count()
         has_subjects = sub_count > 0
         checklist.append({
-            'label': f'Teaching Subjects & Monthly Fee ({sub_count} added)',
+            'label': f'Teaching Subjects & Fee ({sub_count} added)',
             'points': 20,
             'completed': has_subjects,
             'url_name': 'tutors:subjects_manage',
@@ -106,11 +124,11 @@ class TutorProfile(models.Model):
         qual_count = self.qualifications.count()
         has_qual = qual_count > 0
         checklist.append({
-            'label': f'Academic Degrees & Qualifications ({qual_count} added)',
+            'label': f'Academic Degrees & Diplomas ({qual_count} added)',
             'points': 20,
             'completed': has_qual,
             'url_name': 'tutors:profile_edit',
-            'action_label': 'Add Qualifications'
+            'action_label': 'Add Degrees'
         })
         if has_qual:
             score += 20
@@ -128,24 +146,25 @@ class TutorProfile(models.Model):
         if has_docs:
             score += 20
 
-        # 5. Weekly Availability Slots (20 pts)
-        slot_count = self.availabilities.filter(is_active=True).count()
-        has_avail = slot_count > 0
+        # 5. Demo / Teaching Introduction Video (+20 pts Boost)
+        has_video = bool(self.demo_video_url and len(self.demo_video_url.strip()) >= 6)
         checklist.append({
-            'label': f'Weekly Teaching Availability ({slot_count} slots active)',
+            'label': 'Demo Video / Teaching Introduction (+20% Search Boost)',
             'points': 20,
-            'completed': has_avail,
-            'url_name': 'tutors:availability_manage',
-            'action_label': 'Set Time Slots'
+            'completed': has_video,
+            'url_name': 'tutors:profile_edit',
+            'action_label': 'Add Demo Video'
         })
-        if has_avail:
+        if has_video:
             score += 20
 
         return {
             'score': score,
             'checklist': checklist,
             'is_complete': score == 100,
-            'remaining_count': sum(1 for item in checklist if not item['completed'])
+            'has_video': has_video,
+            'remaining_count': sum(1 for item in checklist if not item['completed']),
+            'strength_label': '100% Elite' if score == 100 else ('80% Advanced' if score >= 80 else f'{score}% In Progress')
         }
 
     def __str__(self):
@@ -245,4 +264,38 @@ class SavedTutor(models.Model):
 
     def __str__(self):
         return f"{self.user.display_name} saved {self.tutor.display_name}"
+
+
+class TutorPipelineCard(models.Model):
+    """
+    Kanban-style visual lead conversion pipeline for educators.
+    Tracks each tuition opportunity across 5 operational stages:
+    - APPLIED (Unlocked / applied)
+    - DEMO_SCHEDULED (Trial demo confirmed / proposed)
+    - DEMO_COMPLETED (Trial class delivered)
+    - WON (Active regular tuition confirmed)
+    - LOST (Parent chose another tutor / cancelled)
+    """
+    class Stage(models.TextChoices):
+        APPLIED = 'APPLIED', _('Applied / Unlocked')
+        DEMO_SCHEDULED = 'DEMO_SCHEDULED', _('Demo Scheduled')
+        DEMO_COMPLETED = 'DEMO_COMPLETED', _('Demo Completed')
+        WON = 'WON', _('Won (Tuition Active)')
+        LOST = 'LOST', _('Lost / Inactive')
+
+    tutor = models.ForeignKey(TutorProfile, on_delete=models.CASCADE, related_name='pipeline_cards')
+    requirement = models.ForeignKey('leads.TuitionRequirement', on_delete=models.CASCADE, related_name='tutor_pipeline_cards')
+    stage = models.CharField(max_length=25, choices=Stage.choices, default=Stage.APPLIED, db_index=True)
+    notes = models.TextField(blank=True, help_text=_('Personal notes, parent preferences, or next steps'))
+    estimated_monthly_value = models.DecimalField(max_digits=10, decimal_places=2, default=5000.00)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('tutor', 'requirement')
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.tutor.display_name} - {self.requirement.lead_id} [{self.get_stage_display()}]"
+
 

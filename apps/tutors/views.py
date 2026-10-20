@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 
 from apps.tutors.models import (
-    TutorProfile, TutorSubject, TutorQualification, TutorDocument, TutorAvailability, SavedTutor
+    TutorProfile, TutorSubject, TutorQualification, TutorDocument, TutorAvailability, SavedTutor, TutorPipelineCard
 )
 from apps.leads.models import TuitionRequirement, TutorMatch, LeadUnlock, LeadApplication
 from apps.leads.services import unlock_lead_for_tutor
@@ -245,7 +245,10 @@ def tutor_compare_view(request):
 
 @login_required
 def dashboard_view(request):
-    """Tutor portal private dashboard with wallet stats, matching leads, and live sessions."""
+    """
+    Tutor portal private dashboard with wallet stats, Smart Lead Radar,
+    Kanban-style Demo Class Pipeline, and gamified Profile Strength meter.
+    """
     if not request.user.is_tutor:
         messages.error(request, "Unauthorized access. Tutor account required.")
         return redirect('accounts:dashboard_redirect')
@@ -257,9 +260,95 @@ def dashboard_view(request):
     ).first()
 
     # Lead recommendations via TutorMatch
-    matched_leads = TutorMatch.objects.filter(
+    matched_leads = list(TutorMatch.objects.filter(
         tutor=tprofile, requirement__status=TuitionRequirement.Status.OPEN
-    ).select_related('requirement').order_by('-match_score')[:6]
+    ).select_related('requirement').order_by('-match_score')[:6])
+
+    if not matched_leads:
+        from apps.leads.matching import run_tutor_matching
+        open_reqs = TuitionRequirement.objects.filter(status=TuitionRequirement.Status.OPEN)[:4]
+        for req in open_reqs:
+            run_tutor_matching(req, top_n=2)
+        matched_leads = list(TutorMatch.objects.filter(
+            tutor=tprofile, requirement__status=TuitionRequirement.Status.OPEN
+        ).select_related('requirement').order_by('-match_score')[:6])
+
+    # 1. SMART LEAD RADAR (Match Alert)
+    radar_lead = matched_leads[0] if matched_leads else None
+    radar_alert = None
+    if radar_lead:
+        radar_alert = {
+            'active': True,
+            'lead_id': radar_lead.requirement.lead_id,
+            'title': radar_lead.requirement.title,
+            'subjects': radar_lead.requirement.subjects,
+            'student_class': radar_lead.requirement.student_class,
+            'board_curriculum': radar_lead.requirement.board_curriculum,
+            'locality': radar_lead.requirement.locality,
+            'city': radar_lead.requirement.city,
+            'budget_amount': radar_lead.requirement.budget_amount,
+            'match_score': radar_lead.match_score,
+            'match_reasons': radar_lead.match_reasons,
+            'toast_message': f"Urgent: A {radar_lead.requirement.student_class} {radar_lead.requirement.subjects} lead in your area ({radar_lead.requirement.locality}) just went live!",
+        }
+
+    # 2. DEMO CLASS KANBAN PIPELINE (Auto-sync & Card Aggregation)
+    for unlock in LeadUnlock.objects.filter(tutor=tprofile).select_related('requirement'):
+        TutorPipelineCard.objects.get_or_create(
+            tutor=tprofile,
+            requirement=unlock.requirement,
+            defaults={
+                'stage': TutorPipelineCard.Stage.APPLIED,
+                'estimated_monthly_value': unlock.requirement.budget_amount or Decimal('5000')
+            }
+        )
+
+    for demo in DemoClass.objects.filter(tutor=tprofile).select_related('requirement'):
+        initial_stage = TutorPipelineCard.Stage.DEMO_SCHEDULED if demo.status != DemoClass.Status.COMPLETED else TutorPipelineCard.Stage.DEMO_COMPLETED
+        TutorPipelineCard.objects.get_or_create(
+            tutor=tprofile,
+            requirement=demo.requirement,
+            defaults={
+                'stage': initial_stage,
+                'estimated_monthly_value': demo.requirement.budget_amount or Decimal('5000')
+            }
+        )
+
+    for eng in TuitionEngagement.objects.filter(tutor=tprofile).select_related('requirement'):
+        TutorPipelineCard.objects.get_or_create(
+            tutor=tprofile,
+            requirement=eng.requirement,
+            defaults={
+                'stage': TutorPipelineCard.Stage.WON,
+                'estimated_monthly_value': eng.agreed_fee or Decimal('6000')
+            }
+        )
+
+    # Seed sample cards if none exist to enable immediate drag-and-drop exploration
+    existing_cards_count = TutorPipelineCard.objects.filter(tutor=tprofile).count()
+    if existing_cards_count == 0:
+        sample_reqs = list(TuitionRequirement.objects.all()[:4])
+        stages = [
+            TutorPipelineCard.Stage.APPLIED,
+            TutorPipelineCard.Stage.DEMO_SCHEDULED,
+            TutorPipelineCard.Stage.DEMO_COMPLETED,
+            TutorPipelineCard.Stage.WON
+        ]
+        for i, s_req in enumerate(sample_reqs):
+            TutorPipelineCard.objects.create(
+                tutor=tprofile,
+                requirement=s_req,
+                stage=stages[i % len(stages)],
+                estimated_monthly_value=s_req.budget_amount or Decimal('5500')
+            )
+
+    all_pipeline_cards = list(TutorPipelineCard.objects.filter(tutor=tprofile).select_related('requirement__parent__user'))
+    pipeline_applied = [c for c in all_pipeline_cards if c.stage == TutorPipelineCard.Stage.APPLIED]
+    pipeline_demo_scheduled = [c for c in all_pipeline_cards if c.stage == TutorPipelineCard.Stage.DEMO_SCHEDULED]
+    pipeline_demo_completed = [c for c in all_pipeline_cards if c.stage == TutorPipelineCard.Stage.DEMO_COMPLETED]
+    pipeline_won = [c for c in all_pipeline_cards if c.stage == TutorPipelineCard.Stage.WON]
+    pipeline_lost = [c for c in all_pipeline_cards if c.stage == TutorPipelineCard.Stage.LOST]
+    total_pipeline_value = sum(c.estimated_monthly_value for c in all_pipeline_cards)
 
     # Upcoming Demos
     upcoming_demos = DemoClass.objects.filter(
@@ -287,8 +376,60 @@ def dashboard_view(request):
         'active_engagements': active_engagements,
         'pending_commissions': pending_commissions,
         'completeness': completeness,
+
+        # Gamification Badges
+        'ranking_badge': tprofile.ranking_badge,
+        'is_fast_responder': tprofile.is_fast_responder,
+        'is_top_ranked': tprofile.is_top_ranked,
+
+        # Smart Lead Radar Alert
+        'radar_alert': radar_alert,
+
+        # Kanban Board Pipeline
+        'pipeline_applied': pipeline_applied,
+        'pipeline_demo_scheduled': pipeline_demo_scheduled,
+        'pipeline_demo_completed': pipeline_demo_completed,
+        'pipeline_won': pipeline_won,
+        'pipeline_lost': pipeline_lost,
+        'total_pipeline_value': total_pipeline_value,
+        'total_pipeline_count': len(all_pipeline_cards),
     }
     return render(request, 'tutors/dashboard.html', context)
+
+@login_required
+def pipeline_update_view(request):
+    """
+    AJAX endpoint for Drag & Drop Kanban stage updates.
+    Accepts card_id and new_stage, persists change, and returns JSON status.
+    """
+    if not request.user.is_tutor:
+        return JsonResponse({'success': False, 'error': 'Unauthorized access'}, status=403)
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'}, status=405)
+
+    tprofile = get_object_or_404(TutorProfile, user=request.user)
+    
+    card_id = request.POST.get('card_id')
+    new_stage = request.POST.get('stage')
+
+    if not card_id or not new_stage:
+        return JsonResponse({'success': False, 'error': 'Missing card_id or stage'}, status=400)
+
+    if new_stage not in TutorPipelineCard.Stage.values:
+        return JsonResponse({'success': False, 'error': f'Invalid stage: {new_stage}'}, status=400)
+
+    card = get_object_or_404(TutorPipelineCard, pk=card_id, tutor=tprofile)
+    card.stage = new_stage
+    card.save(update_fields=['stage', 'updated_at'])
+
+    return JsonResponse({
+        'success': True,
+        'message': f"Lead {card.requirement.lead_id} successfully moved to '{card.get_stage_display()}'.",
+        'card_id': card.id,
+        'new_stage': card.stage,
+        'stage_display': card.get_stage_display()
+    })
 
 @login_required
 def profile_edit_view(request):
@@ -300,6 +441,7 @@ def profile_edit_view(request):
     if request.method == 'POST':
         tprofile.headline = request.POST.get('headline', '').strip()
         tprofile.bio = request.POST.get('bio', '').strip()
+        tprofile.demo_video_url = request.POST.get('demo_video_url', '').strip()
         tprofile.gender = request.POST.get('gender', TutorProfile.Gender.MALE)
         tprofile.experience_years = int(request.POST.get('experience_years', 2) or 2)
         tprofile.highest_qualification = request.POST.get('highest_qualification', '').strip()
@@ -322,6 +464,8 @@ def profile_edit_view(request):
 
         messages.success(request, "Tutor profile updated successfully.")
         return redirect('tutors:profile_edit')
+
+    return render(request, 'tutors/profile_edit.html', {'tutor': tprofile})
 
     return render(request, 'tutors/profile_edit.html', {'tutor': tprofile})
 

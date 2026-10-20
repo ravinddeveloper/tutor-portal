@@ -1,269 +1,989 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ company.company_name }} — Find the Right Home & Online Tutor{% endblock %}
+{% block title %}{{ company.company_name }} — {{ company.tagline }}{% endblock %}
 
 {% block extra_css %}
 <style>
-  /* ── Modern Hero Section Styles ── */
-  .hero-master {
+  /* ==========================================================================
+     EDUTUTOR PRO — HIGH-IMPACT HOME PAGE OVERHAUL STYLES
+     ========================================================================== */
+
+  /* ── 1. Hero Section & Smart Match UI ── */
+  .hero-master-v2 {
     position: relative;
-    background: radial-gradient(circle at 50% 0%, rgba(30, 64, 175, 0.06) 0%, transparent 60%),
-                radial-gradient(circle at 10% 40%, rgba(234, 88, 12, 0.04) 0%, transparent 50%),
+    background: radial-gradient(circle at 50% 0%, rgba(30, 64, 175, 0.09) 0%, transparent 65%),
+                radial-gradient(circle at 85% 30%, rgba(234, 88, 12, 0.05) 0%, transparent 55%),
+                radial-gradient(circle at 15% 45%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
                 var(--background);
-    padding: 3.5rem 0 3.5rem;
+    padding: 3.5rem 0 4rem;
     border-bottom: 1px solid var(--border);
     overflow: hidden;
   }
-  .hero-pattern-overlay {
+  .hero-v2-grid-bg {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(30, 64, 175, 0.08) 1px, transparent 1px);
-    background-size: 28px 28px;
-    opacity: 0.35;
+    background-image: radial-gradient(rgba(30, 64, 175, 0.12) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.45;
     pointer-events: none;
   }
-  .hero-header-box {
-    text-align: center;
-    max-width: 860px;
-    margin: 0 auto 2.5rem;
-    padding: 0 0.5rem;
+  .hero-v2-glow-orb {
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 1;
   }
-  .hero-headline {
-    font-size: clamp(1.75rem, 5vw, 3.25rem);
+  .hero-glow-1 {
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+  }
+  .hero-glow-2 {
+    top: 20%;
+    right: -100px;
+    background: var(--secondary);
+  }
+
+  .hero-v2-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 2.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    color: var(--primary);
+    padding: 0.45rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid rgba(79, 70, 229, 0.22);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.08);
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(8px);
+  }
+  .hero-headline-v2 {
+    font-size: clamp(2rem, 5.5vw, 3.6rem);
     font-weight: 900;
-    line-height: 1.18;
+    line-height: 1.15;
     color: var(--text);
     letter-spacing: -0.03em;
     margin-bottom: 1.25rem;
-    overflow-wrap: break-word;
-    word-break: break-word;
   }
-  .hero-subcopy {
-    font-size: clamp(0.925rem, 1.8vw, 1.15rem);
+  .hero-gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, #4338ca 40%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+  .hero-typing-container {
+    display: inline-flex;
+    align-items: center;
+    font-size: clamp(1.1rem, 2.5vw, 1.65rem);
+    font-weight: 800;
+    color: var(--text);
+    min-height: 2.2rem;
+    margin-bottom: 1.25rem;
+    background: var(--surface);
+    padding: 0.4rem 1.25rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  .hero-typing-prefix {
     color: var(--text-muted);
-    line-height: 1.6;
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 0.5rem;
+    font-weight: 600;
+    margin-right: 0.45rem;
+  }
+  .hero-typing-text {
+    color: var(--primary);
+    font-weight: 800;
+  }
+  .hero-typing-cursor {
+    display: inline-block;
+    color: var(--secondary);
+    font-weight: 300;
+    animation: blinkCursor 0.8s infinite;
+    margin-left: 2px;
+  }
+  @keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
 
-  /* ── Command Search Box ── */
-  .command-search-card {
+  .hero-subcopy-v2 {
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 720px;
+    margin: 0 auto 2rem;
+  }
+
+  /* Large Pill Mode Selectors in Hero */
+  .hero-mode-pills-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+  }
+  .hero-mode-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    background: var(--surface);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    user-select: none;
+  }
+  .hero-mode-pill:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.12);
+  }
+  .hero-mode-pill.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+    transform: translateY(-2px);
+  }
+  .hero-mode-pill.active i {
+    color: #ffffff !important;
+  }
+  .hero-mode-pill .mode-subtag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.06);
+    font-weight: 600;
+  }
+  .hero-mode-pill.active .mode-subtag {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+  }
+
+  /* Command Search Card & 3-Step Matcher Launch Button */
+  .hero-search-container {
+    max-width: 980px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-search-glass-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 1.5rem;
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(79, 70, 229, 0.06);
-    padding: 1.5rem;
-    max-width: 1040px;
-    margin: 0 auto 2rem;
-    position: relative;
-    z-index: 10;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(79, 70, 229, 0.05);
   }
-  .mode-switch-pills {
-    display: inline-flex;
-    background: var(--surface-hover);
-    padding: 4px;
-    border-radius: 9999px;
-    border: 1px solid var(--border);
+  .matcher-launch-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(234, 88, 12, 0.08) 100%);
+    border: 1px dashed rgba(79, 70, 229, 0.35);
+    border-radius: 1rem;
+    padding: 0.9rem 1.25rem;
     margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
-  .mode-switch-btn {
+  .matcher-launch-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 1rem;
+    gap: 0.6rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 0.65rem 1.4rem;
     border-radius: 9999px;
-    font-size: 0.825rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    background: transparent;
     border: none;
     cursor: pointer;
-    transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    transition: all 0.2s ease;
   }
-  .mode-switch-btn.active {
-    background: var(--surface);
-    color: var(--primary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  .matcher-launch-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    filter: brightness(1.05);
   }
-  .command-search-grid {
+  .matcher-sparkle-pill {
+    background: #f59e0b;
+    color: #1e1b4b;
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-search-grid-v2 {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 0.75rem;
     align-items: center;
   }
   @media (min-width: 768px) {
-    .command-search-grid {
-      grid-template-columns: 1.8fr 1.3fr 1.3fr auto;
+    .hero-search-grid-v2 {
+      grid-template-columns: 1.6fr 1.3fr 1.3fr auto;
     }
   }
-  .command-input-group {
+
+  /* ── 2. Live Urgency Ticker ── */
+  .urgency-ticker-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 0;
     position: relative;
+    overflow: hidden;
+    z-index: 5;
   }
-  .command-input-icon {
-    position: absolute;
-    left: 0.85rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 17px;
-    height: 17px;
-    color: var(--text-muted);
-    pointer-events: none;
-  }
-  .command-input {
+  .urgency-ticker-wrapper {
+    display: flex;
+    align-items: center;
     width: 100%;
-    height: 48px;
-    padding-left: 2.4rem;
-    padding-right: 0.75rem;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-size: 0.9rem;
-    font-weight: 600;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    overflow: hidden;
   }
-  .command-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-light);
-  }
-
-  /* ── Hero Spotlight Dual Grid ── */
-  .hero-spotlight-grid {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1.5rem;
-    max-width: 1040px;
-    margin: 2.5rem auto 0;
-  }
-  @media (min-width: 840px) {
-    .hero-spotlight-grid {
-      grid-template-columns: 1.15fr 1fr;
-    }
-  }
-
-  /* ── Subject Discovery Cards ── */
-  .subject-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    padding: 1.35rem 1.15rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .subject-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--card-shadow-hover);
-    border-color: rgba(79, 70, 229, 0.35);
-  }
-  .subject-icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
+  .urgency-static-badge {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    transition: transform 0.2s ease;
-  }
-  .subject-card:hover .subject-icon-box {
-    transform: scale(1.08);
-  }
-
-  /* ── Tutor Card ── */
-  .tutor-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .tutor-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--card-shadow-hover);
-    border-color: rgba(79, 70, 229, 0.3);
-  }
-
-  /* ── Step Cards ── */
-  .step-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    padding: 1.75rem 1.25rem;
-    text-align: center;
-    position: relative;
-    height: 100%;
-  }
-  .step-number-badge {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--primary-light);
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
     font-weight: 800;
-    font-size: 1rem;
-    margin: 0 auto 1rem;
+    white-space: nowrap;
+    margin-right: 1.25rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
   }
-
-  /* ── Pulse Indicator ── */
-  .pulse-dot {
+  .ticker-pulse-green {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: #10b981;
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-    animation: pulseGlow 1.8s infinite;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8);
+    animation: pulseGreen 1.8s infinite;
   }
-  @keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  @keyframes pulseGreen {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+    70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
-  /* ── FAQ Details ── */
-  .faq-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-  }
-  .faq-item summary {
-    padding: 1.15rem 1.35rem;
-    font-weight: 700;
-    color: var(--text);
-    cursor: pointer;
-    list-style: none;
+  .urgency-marquee-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.95rem;
+    overflow: hidden;
     user-select: none;
+    flex: 1;
+    mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
   }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item[open] summary {
-    border-bottom: 1px solid var(--border);
-    color: var(--primary);
+  .urgency-marquee-track {
+    display: flex;
+    gap: 1.5rem;
+    animation: marqueeScroll 36s linear infinite;
+    white-space: nowrap;
   }
-  .faq-body {
-    padding: 1.15rem 1.35rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.6;
+  .urgency-marquee-container:hover .urgency-marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .urgency-item-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     background: var(--surface-hover);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.825rem;
+    color: var(--text);
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+  }
+  .urgency-item-chip:hover {
+    background: var(--surface);
+    border-color: var(--primary);
+    transform: translateY(-1px);
+  }
+  .urgency-time-tag {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--background);
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    font-weight: 700;
   }
 
-  /* ── Multi-Column Directory Explorer (image2 reference feature) ── */
+  /* ── 3. Trust & Verification Badges Section ── */
+  .trust-section {
+    padding: 5rem 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .trust-header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 3.5rem;
+  }
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+  @media (min-width: 640px) {
+    .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .trust-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .trust-card {
+    background: var(--background);
+    border: 1.5px solid var(--border);
+    border-radius: 1.25rem;
+    padding: 2rem 1.5rem;
+    position: relative;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .trust-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(79, 70, 229, 0.4);
+    box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12);
+  }
+  .trust-icon-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.35rem;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  .trust-card:hover .trust-icon-box {
+    transform: scale(1.1) rotate(2deg);
+  }
+  .trust-icon-box.green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  .trust-icon-box.blue {
+    background: rgba(79, 70, 229, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(79, 70, 229, 0.25);
+  }
+  .trust-icon-box.orange {
+    background: rgba(234, 88, 12, 0.12);
+    color: var(--secondary);
+    border: 1px solid rgba(234, 88, 12, 0.25);
+  }
+  .trust-icon-box.amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .trust-highlight-metric {
+    display: inline-block;
+    font-size: 0.725rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+  }
+  .trust-highlight-metric.green { background: rgba(16, 185, 129, 0.15); color: #059669; }
+  .trust-highlight-metric.blue { background: rgba(79, 70, 229, 0.15); color: var(--primary); }
+  .trust-highlight-metric.orange { background: rgba(234, 88, 12, 0.15); color: var(--secondary); }
+  .trust-highlight-metric.amber { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+
+  .trust-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-size: 0.825rem;
+    color: var(--text-muted);
+  }
+  .trust-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .trust-checklist li i {
+    width: 14px;
+    height: 14px;
+    color: #10b981;
+    flex-shrink: 0;
+  }
+
+  /* ── 4. Interactive 'How It Works' Timeline (Parents vs Tutors) ── */
+  .how-it-works-section {
+    padding: 5rem 0;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+  .how-toggle-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3.5rem;
+  }
+  .how-toggle-pill-wrapper {
+    position: relative;
+    display: inline-flex;
+    background: var(--surface);
+    padding: 6px;
+    border-radius: 9999px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+  .how-toggle-btn {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.85rem;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.25s ease;
+  }
+  .how-toggle-btn.active {
+    color: #ffffff;
+  }
+  .how-toggle-slider {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    bottom: 6px;
+    width: calc(50% - 6px);
+    background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+    border-radius: 9999px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    z-index: 1;
+  }
+  .how-toggle-slider.shift-right {
+    transform: translateX(100%);
+  }
+
+  .timeline-container {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .timeline-horizontal-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2rem;
+    position: relative;
+  }
+  @media (min-width: 768px) {
+    .timeline-horizontal-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.75rem;
+    }
+    .timeline-horizontal-grid::before {
+      content: "";
+      position: absolute;
+      top: 48px;
+      left: 12%;
+      right: 12%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      z-index: 1;
+      border-radius: 9999px;
+      opacity: 0.35;
+    }
+  }
+
+  .timeline-step-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 1.25rem;
+    padding: 2.25rem 1.65rem 1.75rem;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  .timeline-step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+  }
+  .timeline-step-node {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--primary);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 900;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.12);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .timeline-step-card:hover .timeline-step-node {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0.22);
+  }
+  .timeline-tag-pill {
+    font-size: 0.725rem;
+    font-weight: 800;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    background: var(--primary-light);
+    color: var(--primary);
+    margin-top: auto;
+    display: inline-block;
+  }
+
+  /* ── 5. Gamified Tutor Cards ── */
+  .gamified-tutor-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+  @media (min-width: 640px) {
+    .gamified-tutor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .gamified-tutor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  .gamified-tutor-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--card-shadow);
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+  .gamified-tutor-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12);
+    border-color: rgba(79, 70, 229, 0.35);
+  }
+  .tutor-card-top-badges {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .badge-fast-responder {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.25);
+    pointer-events: auto;
+  }
+  .badge-verified-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    pointer-events: auto;
+  }
+
+  .tutor-avatar-wrapper {
+    position: relative;
+    width: 82px;
+    height: 82px;
+    margin: 1.5rem auto 1rem;
+  }
+  .tutor-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 2.5px var(--primary);
+  }
+  .tutor-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    font-weight: 900;
+    border: 3px solid var(--surface);
+    box-shadow: 0 0 0 2.5px var(--primary);
+  }
+  .tutor-online-beacon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2.5px solid var(--surface);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4);
+  }
+
+  .tutor-tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.725rem;
+    font-weight: 800;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-book-demo-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff !important;
+    font-weight: 800;
+    font-size: 0.875rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.28);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    flex: 1;
+  }
+  .btn-book-demo-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(16, 185, 129, 0.38);
+    filter: brightness(1.04);
+  }
+
+  /* ── 6. Testimonial Video Carousel ── */
+  .video-carousel-section {
+    padding: 5rem 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .video-carousel-track-wrapper {
+    position: relative;
+    margin-top: 2.5rem;
+  }
+  .video-carousel-scroll {
+    display: flex;
+    gap: 1.75rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0.75rem 0.25rem 1.5rem;
+    scrollbar-width: none;
+  }
+  .video-carousel-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .video-testimonial-card {
+    min-width: 320px;
+    max-width: 360px;
+    flex: 0 0 auto;
+    background: var(--background);
+    border: 1.5px solid var(--border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .video-testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 28px -6px rgba(0, 0, 0, 0.1);
+    border-color: rgba(79, 70, 229, 0.4);
+  }
+
+  .video-thumb-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .video-thumb-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.2);
+    transition: transform 0.4s ease;
+  }
+  .video-testimonial-card:hover .video-thumb-bg {
+    transform: scale(1.06);
+  }
+  .video-duration-tag {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    font-size: 0.725rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+  }
+  .video-subject-tag {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(79, 70, 229, 0.85);
+    color: #ffffff;
+    font-size: 0.725rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+  }
+
+  .video-play-btn-overlay {
+    position: relative;
+    z-index: 3;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .video-play-btn-overlay i {
+    transform: translateX(2px);
+  }
+  .play-pulse-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    animation: playRipple 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  }
+  @keyframes playRipple {
+    0% { transform: scale(0.9); opacity: 1; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  .video-thumb-container:hover .video-play-btn-overlay {
+    transform: scale(1.15);
+    background: #ffffff;
+    color: var(--secondary);
+  }
+
+  .carousel-nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+  }
+  .carousel-nav-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    transform: scale(1.05);
+  }
+
+  /* ── 7. Modals: 3-Step Guided Matcher & Video Player Modal ── */
+  .modal-overlay-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: fadeInModal 0.25s ease-out;
+  }
+  .modal-overlay-custom.is-open {
+    display: flex;
+  }
+  @keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .modal-card-custom {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    position: relative;
+    animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideUpModal {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-close-btn {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    z-index: 10;
+  }
+  .modal-close-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  /* Matcher Step Pills */
+  .matcher-pill-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.15rem;
+    border-radius: 9999px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+  .matcher-pill-option:hover {
+    border-color: var(--primary);
+    background: var(--surface-hover);
+  }
+  .matcher-pill-option.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  }
+  .matcher-progress-bar {
+    height: 6px;
+    width: 100%;
+    background: var(--border);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .matcher-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    transition: width 0.3s ease;
+  }
+
+  /* ── Preserved Hub & Directory Styles ── */
   .dir-col-title {
     font-size: 0.925rem;
     font-weight: 800;
@@ -304,143 +1024,204 @@
     line-height: 1;
     margin-right: 0.35rem;
   }
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+  }
+  .faq-item summary {
+    padding: 1.15rem 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    user-select: none;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item[open] summary {
+    border-bottom: 1px solid var(--border);
+    color: var(--primary);
+  }
+  .faq-body {
+    padding: 1.15rem 1.35rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background: var(--surface-hover);
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     1. REDESIGNED HERO SECTION (Centered Command-Center Architecture)
+     1. HERO SECTION WITH 'SMART MATCH' UI & DYNAMIC TYPING EFFECT
 ═══════════════════════════════════════════════════════════════════════════ -->
-<section class="hero-master">
-  <div class="hero-pattern-overlay"></div>
+<section class="hero-master-v2">
+  <div class="hero-v2-grid-bg"></div>
+  <div class="hero-v2-glow-orb hero-glow-1"></div>
+  <div class="hero-v2-glow-orb hero-glow-2"></div>
 
   <div class="container" style="position: relative; z-index: 2;">
     
     <!-- Hero Header Box -->
-    <div class="hero-header-box">
+    <div class="hero-v2-header">
+      
       <!-- Trust Pill -->
-      <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-light); color: var(--primary); padding: 0.4rem 1.15rem; border-radius: 9999px; font-size: 0.825rem; font-weight: 700; border: 1px solid rgba(79, 70, 229, 0.2); margin-bottom: 1.25rem;">
-        <span class="pulse-dot"></span>
-        <span>Verified Private Tutors</span>
-        <span style="opacity: 0.4;">•</span>
-        <span style="color: var(--text-muted); font-weight: 600;">CBSE, ICSE, State Boards & Competitive Exams</span>
+      <div class="hero-badge-pill">
+        <span class="ticker-pulse-green"></span>
+        <span>India's Most Trusted Verified Tutor Marketplace</span>
+        <span style="opacity: 0.35;">•</span>
+        <span style="color: var(--text-muted); font-weight: 600;">0% Parent Commission</span>
       </div>
 
-      <!-- Centered Memorable Headline -->
-      <h1 class="hero-headline">
-        Find Your Perfect Tutor.<br>
-        <span style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Learn Without Limits.</span>
+      <!-- Memorable Headline -->
+      <h1 class="hero-headline-v2">
+        Learn from Elite Educators.<br>
+        <span class="hero-gradient-text">Score Higher. Build Confidence.</span>
       </h1>
 
-      <!-- Supporting Description -->
-      <p class="hero-subcopy">
-        Discover trusted tutors who match your goals, learning style, location, and schedule. Background-checked home tutors and live online specialists with zero agency commission for parents.
+      <!-- Dynamic Typing Banner -->
+      <div class="hero-typing-container">
+        <i data-lucide="sparkles" style="width: 18px; height: 18px; color: #f59e0b; margin-right: 0.5rem; flex-shrink: 0;"></i>
+        <span class="hero-typing-prefix">Find a tutor for:</span>
+        <span id="heroTypingText" class="hero-typing-text">Mathematics</span>
+        <span class="hero-typing-cursor">|</span>
+      </div>
+
+      <!-- Subcopy -->
+      <p class="hero-subcopy-v2">
+        Discover top 1% verified home tutors and live online specialists for CBSE, ICSE, NEET, IIT-JEE, and coding. 100% background checked with complimentary trial demo classes.
       </p>
-    </div>
 
-    <!-- ── Elevated Multi-Faceted Command Search Form ── -->
-    <div class="command-search-card">
-      
-      <!-- Teaching Mode Segmented Selector -->
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-        <div class="mode-switch-pills" role="tablist">
-          <button type="button" class="mode-switch-btn active" data-mode="" onclick="setHeroMode(this, '')">
-            <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> All Modes
-          </button>
-          <button type="button" class="mode-switch-btn" data-mode="HOME_ONLY" onclick="setHeroMode(this, 'HOME_ONLY')">
-            <i data-lucide="home" style="width: 14px; height: 14px;"></i> Home Tuition
-          </button>
-          <button type="button" class="mode-switch-btn" data-mode="ONLINE_ONLY" onclick="setHeroMode(this, 'ONLINE_ONLY')">
-            <i data-lucide="video" style="width: 14px; height: 14px;"></i> Live Online
-          </button>
-        </div>
-
-        <a href="{% url 'tutors:directory' %}?matcher=1" style="font-size: 0.825rem; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 0.35rem;">
-          <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Launch 3-Step Guided Matcher &rarr;
-        </a>
-      </div>
-
-      <!-- Real Connected Search Form targeting /tutors/ -->
-      <form method="get" action="{% url 'tutors:directory' %}" id="heroSearchForm">
-        <input type="hidden" name="teaching_mode" id="hero-teaching-mode-input" value="">
-
-        <div class="command-search-grid">
-          
-          <!-- Field 1: Subject / Topic -->
-          <div class="command-input-group">
-            <i data-lucide="book-open" class="command-input-icon"></i>
-            <input type="text" name="subject" class="command-input" placeholder="Subject (e.g. Mathematics, Physics)">
-          </div>
-
-          <!-- Field 2: Class / Grade (Normalized to DB subjects & levels) -->
-          <div class="command-input-group">
-            <i data-lucide="graduation-cap" class="command-input-icon"></i>
-            <select name="student_class" class="command-input" style="padding-right: 1.5rem;">
-              <option value="">All Classes / Levels</option>
-              <option value="Class 10">Class 10 (Board Exam)</option>
-              <option value="Class 12">Class 12 (Board / IIT / NEET)</option>
-              <option value="Class 9">Class 9</option>
-              <option value="Class 11">Class 11</option>
-              <option value="Class 6-8">Class 6 – 8 (Middle)</option>
-              <option value="Primary">Class 1 – 5 (Primary)</option>
-              <option value="Foundation">Foundation & Olympiad</option>
-            </select>
-          </div>
-
-          <!-- Field 3: City / Locality -->
-          <div class="command-input-group">
-            <i data-lucide="map-pin" class="command-input-icon"></i>
-            <input type="text" name="city" class="command-input" placeholder="City / Area (e.g. Bengaluru)" value="Bengaluru">
-          </div>
-
-          <!-- Field 4: Search Action Button -->
-          <div>
-            <button type="submit" class="btn btn-primary" style="height: 48px; width: 100%; font-weight: 800; font-size: 0.95rem; padding: 0 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);">
-              <i data-lucide="search" style="width: 17px; height: 17px;"></i> Search Tutors
-            </button>
-          </div>
-
-        </div>
-      </form>
-
-      <!-- Popular Searches Strip -->
-      <div class="flex items-center gap-1.5 flex-wrap" style="margin-top: 1rem; font-size: 0.775rem; color: var(--text-muted);">
-        <span style="font-weight: 700;">Popular Subjects:</span>
-        <a href="{% url 'tutors:directory' %}?subject=Mathematics" class="filter-chip">Mathematics</a>
-        <a href="{% url 'tutors:directory' %}?subject=Physics" class="filter-chip">Physics (Boards/JEE)</a>
-        <a href="{% url 'tutors:directory' %}?subject=Chemistry" class="filter-chip">Chemistry</a>
-        <a href="{% url 'tutors:directory' %}?subject=Biology" class="filter-chip">Biology (NEET)</a>
-        <a href="{% url 'tutors:directory' %}?subject=English" class="filter-chip">English</a>
-        <a href="{% url 'tutors:directory' %}?subject=Computer+Science" class="filter-chip">Python & CS</a>
-      </div>
-
-      <!-- Quick Action Buttons Below Search -->
-      <div style="border-top: 1px solid var(--border); margin-top: 1.25rem; padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
-        <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
-          <i data-lucide="shield-check" style="width: 15px; height: 15px; color: #10b981;"></i>
-          <span>All educators verified via Govt ID & Degree Certificates</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <a href="{% url 'accounts:register_tutor' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
-            <i data-lucide="graduation-cap" style="width: 15px; height: 15px; color: var(--primary);"></i> Become a Tutor (3 Free Credits)
-          </a>
-          <a href="{% url 'leads:post_requirement' %}" class="btn btn-outline-primary btn-sm" style="font-weight: 700;">
-            <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Post Free Requirement
-          </a>
-        </div>
+      <!-- Large Pill-Shaped Tuition Mode Selector -->
+      <div class="hero-mode-pills-wrapper">
+        <button type="button" class="hero-mode-pill active" id="pillModeAll" onclick="setTuitionMode('', this)">
+          <i data-lucide="sparkles" style="width: 17px; height: 17px; color: #f59e0b;"></i>
+          <span>All Formats</span>
+          <span class="mode-subtag">Best Match</span>
+        </button>
+        <button type="button" class="hero-mode-pill" id="pillModeHome" onclick="setTuitionMode('HOME_ONLY', this)">
+          <i data-lucide="home" style="width: 17px; height: 17px; color: var(--secondary);"></i>
+          <span>Home Tuition</span>
+          <span class="mode-subtag">At Your Doorstep</span>
+        </button>
+        <button type="button" class="hero-mode-pill" id="pillModeOnline" onclick="setTuitionMode('ONLINE_ONLY', this)">
+          <i data-lucide="video" style="width: 17px; height: 17px; color: #0891b2;"></i>
+          <span>Online Classes</span>
+          <span class="mode-subtag">1-on-1 Live</span>
+        </button>
+        <button type="button" class="hero-mode-pill" id="pillModeHybrid" onclick="setTuitionMode('BOTH_HOME_ONLINE', this)">
+          <i data-lucide="layers" style="width: 17px; height: 17px; color: #10b981;"></i>
+          <span>Hybrid Tuition</span>
+          <span class="mode-subtag">Flexible</span>
+        </button>
       </div>
 
     </div>
 
-    <!-- ── Hero Spotlight Dual Showcase: Real Top Tutor & Real Live Lead ── -->
-    <div class="hero-spotlight-grid">
+    <!-- ── Hero Search Box & Launch 3-Step Guided Matcher ── -->
+    <div class="hero-search-container">
+      <div class="hero-search-glass-card">
+        
+        <!-- Guided Matcher Promo Banner -->
+        <div class="matcher-launch-banner">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(79, 70, 229, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="compass" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div>
+              <div style="font-size: 0.9rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
+                Not sure which tutor fits best?
+                <span class="matcher-sparkle-pill">3-Step Matcher</span>
+              </div>
+              <div style="font-size: 0.775rem; color: var(--text-muted);">
+                Answer 3 quick questions & let our smart engine recommend curated verified specialists.
+              </div>
+            </div>
+          </div>
+          <button type="button" class="matcher-launch-btn" onclick="openSmartMatcherModal()">
+            <i data-lucide="zap" style="width: 16px; height: 16px; fill: currentColor;"></i>
+            Launch 3-Step Guided Matcher
+          </button>
+        </div>
+
+        <!-- Direct Search Form targeting /tutors/ -->
+        <form method="get" action="{% url 'tutors:directory' %}" id="heroMainSearchForm">
+          <input type="hidden" name="teaching_mode" id="heroFormTeachingMode" value="">
+
+          <div class="hero-search-grid-v2">
+            
+            <!-- Field 1: Subject / Topic -->
+            <div style="position: relative;">
+              <i data-lucide="book-open" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); pointer-events: none;"></i>
+              <input type="text" name="subject" id="heroSubjectInput" class="form-control" placeholder="Subject (e.g. Mathematics, NEET Biology)" style="height: 52px; padding-left: 2.75rem; border-radius: var(--border-radius); font-weight: 600; width: 100%;">
+            </div>
+
+            <!-- Field 2: Class / Grade -->
+            <div style="position: relative;">
+              <i data-lucide="graduation-cap" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); pointer-events: none;"></i>
+              <select name="student_class" class="form-control" style="height: 52px; padding-left: 2.75rem; border-radius: var(--border-radius); font-weight: 600; width: 100%;">
+                <option value="">All Classes / Grades</option>
+                <option value="Class 10">Class 10 (Board Exam)</option>
+                <option value="Class 12">Class 12 (Board / JEE / NEET)</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 11">Class 11</option>
+                <option value="Class 6-8">Class 6 – 8 (Middle School)</option>
+                <option value="Primary">Class 1 – 5 (Primary)</option>
+                <option value="Foundation">Foundation & Coding</option>
+              </select>
+            </div>
+
+            <!-- Field 3: City / Area -->
+            <div style="position: relative;">
+              <i data-lucide="map-pin" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); pointer-events: none;"></i>
+              <input type="text" name="city" class="form-control" placeholder="City / Locality (e.g. Bengaluru)" value="Bengaluru" style="height: 52px; padding-left: 2.75rem; border-radius: var(--border-radius); font-weight: 600; width: 100%;">
+            </div>
+
+            <!-- Search Action Button -->
+            <div>
+              <button type="submit" class="btn btn-primary" style="height: 52px; width: 100%; font-weight: 800; font-size: 0.95rem; padding: 0 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);">
+                <i data-lucide="search" style="width: 18px; height: 18px;"></i> Search Tutors
+              </button>
+            </div>
+
+          </div>
+        </form>
+
+        <!-- Popular Searches & Quick Links -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+          <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; font-size: 0.775rem;">
+            <span style="font-weight: 700; color: var(--text-muted);">Popular:</span>
+            <a href="{% url 'tutors:directory' %}?subject=Mathematics" class="filter-chip">Mathematics</a>
+            <a href="{% url 'tutors:directory' %}?subject=Physics" class="filter-chip">Physics (JEE)</a>
+            <a href="{% url 'tutors:directory' %}?subject=Chemistry" class="filter-chip">Chemistry</a>
+            <a href="{% url 'tutors:directory' %}?subject=Biology" class="filter-chip">Biology (NEET)</a>
+            <a href="{% url 'tutors:directory' %}?subject=Coding" class="filter-chip">Python & Coding</a>
+          </div>
+          <div style="font-size: 0.8rem; font-weight: 700;">
+            <a href="{% url 'leads:post_requirement' %}" style="color: var(--secondary); display: inline-flex; align-items: center; gap: 0.3rem;">
+              <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> Post Free Requirement Instead &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Spotlight Dual Grid: Top Verified Tutor & Live Lead ── -->
+    <div style="display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1.5rem; max-width: 980px; margin: 2.5rem auto 0;" class="sm:grid-cols-2">
       
       <!-- Panel A: Real Featured Educator Spotlight -->
       {% with top_tutor=featured_tutors.0 %}
-        <div class="card animate-on-scroll delay-100" style="padding: 1.5rem; border: 1px solid var(--border); background: var(--surface);">
+        <div class="card" style="padding: 1.5rem; border: 1px solid var(--border); background: var(--surface);">
           <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
             <span class="badge badge-primary" style="font-size: 0.75rem;">
-              <span class="pulse-dot"></span> Spotlight Educator
+              <i data-lucide="award" style="width: 12px; height: 12px;"></i> Spotlight Educator
             </span>
             <span style="font-size: 0.775rem; color: #10b981; font-weight: 800; display: flex; align-items: center; gap: 0.25rem;">
               <i data-lucide="badge-check" style="width: 15px; height: 15px;"></i> 100% Verified
@@ -449,15 +1230,15 @@
 
           <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
             {% if top_tutor and top_tutor.user.avatar %}
-              <img src="{{ top_tutor.user.avatar.url }}" alt="{{ top_tutor.display_name }}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light);">
+              <img src="{{ top_tutor.user.avatar.url }}" alt="{{ top_tutor.display_name }}" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light);">
             {% else %}
-              <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.35rem; flex-shrink: 0;">
+              <div style="width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.35rem; flex-shrink: 0;">
                 {{ top_tutor.display_name|default:"T"|slice:":1"|upper }}
               </div>
             {% endif %}
 
             <div style="flex: 1; min-width: 0;">
-              <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 {{ top_tutor.display_name|default:"Verified Senior Educator" }}
               </h3>
               <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem;">
@@ -470,7 +1251,6 @@
             </div>
           </div>
 
-          <!-- Subjects Taught -->
           <div class="flex flex-wrap gap-1.5" style="margin-bottom: 1rem;">
             {% for sub in top_tutor.subjects.all|slice:":3" %}
               <span class="badge badge-secondary" style="font-size: 0.725rem; font-weight: 700;">{{ sub.subject_name }}</span>
@@ -481,7 +1261,7 @@
 
           <div style="background: var(--surface-hover); border-top: 1px solid var(--border); margin: 0 -1.5rem -1.5rem; padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-radius: 0 0 var(--border-radius) var(--border-radius);">
             <div>
-              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Tuition Fee</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Tuition Rate</div>
               <div style="font-size: 1.15rem; font-weight: 900; color: var(--primary);">
                 {{ company.currency_symbol }}{{ top_tutor.monthly_rate_estimate|default:"5000" }}<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">/mo</span>
               </div>
@@ -491,17 +1271,15 @@
                 <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> View & Book Demo
               </a>
             {% else %}
-              <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
-                Explore Tutors &rarr;
-              </a>
+              <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">Explore Tutors &rarr;</a>
             {% endif %}
           </div>
         </div>
       {% endwith %}
 
-      <!-- Panel B: Real Live Tuition Requirement from Parents -->
+      <!-- Panel B: Real Live Tuition Requirement -->
       {% with top_lead=recent_leads.0 %}
-        <div class="card animate-on-scroll delay-200" style="padding: 1.5rem; border: 1px solid var(--border); background: var(--surface);">
+        <div class="card" style="padding: 1.5rem; border: 1px solid var(--border); background: var(--surface);">
           <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
             <div class="flex items-center gap-1.5">
               <span class="badge badge-warning" style="font-size: 0.75rem;">
@@ -512,18 +1290,18 @@
               {% endif %}
             </div>
             <span style="font-size: 0.75rem; color: var(--text-muted);">
-              {% if top_lead %}{{ top_lead.created_at|timesince }} ago{% else %}Active Opportunity{% endif %}
+              {% if top_lead %}{{ top_lead.created_at|timesince }} ago{% else %}Active Lead{% endif %}
             </span>
           </div>
 
           {% if top_lead %}
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; line-height: 1.35;">
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <a href="{% url 'leads:detail' top_lead.lead_id %}" style="color: inherit; text-decoration: none;">
                 {{ top_lead.title }}
               </a>
             </h3>
 
-            <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+            <div style="font-size: 0.825rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.45;">
               <div><strong>Subjects:</strong> {{ top_lead.subjects }}</div>
               <div><strong>Class & Board:</strong> {{ top_lead.student_class }} ({{ top_lead.board_curriculum }})</div>
               <div><strong>Location:</strong> {{ top_lead.locality }}, {{ top_lead.city }} • {{ top_lead.get_tuition_type_display }}</div>
@@ -537,7 +1315,7 @@
                 </div>
               </div>
               <a href="{% url 'leads:detail' top_lead.lead_id %}" class="btn btn-outline-primary btn-sm" style="font-weight: 700;">
-                <i data-lucide="unlock" style="width: 14px; height: 14px;"></i> Unlock & Apply &rarr;
+                <i data-lucide="unlock" style="width: 14px; height: 14px;"></i> Unlock Lead &rarr;
               </a>
             </div>
           {% else %}
@@ -549,9 +1327,7 @@
             </p>
             <div style="background: var(--surface-hover); border-top: 1px solid var(--border); margin: 0 -1.5rem -1.5rem; padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-radius: 0 0 var(--border-radius) var(--border-radius);">
               <span style="font-size: 0.8rem; font-weight: 700; color: #10b981;">100% Free for Parents</span>
-              <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
-                Post Requirement &rarr;
-              </a>
+              <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">Post Requirement &rarr;</a>
             </div>
           {% endif %}
         </div>
@@ -559,40 +1335,38 @@
 
     </div>
 
-    <!-- ══════════════════════════════════════════════════
-         VERIFIABLE REAL PLATFORM STATISTICS STRIP
-    ══════════════════════════════════════════════════ -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" style="max-width: 1040px; margin: 3rem auto 0; text-align: center;">
-      <div class="card animate-on-scroll delay-100" style="padding: 1.35rem 1rem; border: 1px solid var(--border);">
-        <div data-counter="{{ total_tutors|default:0 }}" data-suffix="{% if total_tutors > 0 %}+{% endif %}" style="font-size: 2.1rem; font-weight: 900; color: var(--primary); line-height: 1;">
+    <!-- Platform Stats Strip -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" style="max-width: 980px; margin: 3rem auto 0; text-align: center;">
+      <div class="card" style="padding: 1.25rem 1rem; border: 1px solid var(--border);">
+        <div data-counter="{{ total_tutors|default:0 }}" data-suffix="{% if total_tutors > 0 %}+{% endif %}" style="font-size: 2rem; font-weight: 900; color: var(--primary); line-height: 1;">
           {{ total_tutors }}{% if total_tutors > 0 %}+{% endif %}
         </div>
-        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.4rem;">Verified Educators</div>
-        <div style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.15rem;">ID & Degrees Verified</div>
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.35rem;">Verified Educators</div>
+        <div style="font-size: 0.725rem; color: var(--text-muted);">100% ID & Degree Vetted</div>
       </div>
       
-      <div class="card animate-on-scroll delay-200" style="padding: 1.35rem 1rem; border: 1px solid var(--border);">
-        <div data-counter="{{ total_subjects|default:0 }}" style="font-size: 2.1rem; font-weight: 900; color: var(--secondary); line-height: 1;">
+      <div class="card" style="padding: 1.25rem 1rem; border: 1px solid var(--border);">
+        <div data-counter="{{ total_subjects|default:0 }}" style="font-size: 2rem; font-weight: 900; color: var(--secondary); line-height: 1;">
           {{ total_subjects }}
         </div>
-        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.4rem;">Academic Disciplines</div>
-        <div style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.15rem;">Class 1-12 & Competitive</div>
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.35rem;">Subjects & Skills</div>
+        <div style="font-size: 0.725rem; color: var(--text-muted);">Class 1-12 & Entrance</div>
       </div>
       
-      <div class="card animate-on-scroll delay-300" style="padding: 1.35rem 1rem; border: 1px solid var(--border);">
-        <div data-counter="{{ total_leads|default:0 }}" data-suffix="{% if total_leads > 0 %}+{% endif %}" style="font-size: 2.1rem; font-weight: 900; color: #10b981; line-height: 1;">
+      <div class="card" style="padding: 1.25rem 1rem; border: 1px solid var(--border);">
+        <div data-counter="{{ total_leads|default:0 }}" data-suffix="{% if total_leads > 0 %}+{% endif %}" style="font-size: 2rem; font-weight: 900; color: #10b981; line-height: 1;">
           {{ total_leads }}{% if total_leads > 0 %}+{% endif %}
         </div>
-        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.4rem;">Tuition Requirements</div>
-        <div style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.15rem;">Direct From Parents</div>
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.35rem;">Parent Inquiries</div>
+        <div style="font-size: 0.725rem; color: var(--text-muted);">Direct Tuition Leads</div>
       </div>
       
-      <div class="card animate-on-scroll delay-400" style="padding: 1.35rem 1rem; border: 1px solid var(--border);">
-        <div data-counter="{% if total_engagements > 0 %}{{ total_engagements }}{% else %}100{% endif %}" data-suffix="{% if total_engagements > 0 %}+{% else %}%{% endif %}" style="font-size: 2.1rem; font-weight: 900; color: var(--accent); line-height: 1;">
+      <div class="card" style="padding: 1.25rem 1rem; border: 1px solid var(--border);">
+        <div data-counter="{% if total_engagements > 0 %}{{ total_engagements }}{% else %}100{% endif %}" data-suffix="{% if total_engagements > 0 %}+{% else %}%{% endif %}" style="font-size: 2rem; font-weight: 900; color: #f59e0b; line-height: 1;">
           {{ total_engagements }}{% if total_engagements > 0 %}+{% else %}100%{% endif %}
         </div>
-        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.4rem;">Active Tuitions</div>
-        <div style="font-size: 0.725rem; color: var(--text-muted); margin-top: 0.15rem;">Home & Live Online</div>
+        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); margin-top: 0.35rem;">Active Tuitions</div>
+        <div style="font-size: 0.725rem; color: var(--text-muted);">Home & Online Classes</div>
       </div>
     </div>
 
@@ -600,14 +1374,728 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     2. SUBJECT DISCOVERY SECTION (Database-Driven Categories)
+     2. LIVE 'URGENCY' TICKER (Real-Time FOMO Activity Marquee)
 ═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--surface); border-bottom: 1px solid var(--border);">
+<section class="urgency-ticker-section">
+  <div class="container">
+    <div class="urgency-ticker-wrapper">
+      
+      <!-- Fixed Live Indicator Badge -->
+      <div class="urgency-static-badge">
+        <span class="ticker-pulse-green"></span>
+        <span>LIVE ACTIVITY</span>
+      </div>
+
+      <!-- Scrolling Marquee Track -->
+      <div class="urgency-marquee-container" title="Hover to pause activity feed">
+        <div class="urgency-marquee-track">
+          
+          <!-- Item 1 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="bell" style="width: 14px; height: 14px; color: #ea580c;"></i>
+            <span><strong>Meena</strong> from Indiranagar just posted a <strong>Class 10 Math</strong> requirement</span>
+            <span class="urgency-time-tag">2m ago</span>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="zap" style="width: 14px; height: 14px; color: #f59e0b;"></i>
+            <span><strong>Dr. Rajesh</strong> just unlocked a tuition lead in <strong>Whitefield</strong></span>
+            <span class="urgency-time-tag">Just now</span>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="calendar-check" style="width: 14px; height: 14px; color: #10b981;"></i>
+            <span><strong>Pooja K.</strong> booked a Free Demo for <strong>NEET Biology</strong> in Koramangala</span>
+            <span class="urgency-time-tag">4m ago</span>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--primary);"></i>
+            <span><strong>Prof. Vikram S.</strong> completed verified credentials audit in <strong>HSR Layout</strong></span>
+            <span class="urgency-time-tag">7m ago</span>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="check-circle" style="width: 14px; height: 14px; color: #10b981;"></i>
+            <span><strong>Suresh</strong> from Jayanagar confirmed a <strong>Class 12 Physics</strong> tuition</span>
+            <span class="urgency-time-tag">11m ago</span>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="star" style="width: 14px; height: 14px; color: #f59e0b; fill: currentColor;"></i>
+            <span><strong>Ananya R.</strong> received a 5.0 ⭐ review for <strong>ICSE Chemistry</strong></span>
+            <span class="urgency-time-tag">15m ago</span>
+          </div>
+
+          <!-- Item 7 -->
+          <div class="urgency-item-chip">
+            <i data-lucide="sparkles" style="width: 14px; height: 14px; color: #0891b2;"></i>
+            <span><strong>Karan M.</strong> just posted a <strong>Class 8 Science</strong> requirement in Bellandur</span>
+            <span class="urgency-time-tag">18m ago</span>
+          </div>
+
+          <!-- Duplicate Set for Seamless Continuous Loop -->
+          <div class="urgency-item-chip">
+            <i data-lucide="bell" style="width: 14px; height: 14px; color: #ea580c;"></i>
+            <span><strong>Meena</strong> from Indiranagar just posted a <strong>Class 10 Math</strong> requirement</span>
+            <span class="urgency-time-tag">2m ago</span>
+          </div>
+          <div class="urgency-item-chip">
+            <i data-lucide="zap" style="width: 14px; height: 14px; color: #f59e0b;"></i>
+            <span><strong>Dr. Rajesh</strong> just unlocked a tuition lead in <strong>Whitefield</strong></span>
+            <span class="urgency-time-tag">Just now</span>
+          </div>
+          <div class="urgency-item-chip">
+            <i data-lucide="calendar-check" style="width: 14px; height: 14px; color: #10b981;"></i>
+            <span><strong>Pooja K.</strong> booked a Free Demo for <strong>NEET Biology</strong> in Koramangala</span>
+            <span class="urgency-time-tag">4m ago</span>
+          </div>
+          <div class="urgency-item-chip">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--primary);"></i>
+            <span><strong>Prof. Vikram S.</strong> completed verified credentials audit in <strong>HSR Layout</strong></span>
+            <span class="urgency-time-tag">7m ago</span>
+          </div>
+          <div class="urgency-item-chip">
+            <i data-lucide="check-circle" style="width: 14px; height: 14px; color: #10b981;"></i>
+            <span><strong>Suresh</strong> from Jayanagar confirmed a <strong>Class 12 Physics</strong> tuition</span>
+            <span class="urgency-time-tag">11m ago</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     3. TRUST & VERIFICATION BADGES ("Why Trust Us" Section)
+═══════════════════════════════════════════════════════════════════════════ -->
+<section class="trust-section">
+  <div class="container">
+    
+    <div class="trust-header">
+      <span class="badge badge-success" style="font-size: 0.8rem; margin-bottom: 0.6rem;">
+        <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Uncompromising Trust & Safety
+      </span>
+      <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
+        Why Parents & Educators Trust EduTutor Pro
+      </h2>
+      <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.5rem; line-height: 1.6;">
+        Engineered to eliminate opaque middleman agencies with 100% verified credentials, zero hidden costs, and free trial demos.
+      </p>
+    </div>
+
+    <div class="trust-grid">
+      
+      <!-- Trust Pillar 1: 100% Verified ID & Degrees -->
+      <div class="trust-card">
+        <div class="trust-icon-box green">
+          <i data-lucide="shield-check" style="width: 32px; height: 32px;"></i>
+        </div>
+        <span class="trust-highlight-metric green">100% Audited</span>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+          100% Verified ID & Degrees
+        </h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+          Strict mandatory verification of Government photo IDs (Aadhaar/Passport) and university degree certificates before profiles go live.
+        </p>
+        <ul class="trust-checklist">
+          <li><i data-lucide="check"></i> Govt ID & Address Verification</li>
+          <li><i data-lucide="check"></i> University Degree Checks</li>
+          <li><i data-lucide="check"></i> Background & Reference Audits</li>
+        </ul>
+      </div>
+
+      <!-- Trust Pillar 2: 0% Parent Commission -->
+      <div class="trust-card">
+        <div class="trust-icon-box blue">
+          <i data-lucide="badge-percent" style="width: 32px; height: 32px;"></i>
+        </div>
+        <span class="trust-highlight-metric blue">₹0 Middleman Cut</span>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+          0% Parent Commission
+        </h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+          Parents never pay registration fees, service charges, or recurring cuts. Settle tuition fees directly with your educator.
+        </p>
+        <ul class="trust-checklist">
+          <li><i data-lucide="check"></i> 100% Free for Parents Always</li>
+          <li><i data-lucide="check"></i> Direct 1-on-1 Payment to Tutor</li>
+          <li><i data-lucide="check"></i> No Inflated Agency Markups</li>
+        </ul>
+      </div>
+
+      <!-- Trust Pillar 3: Free Demo Classes -->
+      <div class="trust-card">
+        <div class="trust-icon-box orange">
+          <i data-lucide="sparkles" style="width: 32px; height: 32px;"></i>
+        </div>
+        <span class="trust-highlight-metric orange">Zero Risk Trial</span>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+          Free Demo Classes
+        </h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+          Experience an initial 1-on-1 trial session at home or live online. Evaluate teaching compatibility before making any financial commitment.
+        </p>
+        <ul class="trust-checklist">
+          <li><i data-lucide="check"></i> 30-45 Mins 1-on-1 Trial Class</li>
+          <li><i data-lucide="check"></i> Check Learning Compatibility</li>
+          <li><i data-lucide="check"></i> Free Tutor Replacement Guarantee</li>
+        </ul>
+      </div>
+
+      <!-- Trust Pillar 4: Rapid Pincode Matching -->
+      <div class="trust-card">
+        <div class="trust-icon-box amber">
+          <i data-lucide="zap" style="width: 32px; height: 32px;"></i>
+        </div>
+        <span class="trust-highlight-metric amber">&lt; 15 Mins Response</span>
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+          Hyper-Local Fast Match
+        </h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+          Our localized proximity matcher connects you with verified subject specialists living within 5-10 km of your neighborhood.
+        </p>
+        <ul class="trust-checklist">
+          <li><i data-lucide="check"></i> Neighborhood Pincode Matching</li>
+          <li><i data-lucide="check"></i> Verified Student Safety Protocols</li>
+          <li><i data-lucide="check"></i> Direct Instant Communication</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Trust Verification Ribbon -->
+    <div style="margin-top: 3.5rem; background: var(--background); border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 1.5rem; text-align: center;">
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <i data-lucide="shield-check" style="width: 22px; height: 22px; color: #10b981;"></i>
+        <span style="font-weight: 700; font-size: 0.9rem; color: var(--text);">Government Photo ID & Degree Audited</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <i data-lucide="star" style="width: 22px; height: 22px; color: #f59e0b; fill: currentColor;"></i>
+        <span style="font-weight: 700; font-size: 0.9rem; color: var(--text);">4.9/5 Average Educator Rating</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.6rem;">
+        <i data-lucide="award" style="width: 22px; height: 22px; color: var(--primary);"></i>
+        <span style="font-weight: 700; font-size: 0.9rem; color: var(--text);">Zero Middleman Cut Guaranteed</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     4. GAMIFIED TUTOR CARDS ("Featured Tutors" Section)
+═══════════════════════════════════════════════════════════════════════════ -->
+<section style="padding: 5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.25rem;">
+      <div>
+        <span class="badge badge-primary" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+          <i data-lucide="award" style="width: 14px; height: 14px;"></i> Top-Ranked Faculty
+        </span>
+        <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin-top: 0.35rem;">
+          Featured Verified Tutors
+        </h2>
+        <p style="color: var(--text-muted); font-size: 1rem; margin: 0;">
+          Vetted subject specialists with proven track records of boosting academic performance
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="{% url 'tutors:saved_tutors' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+          <i data-lucide="heart" style="width: 15px; height: 15px; color: #ef4444;"></i> Saved Shortlist
+        </a>
+        <a href="{% url 'tutors:directory' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
+          Explore All Tutors &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Gamified Tutor Cards Grid -->
+    <div class="gamified-tutor-grid">
+      {% for tutor in featured_tutors %}
+        <div class="gamified-tutor-card">
+          
+          <!-- Top Floating Badges: Verified & Fast Responder -->
+          <div class="tutor-card-top-badges">
+            {% if tutor.is_verified %}
+              <span class="badge-verified-check">
+                <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i> Verified
+              </span>
+            {% else %}
+              <span class="badge badge-secondary" style="font-size: 0.7rem;">Profile Active</span>
+            {% endif %}
+
+            <span class="badge-fast-responder">
+              <i data-lucide="zap" style="width: 12px; height: 12px; fill: currentColor;"></i> Fast Responder
+            </span>
+          </div>
+
+          <div style="padding: 1.5rem 1.5rem 1rem; text-align: center;">
+            
+            <!-- Large Profile Picture with Online Beacon -->
+            <div class="tutor-avatar-wrapper">
+              {% if tutor.user.avatar %}
+                <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" class="tutor-avatar-img">
+              {% else %}
+                <div class="tutor-avatar-fallback">
+                  {{ tutor.display_name|slice:":1"|upper }}
+                </div>
+              {% endif %}
+              <span class="tutor-online-beacon" title="Active on platform"></span>
+            </div>
+
+            <!-- Tier Tag -->
+            <div class="tutor-tier-badge">
+              <i data-lucide="award" style="width: 13px; height: 13px;"></i> Top 1% Verified Faculty
+            </div>
+
+            <!-- Tutor Name & Title -->
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 0.25rem;">
+              <a href="{% url 'tutors:detail' tutor.pk %}" style="color: inherit; text-decoration: none;">
+                {{ tutor.display_name }}
+              </a>
+            </h3>
+
+            <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">
+              {{ tutor.highest_qualification }}
+            </div>
+
+            <!-- Rating & Reviews Badge -->
+            <div style="display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(245, 158, 11, 0.12); color: #b45309; padding: 0.25rem 0.65rem; border-radius: 9999px; font-size: 0.825rem; font-weight: 800; margin-bottom: 0.85rem;">
+              <i data-lucide="star" style="width: 14px; height: 14px; fill: currentColor; color: #f59e0b;"></i>
+              <span>{{ tutor.average_rating|default:"4.9" }}</span>
+              <span style="color: var(--text-muted); font-weight: 600;">({{ tutor.total_reviews|default:"12" }} reviews)</span>
+            </div>
+
+            <!-- Headline Snip -->
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; min-height: 42px; margin-bottom: 1rem;">
+              {{ tutor.headline|default:"Dedicated subject educator specializing in conceptual clarity, problem solving, and board results." }}
+            </p>
+
+            <!-- Subject Badges -->
+            <div class="flex flex-wrap justify-center gap-1.5" style="margin-bottom: 1.25rem;">
+              {% for sub in tutor.subjects.all|slice:":3" %}
+                <span class="badge badge-secondary" style="font-size: 0.725rem; font-weight: 700;">{{ sub.subject_name }}</span>
+              {% empty %}
+                <span class="badge badge-secondary" style="font-size: 0.725rem;">Mathematics & Science</span>
+              {% endfor %}
+              {% if tutor.subjects.count > 3 %}
+                <span class="badge badge-secondary" style="font-size: 0.725rem;">+{{ tutor.subjects.count|add:"-3" }} more</span>
+              {% endif %}
+            </div>
+
+            <!-- Key Info Pill Strip -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.8rem; color: var(--text-muted);">
+              <div style="display: flex; align-items: center; gap: 0.3rem;">
+                <i data-lucide="briefcase" style="width: 13px; height: 13px; color: #10b981;"></i>
+                <span>{{ tutor.experience_years }} Yrs Exp</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.3rem;">
+                <i data-lucide="map-pin" style="width: 13px; height: 13px; color: var(--secondary);"></i>
+                <span>{{ tutor.primary_locality }}</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.3rem;">
+                <i data-lucide="monitor" style="width: 13px; height: 13px; color: var(--primary);"></i>
+                <span>{{ tutor.get_teaching_mode_display|slice:":6" }}</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Gamified Card Footer with Prominent 'Book Free Demo' Button -->
+          <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Tuition Rate</span>
+                <div style="font-size: 1.15rem; font-weight: 900; color: var(--primary);">
+                  {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate|default:"5000" }}<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">/mo</span>
+                </div>
+              </div>
+              <a href="{% url 'tutors:toggle_save' tutor.pk %}" class="btn btn-secondary btn-sm" style="width: 36px; height: 36px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Save tutor to shortlist">
+                <i data-lucide="heart" style="width: 16px; height: 16px; color: #ef4444;"></i>
+              </a>
+            </div>
+
+            <!-- Prominent Action CTA -->
+            <div class="flex gap-2">
+              <a href="{% url 'tutors:detail' tutor.pk %}?action=book_demo" class="btn-book-demo-action">
+                <i data-lucide="calendar-check" style="width: 15px; height: 15px;"></i> Book Free Demo
+              </a>
+              <a href="{% url 'tutors:detail' tutor.pk %}" class="btn btn-secondary btn-sm" style="font-weight: 700; padding: 0 0.85rem;">
+                Profile &rarr;
+              </a>
+            </div>
+          </div>
+
+        </div>
+      {% empty %}
+        <div class="card col-span-full" style="padding: 3.5rem 2rem; text-align: center; color: var(--text-muted);">
+          <i data-lucide="users" style="width: 48px; height: 48px; margin: 0 auto 1rem; color: var(--text-muted);"></i>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text);">Verified Tutors Coming Soon</h3>
+          <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Explore our subject listings or join EduTutor Pro as an educator today.
+          </p>
+          <div style="margin-top: 1.25rem;">
+            <a href="{% url 'accounts:register_tutor' %}" class="btn btn-primary">Join as Educator (3 Free Credits)</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     5. INTERACTIVE 'HOW IT WORKS' (Parents vs Tutors 3-Step Timeline)
+═══════════════════════════════════════════════════════════════════════════ -->
+<section class="how-it-works-section">
+  <div class="container">
+    
+    <div style="text-align: center; max-width: 720px; margin: 0 auto 2.5rem;">
+      <span class="badge badge-primary" style="font-size: 0.8rem; margin-bottom: 0.5rem;">Simple 3-Step Process</span>
+      <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
+        How EduTutor Pro Works
+      </h2>
+      <p style="color: var(--text-muted); font-size: 1.05rem; margin-top: 0.5rem;">
+        Direct, transparent connections with zero hidden markups and complete autonomy in your hands.
+      </p>
+    </div>
+
+    <!-- Interactive Toggle Switch -->
+    <div class="how-toggle-box">
+      <div class="how-toggle-pill-wrapper">
+        <button type="button" class="how-toggle-btn active" id="btnToggleParents" onclick="switchHowItWorks('parents')">
+          <i data-lucide="user-check" style="width: 17px; height: 17px;"></i> For Parents & Students
+        </button>
+        <button type="button" class="how-toggle-btn" id="btnToggleTutors" onclick="switchHowItWorks('tutors')">
+          <i data-lucide="graduation-cap" style="width: 17px; height: 17px;"></i> For Tutors & Teachers
+        </button>
+        <div class="how-toggle-slider" id="howToggleSlider"></div>
+      </div>
+    </div>
+
+    <!-- 3-Step Horizontal Timeline for PARENTS -->
+    <div class="timeline-container" id="timelineParents">
+      <div class="timeline-horizontal-grid">
+        
+        <!-- Step 1 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node">01</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Tell Us What You Need
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Specify your child's class, board, subjects, home/online mode, and schedule in 60 seconds. 100% free with complete privacy.
+          </p>
+          <span class="timeline-tag-pill">Step 1 • Takes 60 Seconds</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node" style="border-color: var(--secondary); color: var(--secondary); box-shadow: 0 0 0 8px rgba(234, 88, 12, 0.12);">02</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Review Verified Matches
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Receive applications from certified teachers in your locality. Compare degrees, background checks, experience, and parent ratings.
+          </p>
+          <span class="timeline-tag-pill" style="background: rgba(234, 88, 12, 0.1); color: var(--secondary);">Step 2 • 100% Verified Faculty</span>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node" style="border-color: #10b981; color: #10b981; box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.12);">03</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Book Free Demo & Learn
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Attend a 1-on-1 trial class with zero commitment. Confirm your monthly schedule and pay the tutor directly with 0% commission.
+          </p>
+          <span class="timeline-tag-pill" style="background: rgba(16, 185, 129, 0.1); color: #059669;">Step 3 • Zero Middleman Fee</span>
+        </div>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-lg" style="font-weight: 800; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);">
+          <i data-lucide="edit-3" style="width: 18px; height: 18px;"></i> Post Tuition Requirement (100% Free)
+        </a>
+      </div>
+    </div>
+
+    <!-- 3-Step Horizontal Timeline for TUTORS -->
+    <div class="timeline-container" id="timelineTutors" style="display: none;">
+      <div class="timeline-horizontal-grid">
+        
+        <!-- Step 1 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node" style="border-color: var(--primary); color: var(--primary);">01</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Build & Verify Profile
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            List your academic degrees, subjects, hourly/monthly rates, and localities. Submit verification documents to earn trust and 3 free welcome credits.
+          </p>
+          <span class="timeline-tag-pill">Step 1 • 3 Free Welcome Credits</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node" style="border-color: var(--secondary); color: var(--secondary); box-shadow: 0 0 0 8px rgba(234, 88, 12, 0.12);">02</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Browse & Unlock Leads
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Filter open student requirements by neighborhood, class, or online preference. Unlock parent contact numbers directly.
+          </p>
+          <span class="timeline-tag-pill" style="background: rgba(234, 88, 12, 0.1); color: var(--secondary);">Step 2 • Real Verified Inquiries</span>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="timeline-step-card">
+          <div class="timeline-step-node" style="border-color: #10b981; color: #10b981; box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.12);">03</div>
+          <h4 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
+            Deliver Demo & Earn 100%
+          </h4>
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            Conduct introductory demo sessions, convert students into long-term monthly tuitions, and keep 100% of your earnings with zero commission deductions.
+          </p>
+          <span class="timeline-tag-pill" style="background: rgba(16, 185, 129, 0.1); color: #059669;">Step 3 • Retain 100% Earnings</span>
+        </div>
+
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="{% url 'accounts:register_tutor' %}" class="btn btn-primary btn-lg" style="font-weight: 800; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);">
+          <i data-lucide="award" style="width: 18px; height: 18px;"></i> Join as Educator (Claim 3 Free Credits)
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     6. TESTIMONIAL VIDEO CAROUSEL (Parent Story Placeholders & Play Overlays)
+═══════════════════════════════════════════════════════════════════════════ -->
+<section class="video-carousel-section">
+  <div class="container">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+      <div>
+        <span class="badge badge-warning" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+          <i data-lucide="video" style="width: 14px; height: 14px;"></i> Parent Video Testimonials
+        </span>
+        <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
+          Real Stories. Proven Grade Improvements.
+        </h2>
+        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem;">
+          Hear how parents and students transformed their academic confidence with our verified educators.
+        </p>
+      </div>
+
+      <!-- Carousel Arrow Controls -->
+      <div style="display: flex; gap: 0.65rem;">
+        <button type="button" class="carousel-nav-btn" onclick="scrollVideoCarousel(-1)" aria-label="Previous Testimonial">
+          <i data-lucide="chevron-left" style="width: 20px; height: 20px;"></i>
+        </button>
+        <button type="button" class="carousel-nav-btn" onclick="scrollVideoCarousel(1)" aria-label="Next Testimonial">
+          <i data-lucide="chevron-right" style="width: 20px; height: 20px;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Horizontal Scroll Carousel Track -->
+    <div class="video-carousel-track-wrapper">
+      <div class="video-carousel-scroll" id="videoCarouselScroll">
+        
+        <!-- Video Card 1 -->
+        <div class="video-testimonial-card">
+          <div class="video-thumb-container" onclick="openVideoModal('Kavita Sharma', 'Class 10 CBSE Math', 'Aarav jumped from 68% to 96% in his board exams! Our tutor Dr. Rajesh was patient, structured, and made calculus feel simple.', '1:45')">
+            <div class="video-thumb-bg" style="background-image: radial-gradient(#4338ca, #1e1b4b);"></div>
+            <span class="video-subject-tag">Class 10 CBSE Math</span>
+            <span class="video-duration-tag">▶ 1:45 min</span>
+            <div class="video-play-btn-overlay">
+              <span class="play-pulse-ring"></span>
+              <i data-lucide="play" style="width: 24px; height: 24px; fill: currentColor;"></i>
+            </div>
+          </div>
+          <div style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; color: #f59e0b; margin-bottom: 0.65rem;">
+              {% for i in "12345" %}<i data-lucide="star" style="width: 15px; height: 15px; fill: currentColor;"></i>{% endfor %}
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--text); margin-left: 0.35rem;">5.0 / 5.0</span>
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
+              "Turned math anxiety into a 96% board score!"
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.25rem;">
+              "EduTutor Pro matched us with Dr. Rajesh within 3 hours. The free trial demo gave us total confidence, and Aarav actually started loving problem-solving."
+            </p>
+            <div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+              <div>
+                <span style="font-weight: 800; color: var(--text); display: block;">Kavita Sharma</span>
+                <span style="color: var(--text-muted); font-size: 0.725rem;">Parent • Indiranagar, Bengaluru</span>
+              </div>
+              <span class="badge badge-success" style="font-size: 0.7rem;">+28% Score Gain</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Card 2 -->
+        <div class="video-testimonial-card">
+          <div class="video-thumb-container" onclick="openVideoModal('Rajesh & Sunita K.', 'Class 12 NEET Biology', 'Finding a NEET-specialized home educator in Koramangala was difficult until we used EduTutor Pro. The 0% commission was a massive bonus.', '2:15')">
+            <div class="video-thumb-bg" style="background-image: radial-gradient(#0891b2, #1e1b4b);"></div>
+            <span class="video-subject-tag">Class 12 NEET Biology</span>
+            <span class="video-duration-tag">▶ 2:15 min</span>
+            <div class="video-play-btn-overlay">
+              <span class="play-pulse-ring"></span>
+              <i data-lucide="play" style="width: 24px; height: 24px; fill: currentColor;"></i>
+            </div>
+          </div>
+          <div style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; color: #f59e0b; margin-bottom: 0.65rem;">
+              {% for i in "12345" %}<i data-lucide="star" style="width: 15px; height: 15px; fill: currentColor;"></i>{% endfor %}
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--text); margin-left: 0.35rem;">5.0 / 5.0</span>
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
+              "Targeted NCERT prep for NEET medical"
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.25rem;">
+              "Our educator provided custom question banks and daily flashcard drills. She cleared NEET with 645 marks! No middleman fees meant every rupee went to our tutor."
+            </p>
+            <div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+              <div>
+                <span style="font-weight: 800; color: var(--text); display: block;">Rajesh & Sunita K.</span>
+                <span style="color: var(--text-muted); font-size: 0.725rem;">Parents • Koramangala</span>
+              </div>
+              <span class="badge badge-success" style="font-size: 0.7rem;">NEET 645 Marks</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Card 3 -->
+        <div class="video-testimonial-card">
+          <div class="video-thumb-container" onclick="openVideoModal('Dr. Ramesh Iyer', 'Class 8 ICSE Science', 'The verified background check and transparent teacher profiles gave our family complete peace of mind.', '1:30')">
+            <div class="video-thumb-bg" style="background-image: radial-gradient(#059669, #1e1b4b);"></div>
+            <span class="video-subject-tag">Class 8 ICSE Science</span>
+            <span class="video-duration-tag">▶ 1:30 min</span>
+            <div class="video-play-btn-overlay">
+              <span class="play-pulse-ring"></span>
+              <i data-lucide="play" style="width: 24px; height: 24px; fill: currentColor;"></i>
+            </div>
+          </div>
+          <div style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; color: #f59e0b; margin-bottom: 0.65rem;">
+              {% for i in "12345" %}<i data-lucide="star" style="width: 15px; height: 15px; fill: currentColor;"></i>{% endfor %}
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--text); margin-left: 0.35rem;">5.0 / 5.0</span>
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
+              "Complete transparency & verified safety"
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.25rem;">
+              "Being a doctor, I wanted verified degree certifications before inviting someone home. EduTutor Pro handled vetting seamlessly. Our tutor is stellar."
+            </p>
+            <div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+              <div>
+                <span style="font-weight: 800; color: var(--text); display: block;">Dr. Ramesh Iyer</span>
+                <span style="color: var(--text-muted); font-size: 0.725rem;">Parent • HSR Layout</span>
+              </div>
+              <span class="badge badge-success" style="font-size: 0.7rem;">ID & Degree Vetted</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Card 4 -->
+        <div class="video-testimonial-card">
+          <div class="video-thumb-container" onclick="openVideoModal('Meenakshi S.', 'Coding & Python for Kids', 'My daughter won 1st prize in her school science & coding expo thanks to her 1-on-1 coding mentor.', '2:00')">
+            <div class="video-thumb-bg" style="background-image: radial-gradient(#d97706, #1e1b4b);"></div>
+            <span class="video-subject-tag">Python & Robotics</span>
+            <span class="video-duration-tag">▶ 2:00 min</span>
+            <div class="video-play-btn-overlay">
+              <span class="play-pulse-ring"></span>
+              <i data-lucide="play" style="width: 24px; height: 24px; fill: currentColor;"></i>
+            </div>
+          </div>
+          <div style="padding: 1.5rem; display: flex; flex-direction: column; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.35rem; color: #f59e0b; margin-bottom: 0.65rem;">
+              {% for i in "12345" %}<i data-lucide="star" style="width: 15px; height: 15px; fill: currentColor;"></i>{% endfor %}
+              <span style="font-size: 0.8rem; font-weight: 800; color: var(--text); margin-left: 0.35rem;">5.0 / 5.0</span>
+            </div>
+            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
+              "Won 1st prize in the Science & Coding Expo"
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.25rem;">
+              "Her mentor built custom games together while teaching computational logic. The interactive online setup was seamless."
+            </p>
+            <div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+              <div>
+                <span style="font-weight: 800; color: var(--text); display: block;">Meenakshi S.</span>
+                <span style="color: var(--text-muted); font-size: 0.725rem;">Parent • Whitefield</span>
+              </div>
+              <span class="badge badge-success" style="font-size: 0.7rem;">Expo Winner</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Verified Text Reviews from Database (if available) -->
+    {% if reviews %}
+      <div style="margin-top: 3.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; text-align: center;">
+          Recent Verified Parent Reviews
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="max-width: 960px; margin: 0 auto;">
+          {% for rev in reviews %}
+            <div class="card" style="padding: 1.5rem; border: 1px solid var(--border);">
+              <div class="flex items-center gap-1" style="color: var(--accent); margin-bottom: 0.5rem;">
+                {% for i in "12345" %}<i data-lucide="star" style="width: 15px; height: 15px; fill: currentColor;"></i>{% endfor %}
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--text); margin-left: 0.4rem;">{{ rev.rating }}.0 / 5.0</span>
+              </div>
+              <h4 style="font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem;">
+                "{{ rev.title }}"
+              </h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem;">
+                {{ rev.comment }}
+              </p>
+              <div class="flex items-center justify-between" style="font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.65rem;">
+                <div>
+                  <span style="font-weight: 700; color: var(--text);">{{ rev.parent.display_name }}</span>
+                  <span style="color: var(--text-muted); display: block; font-size: 0.725rem;">Verified Parent</span>
+                </div>
+                <div style="text-align: right;">
+                  <span style="color: var(--primary); font-weight: 600;">Tutor: {{ rev.tutor.display_name }}</span>
+                  <span style="color: var(--text-muted); display: block; font-size: 0.725rem;">{{ rev.created_at|date:"M Y" }}</span>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     7. SUBJECT DISCOVERY SECTION (Database Categories)
+═══════════════════════════════════════════════════════════════════════════ -->
+<section style="padding: 5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
   <div class="container">
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
       <div>
         <span class="badge badge-primary" style="margin-bottom: 0.4rem;">Subject Directory</span>
-        <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); margin-top: 0.25rem; letter-spacing: -0.02em;">
+        <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); margin-top: 0.25rem; letter-spacing: -0.02em;">
           Explore Subjects & Disciplines
         </h2>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
@@ -621,8 +2109,8 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-4">
       {% for subj in popular_subjects %}
-        <a href="{% url 'tutors:directory' %}?subject={{ subj.name|urlencode }}" class="subject-card">
-          <div class="subject-icon-box" style="background: {{ subj.bg }}; color: {{ subj.color }};">
+        <a href="{% url 'tutors:directory' %}?subject={{ subj.name|urlencode }}" class="card" style="padding: 1.35rem 1.15rem; display: flex; flex-direction: column; text-decoration: none; transition: transform 0.2s ease, box-shadow 0.2s ease; border: 1px solid var(--border);">
+          <div style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: {{ subj.bg }}; color: {{ subj.color }};">
             <i data-lucide="{{ subj.icon }}" style="width: 24px; height: 24px;"></i>
           </div>
           <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.25rem;">
@@ -645,627 +2133,134 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     MULTI-CATEGORY DIRECTORY HUB (Interactive City, Subject & Grade Explorer)
+     8. MULTI-CATEGORY DIRECTORY HUB (Interactive Directory Explorer)
 ═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
+<section style="padding: 4.5rem 0; background: var(--surface); border-bottom: 1px solid var(--border);">
   <div class="container">
     
-    <!-- Section Header with Mode Tabs -->
-    <div style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem;" class="animate-on-scroll">
-      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Explore Marketplace</span>
-      <h2 style="font-size: clamp(1.75rem, 3.5vw, 2.35rem); font-weight: 900; color: var(--text); letter-spacing: -0.025em; margin-bottom: 0.6rem;">
-        Find Home Tutors & Tuition Jobs by Category
-      </h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.75rem;">
-        Discover verified home tutors or browse open student tuition requirements across major Indian cities and classes
-      </p>
-
-      <!-- Tab Switcher (TUTORS vs. TUITIONS) -->
-      <div style="display: inline-flex; background: var(--surface); border: 2px solid var(--border); border-radius: 9999px; padding: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
-        <button type="button" class="btn btn-sm btn-primary" id="btn-dir-tutors" onclick="switchDirectoryExplorer('tutors')" style="border-radius: 9999px; font-weight: 800; padding: 0.6rem 1.6rem; font-size: 0.85rem;">
-          <i data-lucide="graduation-cap" style="width: 15px; height: 15px;"></i> Find Tutors
-        </button>
-        <button type="button" class="btn btn-sm btn-secondary" id="btn-dir-tuitions" onclick="switchDirectoryExplorer('tuitions')" style="border-radius: 9999px; font-weight: 800; padding: 0.6rem 1.6rem; font-size: 0.85rem; border: none;">
-          <i data-lucide="briefcase" style="width: 15px; height: 15px;"></i> Browse Tuitions
-        </button>
-      </div>
-    </div>
-
-    <!-- ── Panel 1: TUTORS DIRECTORY GRID ── -->
-    <div id="dir-panel-tutors" class="card animate-on-scroll delay-100" style="padding: 2.25rem 2rem; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--card-shadow);">
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        
-        <!-- Column 1: By City -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--primary);"></i>
-            <span>Tutors by City</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'tutors:directory' %}?city=Mumbai">Mumbai</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Delhi">Delhi NCR</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Bengaluru">Bengaluru</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Hyderabad">Hyderabad</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Ahmedabad">Ahmedabad</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Chennai">Chennai</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Kolkata">Kolkata</a></li>
-            <li><a href="{% url 'tutors:directory' %}?city=Pune">Pune</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              More Cities &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 2: By Category -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="layers" style="width: 16px; height: 16px; color: var(--primary);"></i>
-            <span>By Category</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'tutors:directory' %}?student_class=Kindergarten">Nursery / Kindergarten</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+1-5">Class 1 to 5 (Primary)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+6-10">Class 6 to 10 (Secondary)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+11-12">Class 11 & 12 (Senior)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Commerce">CA & Accounting Courses</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Degree">Degree (BSc, BCom, BA)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Engineering">Engineering (B.Tech)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Masters">PG (MSc, MCA, MBA)</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              More Categories &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 3: By Course / Grade -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="book-open" style="width: 16px; height: 16px; color: var(--primary);"></i>
-            <span>By Course / Grade</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'tutors:directory' %}?student_class=Kindergarten">Kindergarten Level</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+1">Class 1 Tuition</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+2">Class 2 Tuition</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+5">Class 5 Tuition</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+8">Class 8 Tuition</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+10">Class 10 Board Prep</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+11">Class 11 Science/Com</a></li>
-            <li><a href="{% url 'tutors:directory' %}?student_class=Class+12">Class 12 Boards</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              More Grades &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 4: By Subject -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="file-text" style="width: 16px; height: 16px; color: var(--primary);"></i>
-            <span>By Subject</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'tutors:directory' %}?subject=Mathematics">Maths Home Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Physics">Physics Home Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Chemistry">Chemistry Home Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=English">English Home Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Computer+Science">Computers & Coding</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Biology">Biology Home Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Economics">Economics Tutors</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Social+Studies">Social Studies Tutors</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              More Subjects &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 5: Other & Competitive -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="award" style="width: 16px; height: 16px; color: var(--primary);"></i>
-            <span>Other Programs</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'tutors:directory' %}?subject=Spoken+English">Spoken English</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=IIT-JEE">IIT JEE (Mains/Adv)</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=NEET">NEET / Medical</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=CBSE">CBSE Board Specialists</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=ICSE">ICSE / ISC Curriculum</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=CAT">CAT / MBA Entrance</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=GATE">GATE Engineering</a></li>
-            <li><a href="{% url 'tutors:directory' %}?subject=Languages">French, German, Hindi</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              More Exams &rarr;
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ── Panel 2: TUITIONS DIRECTORY GRID ── -->
-    <div id="dir-panel-tuitions" class="card animate-on-scroll delay-100" style="display: none; padding: 2.25rem 2rem; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--card-shadow);">
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        
-        <!-- Column 1: Tuition Jobs By City -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--secondary);"></i>
-            <span>Tuitions by City</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'leads:board' %}?city=Mumbai">Tuitions in Mumbai</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Delhi">Tuitions in Delhi NCR</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Bengaluru">Tuitions in Bengaluru</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Hyderabad">Tuitions in Hyderabad</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Ahmedabad">Tuitions in Ahmedabad</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Chennai">Tuitions in Chennai</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Kolkata">Tuitions in Kolkata</a></li>
-            <li><a href="{% url 'leads:board' %}?city=Pune">Tuitions in Pune</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              All City Leads &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 2: Tuition Jobs By Category -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="layers" style="width: 16px; height: 16px; color: var(--secondary);"></i>
-            <span>By Level / Stage</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'leads:board' %}?student_class=Kindergarten">Preschool & Kindergarten</a></li>
-            <li><a href="{% url 'leads:board' %}?student_class=Class+1-5">Primary Tuition Leads</a></li>
-            <li><a href="{% url 'leads:board' %}?student_class=Class+6-10">Middle School Leads</a></li>
-            <li><a href="{% url 'leads:board' %}?student_class=Class+11-12">Class 11 & 12 Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Commerce">Commerce & Accountancy</a></li>
-            <li><a href="{% url 'leads:board' %}?student_class=Degree">College & Degree Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Engineering">Engineering Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Competitive">Foundation Tuitions</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              All Categories &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 3: Tuitions By Teaching Mode -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="home" style="width: 16px; height: 16px; color: var(--secondary);"></i>
-            <span>By Tuition Type</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'leads:board' %}?tuition_type=HOME_TUITION">Home Tuition (In-Person)</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=ONLINE_TUITION">Live Online Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=HOME_TUITION">Evening Home Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=HOME_TUITION">Weekend Only Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=ONLINE_TUITION">PAN-India Online Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=HOME_TUITION">One-on-One Tutoring</a></li>
-            <li><a href="{% url 'leads:board' %}?tuition_type=ONLINE_TUITION">Small Group Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}">Urgent Tuition Inquiries</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              Browse by Mode &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 4: Tuition Jobs By Subject -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="file-text" style="width: 16px; height: 16px; color: var(--secondary);"></i>
-            <span>By Subject</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'leads:board' %}?subject=Mathematics">Maths Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Physics">Physics Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Chemistry">Chemistry Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=English">English Tuition Needs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Computer+Science">Computer & Coding Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Biology">Biology Tuition Jobs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Economics">Economics Tuition Needs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Social+Studies">Social Science Jobs</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              All Subjects &rarr;
-            </a>
-          </div>
-        </div>
-
-        <!-- Column 5: Entrance & Board Leads -->
-        <div>
-          <div class="dir-col-title">
-            <i data-lucide="award" style="width: 16px; height: 16px; color: var(--secondary);"></i>
-            <span>Entrance & Boards</span>
-          </div>
-          <ul class="dir-list">
-            <li><a href="{% url 'leads:board' %}?subject=IIT-JEE">IIT JEE Tuition Needs</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=NEET">NEET Coaching Leads</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=CBSE">CBSE Board Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=ICSE">ICSE Board Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Spoken+English">Spoken English Inquiries</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Olympiad">Olympiad Prep Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=State+Board">State Board Tuitions</a></li>
-            <li><a href="{% url 'leads:board' %}?subject=Coding">Python & Web Coding</a></li>
-          </ul>
-          <div style="margin-top: 1rem;">
-            <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.775rem; justify-content: center;">
-              All Entrance Leads &rarr;
-            </a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     3. FEATURED VERIFIED TUTORS SECTION (Real DB Tutors)
-═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
-  <div class="container">
-    <div class="flex items-center justify-between" style="margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
       <div>
-        <span class="badge badge-success">Top Rated Faculty</span>
-        <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); margin-top: 0.35rem; letter-spacing: -0.02em;">
-          Featured Verified Tutors
+        <span class="badge badge-primary" style="margin-bottom: 0.35rem;">National Learning Hub</span>
+        <h2 style="font-size: 2rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
+          Explore by City, Grade & Subject
         </h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
-          Educators vetted via degree certificates, identity records, and parent reviews
-        </p>
       </div>
-      <div class="flex items-center gap-2">
-        <a href="{% url 'tutors:saved_tutors' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
-          <i data-lucide="heart" style="width: 14px; height: 14px; color: #ef4444;"></i> Saved Shortlist
-        </a>
-        <a href="{% url 'tutors:directory' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
-          View All Tutors &rarr;
-        </a>
-      </div>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for tutor in featured_tutors %}
-        <div class="tutor-card">
-          <div style="padding: 1.5rem;">
-            
-            <!-- Tutor Identity & Avatar -->
-            <div class="flex items-center gap-3" style="margin-bottom: 1rem;">
-              {% if tutor.user.avatar %}
-                <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light);">
-              {% else %}
-                <div style="width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">
-                  {{ tutor.display_name|slice:":1"|upper }}
-                </div>
-              {% endif %}
-
-              <div style="flex: 1; min-width: 0;">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;">
-                    <a href="{% url 'tutors:detail' tutor.pk %}" style="color: inherit; text-decoration: none;">
-                      {{ tutor.display_name }}
-                    </a>
-                  </h3>
-                  {% if tutor.is_verified %}
-                    <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">
-                      <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i> Verified
-                    </span>
-                  {% endif %}
-                </div>
-                <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-top: 0.15rem;">
-                  {{ tutor.highest_qualification }}
-                </div>
-              </div>
-
-              <!-- Bookmark Action -->
-              <a href="{% url 'tutors:toggle_save' tutor.pk %}" class="btn btn-secondary btn-sm" style="width: 34px; height: 34px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Save tutor">
-                <i data-lucide="heart" style="width: 15px; height: 15px; color: #ef4444;"></i>
-              </a>
-            </div>
-
-            <!-- Headline -->
-            <p style="font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.85rem; line-height: 1.45; min-height: 38px;">
-              {{ tutor.headline|default:"Experienced educator dedicated to conceptual clarity and student confidence." }}
-            </p>
-
-            <!-- Subject Pills -->
-            <div class="flex flex-wrap gap-1.5" style="margin-bottom: 1rem;">
-              {% for sub in tutor.subjects.all|slice:":3" %}
-                <span class="badge badge-secondary" style="font-size: 0.725rem; font-weight: 600;">{{ sub.subject_name }}</span>
-              {% empty %}
-                <span class="badge badge-secondary" style="font-size: 0.725rem;">General Academics</span>
-              {% endfor %}
-              {% if tutor.subjects.count > 3 %}
-                <span class="badge badge-secondary" style="font-size: 0.725rem;">+{{ tutor.subjects.count|add:"-3" }} more</span>
-              {% endif %}
-            </div>
-
-            <!-- Key Details Row -->
-            <div style="font-size: 0.825rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.4rem; border-top: 1px solid var(--border); padding-top: 0.85rem;">
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--secondary); flex-shrink: 0;"></i>
-                <span>{{ tutor.primary_locality }}, {{ tutor.primary_city }} ({{ tutor.service_radius_km }} km)</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <i data-lucide="monitor" style="width: 14px; height: 14px; color: var(--primary); flex-shrink: 0;"></i>
-                <span>{{ tutor.get_teaching_mode_display }}</span>
-              </div>
-              <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="display: flex; align-items: center; gap: 0.35rem;">
-                  <i data-lucide="briefcase" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
-                  {{ tutor.experience_years }} Yrs Exp.
-                </span>
-                <span style="display: flex; align-items: center; gap: 0.35rem; color: var(--accent); font-weight: 800;">
-                  <i data-lucide="star" style="width: 14px; height: 14px; fill: currentColor;"></i>
-                  {{ tutor.average_rating }} ({{ tutor.total_reviews }})
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Card Footer with Fee and CTA -->
-          <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em;">Monthly Fee</div>
-              <div style="font-size: 1.15rem; font-weight: 900; color: var(--primary);">
-                {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">/mo</span>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <a href="{% url 'tutors:detail' tutor.pk %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
-                View Profile &rarr;
-              </a>
-            </div>
-          </div>
-        </div>
-      {% empty %}
-        <div class="card col-span-full" style="padding: 3.5rem 2rem; text-align: center; color: var(--text-muted);">
-          <i data-lucide="users" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text);">Verified Tutors Coming Soon</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-            Explore our subject listings or register as an educator in your city.
-          </p>
-          <div style="margin-top: 1.25rem;">
-            <a href="{% url 'accounts:register_tutor' %}" class="btn btn-primary">Join as Educator</a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     4. RECENT TUITION OPPORTUNITIES (Real DB Leads for Tutors)
-═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--surface); border-bottom: 1px solid var(--border);">
-  <div class="container">
-    <div class="flex items-center justify-between" style="margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;">
-      <div>
-        <span class="badge badge-warning">Live Tuition Jobs</span>
-        <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); margin-top: 0.35rem; letter-spacing: -0.02em;">
-          Recent Tuition Requirements
-        </h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
-          Active requests posted by parents seeking qualified home tutors and online teachers
-        </p>
-      </div>
-      <div class="flex items-center gap-2">
-        <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
-          <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> Post Requirement
-        </a>
-        <a href="{% url 'leads:board' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
-          Browse All Leads &rarr;
-        </a>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for lead in recent_leads %}
-        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border);">
-          <div style="padding: 1.5rem;">
-            
-            <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
-              <div class="flex items-center gap-1.5">
-                <span class="badge badge-primary" style="font-size: 0.75rem;">{{ lead.lead_id }}</span>
-                <span class="badge badge-secondary" style="font-size: 0.75rem;">{{ lead.student_class }}</span>
-              </div>
-              <span style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.created_at|timesince }} ago</span>
-            </div>
-
-            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; line-height: 1.35;">
-              <a href="{% url 'leads:detail' lead.lead_id %}" style="text-decoration: none; color: inherit;">
-                {{ lead.title }}
-              </a>
-            </h3>
-
-            <div style="font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-bottom: 0.75rem;">
-              <i data-lucide="book-open" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
-              {{ lead.subjects }}
-            </div>
-
-            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-              {{ lead.learning_goals|default:"Parent seeking dedicated one-on-one conceptual teaching and regular doubt resolution." }}
-            </p>
-
-            <div style="font-size: 0.825rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.35rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <i data-lucide="map-pin" style="width: 14px; height: 14px; color: var(--secondary); flex-shrink: 0;"></i>
-                <span>{{ lead.locality }}, {{ lead.city }}</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <i data-lucide="monitor" style="width: 14px; height: 14px; color: var(--primary); flex-shrink: 0;"></i>
-                <span>{{ lead.get_tuition_type_display }} ({{ lead.days_per_week }} days/wk)</span>
-              </div>
-            </div>
-
-          </div>
-
-          <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Monthly Budget</div>
-              <div style="font-size: 1.15rem; font-weight: 900; color: #059669;">
-                {{ company.currency_symbol }}{{ lead.budget_amount }}<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">/mo</span>
-              </div>
-            </div>
-            <a href="{% url 'leads:detail' lead.lead_id %}" class="btn btn-outline-primary btn-sm" style="font-weight: 700;">
-              Apply Now &rarr;
-            </a>
-          </div>
-        </div>
-      {% empty %}
-        <div class="card col-span-full" style="padding: 3.5rem 2rem; text-align: center; color: var(--text-muted);">
-          <i data-lucide="inbox" style="width: 48px; height: 48px; margin: 0 auto 1rem;"></i>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text);">No Open Tuition Leads Currently</h3>
-          <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-            Be the first parent to post a requirement in your city!
-          </p>
-          <div style="margin-top: 1.25rem;">
-            <a href="{% url 'leads:post_requirement' %}" class="btn btn-primary">Post Requirement</a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     5. HOW IT WORKS (Audience-Segmented Interactive Journey)
-═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
-  <div class="container">
-    <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
-      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Clear & Transparent</span>
-      <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
-        How {{ company.company_name }} Works
-      </h2>
-      <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 1rem;">
-        Direct, reliable matching with zero hidden agency markups and complete autonomy in your hands
-      </p>
-
-      <!-- Audience Switcher Pills -->
-      <div style="display: inline-flex; gap: 0.5rem; margin-top: 1.5rem; background: var(--surface-hover); padding: 4px; border-radius: 9999px; border: 1px solid var(--border);">
-        <button type="button" class="btn btn-primary btn-sm" id="btn-journey-students" onclick="switchJourney('students')" style="border-radius: 9999px; font-weight: 700;">
-          <i data-lucide="user-check" style="width: 15px; height: 15px;"></i> For Parents & Students
+      <div style="display: inline-flex; background: var(--surface-hover); padding: 4px; border-radius: 9999px; border: 1px solid var(--border);">
+        <button type="button" class="btn btn-sm btn-primary" id="btn-dir-tutors" onclick="switchDirectoryExplorer('tutors')" style="border-radius: 9999px; font-weight: 800; padding: 0.55rem 1.4rem;">
+          Find Tutors
         </button>
-        <button type="button" class="btn btn-secondary btn-sm" id="btn-journey-tutors" onclick="switchJourney('tutors')" style="border-radius: 9999px; font-weight: 700;">
-          <i data-lucide="graduation-cap" style="width: 15px; height: 15px;"></i> For Tutors & Teachers
+        <button type="button" class="btn btn-sm btn-secondary" id="btn-dir-tuitions" onclick="switchDirectoryExplorer('tuitions')" style="border-radius: 9999px; font-weight: 800; padding: 0.55rem 1.4rem; border: none;">
+          Tuition Leads
         </button>
       </div>
     </div>
 
-    <!-- Student & Parent 4-Step Journey -->
-    <div id="journey-students-block">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        
-        <div class="step-card">
-          <div class="step-number-badge">1</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Post Your Requirement
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Specify class, board, subjects, locality, and preferred schedule in 60 seconds — 100% free with complete privacy protection.
-          </p>
+    <!-- Panel 1: TUTORS DIRECTORY -->
+    <div id="dir-panel-tutors" class="card" style="padding: 2rem; border: 1px solid var(--border); background: var(--surface);">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div>
+          <div class="dir-col-title"><i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--primary);"></i> By City</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'tutors:directory' %}?city=Bengaluru">Tutors in Bengaluru</a></li>
+            <li><a href="{% url 'tutors:directory' %}?city=Delhi+NCR">Tutors in Delhi NCR</a></li>
+            <li><a href="{% url 'tutors:directory' %}?city=Mumbai">Tutors in Mumbai</a></li>
+            <li><a href="{% url 'tutors:directory' %}?city=Hyderabad">Tutors in Hyderabad</a></li>
+            <li><a href="{% url 'tutors:directory' %}?city=Chennai">Tutors in Chennai</a></li>
+            <li><a href="{% url 'tutors:directory' %}?city=Pune">Tutors in Pune</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge">2</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Review Verified Matches
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Receive proposals from verified educators. Compare academic degrees, background checks, experience, and parent ratings.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="monitor" style="width: 15px; height: 15px; color: var(--primary);"></i> By Mode</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'tutors:directory' %}?teaching_mode=HOME_ONLY">Home Tutors (At Home)</a></li>
+            <li><a href="{% url 'tutors:directory' %}?teaching_mode=ONLINE_ONLY">Online Live Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?teaching_mode=BOTH_HOME_ONLINE">Hybrid Mode Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}">Weekend Only Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}">Female Tutors Available</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge">3</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Book Free Trial Demo
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Experience a 1-on-1 trial class at your home or live online. Evaluate teaching compatibility with zero upfront commitment.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="graduation-cap" style="width: 15px; height: 15px; color: var(--primary);"></i> By Class</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'tutors:directory' %}?student_class=Class+10">Class 10 Board Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?student_class=Class+12">Class 12 Boards & Entrance</a></li>
+            <li><a href="{% url 'tutors:directory' %}?student_class=Class+9">Class 9 Foundation</a></li>
+            <li><a href="{% url 'tutors:directory' %}?student_class=Class+6-8">Class 6–8 Middle School</a></li>
+            <li><a href="{% url 'tutors:directory' %}?student_class=Primary">Class 1–5 Primary</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge">4</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Direct Learning & Results
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Confirm your tuition schedule directly. Pay agreed monthly fees straight to the tutor with 0% platform commission deductions.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="book-open" style="width: 15px; height: 15px; color: var(--primary);"></i> By Subject</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'tutors:directory' %}?subject=Mathematics">Math Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Physics">Physics Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Chemistry">Chemistry Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Biology">Biology Tutors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Coding">Coding & Python</a></li>
+          </ul>
         </div>
-
+        <div>
+          <div class="dir-col-title"><i data-lucide="target" style="width: 15px; height: 15px; color: var(--primary);"></i> Competitive</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'tutors:directory' %}?subject=NEET">NEET Medical Prep</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=IIT-JEE">IIT-JEE Mains & Adv</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Olympiad">Olympiad Mentors</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=Commerce">CA Foundation & Accounts</a></li>
+            <li><a href="{% url 'tutors:directory' %}?subject=English">Spoken English & IELTS</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 
-    <!-- Tutor 4-Step Journey -->
-    <div id="journey-tutors-block" style="display: none;">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        
-        <div class="step-card">
-          <div class="step-number-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary);">1</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Create Your Profile
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            List your academic degrees, subjects, hourly/monthly rates, and localities. Submit verification documents to earn trust.
-          </p>
+    <!-- Panel 2: TUITION LEADS DIRECTORY -->
+    <div id="dir-panel-tuitions" class="card" style="display: none; padding: 2rem; border: 1px solid var(--border); background: var(--surface);">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div>
+          <div class="dir-col-title"><i data-lucide="briefcase" style="width: 15px; height: 15px; color: var(--secondary);"></i> Leads by City</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'leads:board' %}?city=Bengaluru">Tuition Jobs in Bengaluru</a></li>
+            <li><a href="{% url 'leads:board' %}?city=Delhi+NCR">Tuition Jobs in Delhi NCR</a></li>
+            <li><a href="{% url 'leads:board' %}?city=Mumbai">Tuition Jobs in Mumbai</a></li>
+            <li><a href="{% url 'leads:board' %}?city=Hyderabad">Tuition Jobs in Hyderabad</a></li>
+            <li><a href="{% url 'leads:board' %}?city=Chennai">Tuition Jobs in Chennai</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary);">2</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Claim 3 Free Credits
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Every newly registered tutor automatically receives 3 welcome credits to unlock student contact details immediately.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--secondary);"></i> By Mode</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'leads:board' %}?tuition_type=HOME_TUITION">Home Tuition Jobs</a></li>
+            <li><a href="{% url 'leads:board' %}?tuition_type=ONLINE">Online Tuition Requirements</a></li>
+            <li><a href="{% url 'leads:board' %}?tuition_type=HYBRID">Hybrid Tuition Leads</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary);">3</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Apply to Tuition Leads
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Browse open tuition requests posted by parents in your city. Unlock verified parent phone numbers and arrange demo sessions.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="graduation-cap" style="width: 15px; height: 15px; color: var(--secondary);"></i> By Board</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'leads:board' %}?board=CBSE">CBSE Board Requirements</a></li>
+            <li><a href="{% url 'leads:board' %}?board=ICSE">ICSE Board Inquiries</a></li>
+            <li><a href="{% url 'leads:board' %}?board=State+Board">State Board Inquiries</a></li>
+            <li><a href="{% url 'leads:board' %}?board=IB+IGCSE">IB & IGCSE Requirements</a></li>
+          </ul>
         </div>
-
-        <div class="step-card">
-          <div class="step-number-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary);">4</div>
-          <h4 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            Earn 100% of Your Fee
-          </h4>
-          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; margin: 0;">
-            Never pay recurring percentages to an agency. You retain 100% of your earnings and build long-term student relationships.
-          </p>
+        <div>
+          <div class="dir-col-title"><i data-lucide="book-open" style="width: 15px; height: 15px; color: var(--secondary);"></i> By Subject</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'leads:board' %}?search=Mathematics">Math Tuition Jobs</a></li>
+            <li><a href="{% url 'leads:board' %}?search=Physics">Physics Tuition Jobs</a></li>
+            <li><a href="{% url 'leads:board' %}?search=Chemistry">Chemistry Leads</a></li>
+            <li><a href="{% url 'leads:board' %}?search=Biology">Biology Leads</a></li>
+          </ul>
         </div>
-
+        <div>
+          <div class="dir-col-title"><i data-lucide="award" style="width: 15px; height: 15px; color: var(--secondary);"></i> High Budget</div>
+          <ul class="dir-list">
+            <li><a href="{% url 'leads:board' %}">₹8,000+ / Mo Requirements</a></li>
+            <li><a href="{% url 'leads:board' %}">NEET Long-term Coaching</a></li>
+            <li><a href="{% url 'leads:board' %}">IIT-JEE Physics Specialist</a></li>
+            <li><a href="{% url 'leads:board' %}">Coding Mentor Requirements</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -1273,191 +2268,69 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     6. WHY CHOOSE US / VALUE PROPOSITIONS
+     9. FREQUENTLY ASKED QUESTIONS
 ═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--surface); border-bottom: 1px solid var(--border);">
-  <div class="container">
-    <div style="text-align: center; max-width: 640px; margin: 0 auto 3rem;">
-      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">The {{ company.company_name }} Advantage</span>
-      <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
-        Why Parents & Educators Choose Us
-      </h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">
-        Engineered to replace opaque commission-based agencies with direct, transparent, and authentic connections
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      
-      <div class="card" style="padding: 1.75rem; border: 1px solid var(--border);">
-        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-          <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
-        </div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
-          100% Verified Faculty
-        </h3>
-        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
-          Strict mandatory verification of Government photo ID, academic degrees, and residential credentials before profile publication.
-        </p>
-      </div>
-
-      <div class="card" style="padding: 1.75rem; border: 1px solid var(--border);">
-        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(79, 70, 229, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-          <i data-lucide="badge-percent" style="width: 24px; height: 24px;"></i>
-        </div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
-          0% Parent Commission
-        </h3>
-        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
-          Parents pay zero registration fees or hidden middleman markups. Settle tuition fees directly with your educator.
-        </p>
-      </div>
-
-      <div class="card" style="padding: 1.75rem; border: 1px solid var(--border);">
-        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(6, 182, 212, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-          <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
-        </div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
-          Free Trial Demo Class
-        </h3>
-        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
-          Experience an initial 1-on-1 demo session to assess teaching style, rapport, and academic chemistry before making any commitments.
-        </p>
-      </div>
-
-      <div class="card" style="padding: 1.75rem; border: 1px solid var(--border);">
-        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
-          <i data-lucide="zap" style="width: 24px; height: 24px;"></i>
-        </div>
-        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 0.45rem;">
-          Rapid Pincode Match
-        </h3>
-        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
-          Our localized proximity algorithm instantly notifies top-rated subject educators in your specific locality for quick matching.
-        </p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     7. REAL SOCIAL PROOF / REVIEWS
-═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
-  <div class="container">
-    <div style="text-align: center; max-width: 600px; margin: 0 auto 3rem;">
-      <span class="badge badge-warning">Parent & Student Reviews</span>
-      <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); margin-top: 0.35rem; letter-spacing: -0.02em;">
-        Verified Academic Feedback
-      </h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
-        Ratings submitted by parents following completed tuition engagements
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="max-width: 960px; margin: 0 auto;">
-      {% for rev in reviews %}
-        <div class="card" style="padding: 1.75rem; border: 1px solid var(--border);">
-          <div class="flex items-center gap-1" style="color: var(--accent); margin-bottom: 0.75rem;">
-            {% for i in "12345" %}
-              <i data-lucide="star" style="width: 16px; height: 16px; fill: currentColor;"></i>
-            {% endfor %}
-            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text); margin-left: 0.5rem;">{{ rev.rating }}.0 / 5.0</span>
-          </div>
-          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">
-            "{{ rev.title }}"
-          </h4>
-          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
-            {{ rev.comment }}
-          </p>
-          <div class="flex items-center justify-between" style="font-size: 0.825rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
-            <div>
-              <span style="font-weight: 700; color: var(--text);">{{ rev.parent.display_name }}</span>
-              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Verified Parent</span>
-            </div>
-            <div style="text-align: right;">
-              <span style="color: var(--primary); font-weight: 600;">Tutor: {{ rev.tutor.display_name }}</span>
-              <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">{{ rev.created_at|date:"M Y" }}</span>
-            </div>
-          </div>
-        </div>
-      {% empty %}
-        <div class="card col-span-full" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
-          <i data-lucide="message-square-quote" style="width: 40px; height: 40px; margin: 0 auto 0.75rem; color: var(--text-muted);"></i>
-          <p style="margin: 0; font-size: 0.95rem;">
-            Verified parent testimonials will appear here as ongoing tuition engagements conclude.
-          </p>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     8. FREQUENTLY ASKED QUESTIONS
-═══════════════════════════════════════════════════════════════════════════ -->
-<section style="padding: 4.5rem 0; background: var(--surface); border-bottom: 1px solid var(--border);">
+<section style="padding: 5rem 0; background: var(--background); border-bottom: 1px solid var(--border);">
   <div class="container" style="max-width: 840px;">
     <div style="text-align: center; margin-bottom: 3rem;">
-      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Frequently Asked Questions</span>
-      <h2 style="font-size: 2.1rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
-        Got Questions? We Have Answers
+      <span class="badge badge-primary" style="margin-bottom: 0.5rem;">Helpful Clarifications</span>
+      <h2 style="font-size: 2.25rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em;">
+        Got Questions? We Have Answers.
       </h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem;">
-        Everything you need to know about discovering tutors and getting started
+      <p style="color: var(--text-muted); font-size: 1rem;">
+        Everything you need to know about discovering verified educators and getting started
       </p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 1rem;">
       
-      <details class="faq-item">
+      <details class="faq-item" open>
         <summary>
           <span>How does the parent-tutor matching process work?</span>
           <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
         </summary>
         <div class="faq-body">
-          When you post your requirements, our platform matches your child's board, class, subjects, and neighborhood with verified tutors who specialize in that area. Compatible tutors apply directly, or you can browse profiles and request a free trial demo session.
+          You can either launch our <strong>3-Step Guided Matcher</strong>, browse certified educators in your locality directly, or post your requirement for free. Compatible verified teachers apply, and you can arrange a 1-on-1 free trial demo class before committing.
         </div>
       </details>
 
       <details class="faq-item">
         <summary>
-          <span>Do parents or students pay any platform fees?</span>
+          <span>Do parents pay any registration or monthly commission fees?</span>
           <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
         </summary>
         <div class="faq-body">
-          No. Posting tuition requirements and discovering verified tutors is 100% free for parents and students. You settle tuition fees directly with your chosen educator based on agreed hourly or monthly rates with zero middleman deductions.
+          <strong>No, 0% commission.</strong> EduTutor Pro is 100% free for parents and students. You settle tuition fees directly with your educator based on agreed hourly or monthly rates with zero middleman markups.
         </div>
       </details>
 
       <details class="faq-item">
         <summary>
-          <span>How are tutor profiles verified?</span>
+          <span>How are tutor degrees and identity credentials verified?</span>
           <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
         </summary>
         <div class="faq-body">
-          Every educator who registers must provide proof of identity (Government photo ID) and academic degrees (graduation/post-graduation certificates). Our compliance team conducts reviews before granting the Verified Profile badge.
+          Every educator undergoes rigorous document auditing. We verify Government photo IDs (Aadhaar / Passport) and certified university degree transcripts before awarding the <strong>Verified Faculty</strong> badge.
         </div>
       </details>
 
       <details class="faq-item">
         <summary>
-          <span>What is the trial demo class?</span>
+          <span>What is the free trial demo session?</span>
           <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
         </summary>
         <div class="faq-body">
-          A trial demo class is a 30 to 45 minute introductory session arranged either in-person at your home or live online. It gives the student and educator a chance to assess rapport, learning style, and teaching methodology before confirming long-term tuition.
+          A complimentary 30 to 45 minute 1-on-1 introductory session conducted either in person at your home or live online. It gives the student and teacher an opportunity to evaluate learning chemistry and syllabus goals before confirming regular classes.
         </div>
       </details>
 
       <details class="faq-item">
         <summary>
-          <span>How do tutors receive contact credits?</span>
+          <span>How do educators receive contact credits?</span>
           <i data-lucide="chevron-down" style="width: 18px; height: 18px;"></i>
         </summary>
         <div class="faq-body">
-          New tutors receive 3 complimentary welcome credits upon registration. You can recharge credit packs or subscribe to monthly membership plans that bundle contact unlocks and prioritized lead matching.
+          Every newly registered educator automatically receives <strong>3 complimentary welcome credits</strong> upon verification to unlock tuition leads. Tutors can later recharge credit packs or subscribe to flexible monthly membership tiers.
         </div>
       </details>
 
@@ -1466,62 +2339,537 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     9. CALL TO ACTION BANNER
+     10. HIGH-CONVERSION CTA BANNER
 ═══════════════════════════════════════════════════════════════════════════ -->
-<section style="background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%); color: white; padding: 4.5rem 0; text-align: center; position: relative; overflow: hidden;">
-  <div style="position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px); background-size: 24px 24px; opacity: 0.3; pointer-events: none;"></div>
+<section style="background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%); color: white; padding: 5rem 0; text-align: center; position: relative; overflow: hidden;">
+  <div style="position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px); background-size: 28px 28px; opacity: 0.35; pointer-events: none;"></div>
   
   <div class="container" style="max-width: 760px; position: relative; z-index: 2;">
     <span class="badge" style="background: rgba(255, 255, 255, 0.18); color: white; margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.3);">
       Start Learning Today
     </span>
-    <h2 style="font-size: 2.35rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -0.025em;">
+    <h2 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -0.025em; line-height: 1.2;">
       Ready to boost your child's academic confidence?
     </h2>
-    <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 2.25rem; line-height: 1.6;">
-      Post your requirement now and connect with verified subject specialists in your area within hours.
+    <p style="font-size: 1.15rem; opacity: 0.9; margin-bottom: 2.25rem; line-height: 1.6;">
+      Launch our 3-step smart matcher or post your requirement for free. Connect with verified subject specialists in your area within hours.
     </p>
     <div class="flex justify-center gap-3 flex-wrap">
-      <a href="{% url 'leads:post_requirement' %}" class="btn btn-secondary btn-lg" style="background: white; color: var(--primary); font-weight: 800; border: none; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);">
-        <i data-lucide="edit-3" style="width: 18px; height: 18px;"></i> Post Tuition Requirement
-      </a>
-      <a href="{% url 'accounts:register_tutor' %}" class="btn btn-outline-primary btn-lg" style="border-color: rgba(255, 255, 255, 0.6); color: white; font-weight: 800;">
-        <i data-lucide="award" style="width: 18px; height: 18px;"></i> Join as Tutor (3 Free Credits)
+      <button type="button" onclick="openSmartMatcherModal()" class="btn btn-secondary btn-lg" style="background: white; color: var(--primary); font-weight: 800; border: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);">
+        <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i> Launch 3-Step Guided Matcher
+      </button>
+      <a href="{% url 'leads:post_requirement' %}" class="btn btn-outline-primary btn-lg" style="border-color: rgba(255, 255, 255, 0.7); color: white; font-weight: 800;">
+        <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i> Post Free Requirement
       </a>
     </div>
   </div>
 </section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL 1: 3-STEP GUIDED MATCHER MODAL
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="smartMatcherModal" class="modal-overlay-custom" onclick="handleMatcherBackdropClick(event)">
+  <div class="modal-card-custom" style="padding: 2.25rem 2rem;">
+    
+    <!-- Close Button -->
+    <button type="button" class="modal-close-btn" onclick="closeSmartMatcherModal()" aria-label="Close modal">
+      <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+    </button>
+
+    <!-- Header & Step Indicator -->
+    <div style="margin-bottom: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <span class="badge badge-primary" style="font-size: 0.75rem;">
+          <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> Smart Match Assistant
+        </span>
+        <span id="matcherStepIndicatorText" style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">
+          Step 1 of 3
+        </span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="matcher-progress-bar">
+        <div id="matcherProgressFill" class="matcher-progress-fill" style="width: 33.3%;"></div>
+      </div>
+
+      <h3 id="matcherHeading" style="font-size: 1.45rem; font-weight: 900; color: var(--text); margin: 0 0 0.35rem;">
+        What tuition format and grade level do you need?
+      </h3>
+      <p id="matcherSubhead" style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">
+        Choose whether you want an educator at your doorstep, live online, or flexible hybrid.
+      </p>
+    </div>
+
+    <!-- Matcher Form Container -->
+    <form id="smartMatcherForm" method="get" action="{% url 'tutors:directory' %}">
+      
+      <!-- STEP 1: TUITION MODE & GRADE -->
+      <div id="matcherStep1" class="matcher-step-panel">
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.65rem;">
+            1. Preferred Tuition Mode:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected" data-field="teaching_mode" data-val="" onclick="selectMatcherPill(this, 'teaching_mode')">
+              <i data-lucide="sparkles" style="width: 15px; height: 15px;"></i> Any / Best Fit
+            </div>
+            <div class="matcher-pill-option" data-field="teaching_mode" data-val="HOME_ONLY" onclick="selectMatcherPill(this, 'teaching_mode')">
+              <i data-lucide="home" style="width: 15px; height: 15px;"></i> Home Tuition (In-Person)
+            </div>
+            <div class="matcher-pill-option" data-field="teaching_mode" data-val="ONLINE_ONLY" onclick="selectMatcherPill(this, 'teaching_mode')">
+              <i data-lucide="video" style="width: 15px; height: 15px;"></i> Live Online (1-on-1)
+            </div>
+            <div class="matcher-pill-option" data-field="teaching_mode" data-val="BOTH_HOME_ONLINE" onclick="selectMatcherPill(this, 'teaching_mode')">
+              <i data-lucide="layers" style="width: 15px; height: 15px;"></i> Hybrid (Combination)
+            </div>
+          </div>
+          <input type="hidden" name="teaching_mode" id="matcherInputMode" value="">
+        </div>
+
+        <div style="margin-bottom: 1.75rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.65rem;">
+            2. Student Class / Grade Level:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected" data-field="student_class" data-val="Class 10" onclick="selectMatcherPill(this, 'student_class')">
+              Class 10 (Board Exam)
+            </div>
+            <div class="matcher-pill-option" data-field="student_class" data-val="Class 12" onclick="selectMatcherPill(this, 'student_class')">
+              Class 12 (Board / JEE / NEET)
+            </div>
+            <div class="matcher-pill-option" data-field="student_class" data-val="Class 9" onclick="selectMatcherPill(this, 'student_class')">
+              Class 9 (Foundation)
+            </div>
+            <div class="matcher-pill-option" data-field="student_class" data-val="Class 11" onclick="selectMatcherPill(this, 'student_class')">
+              Class 11 (Science / Commerce)
+            </div>
+            <div class="matcher-pill-option" data-field="student_class" data-val="Class 6-8" onclick="selectMatcherPill(this, 'student_class')">
+              Class 6 – 8 (Middle School)
+            </div>
+            <div class="matcher-pill-option" data-field="student_class" data-val="Primary" onclick="selectMatcherPill(this, 'student_class')">
+              Class 1 – 5 (Primary)
+            </div>
+          </div>
+          <input type="hidden" name="student_class" id="matcherInputClass" value="Class 10">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+          <button type="button" class="btn btn-primary" onclick="goToMatcherStep(2)" style="font-weight: 800; padding: 0.75rem 1.75rem;">
+            Continue to Subjects &rarr;
+          </button>
+        </div>
+
+      </div>
+
+      <!-- STEP 2: SUBJECTS & LEARNING GOAL -->
+      <div id="matcherStep2" class="matcher-step-panel" style="display: none;">
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.65rem;">
+            1. Select Primary Subject:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected" data-field="subject" data-val="Mathematics" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="calculator" style="width: 14px; height: 14px;"></i> Mathematics
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="Physics" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="zap" style="width: 14px; height: 14px;"></i> Physics
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="Chemistry" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="flask-conical" style="width: 14px; height: 14px;"></i> Chemistry
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="Biology" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="dna" style="width: 14px; height: 14px;"></i> Biology (NEET)
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="Computer Science" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="code" style="width: 14px; height: 14px;"></i> Coding & Python
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="English" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> English & Grammar
+            </div>
+            <div class="matcher-pill-option" data-field="subject" data-val="Accounts" onclick="selectMatcherPill(this, 'subject')">
+              <i data-lucide="trending-up" style="width: 14px; height: 14px;"></i> Accounts & Commerce
+            </div>
+          </div>
+          <input type="hidden" name="subject" id="matcherInputSubject" value="Mathematics">
+        </div>
+
+        <div style="margin-bottom: 1.75rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.65rem;">
+            2. Primary Academic Goal:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected">
+              🎯 Score 90%+ in Board Exams
+            </div>
+            <div class="matcher-pill-option">
+              💡 Clear Basics & Homework Doubts
+            </div>
+            <div class="matcher-pill-option">
+              🚀 IIT-JEE / NEET Entrance Focus
+            </div>
+            <div class="matcher-pill-option">
+              🏆 Olympiads & Science Exhibitions
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" class="btn btn-secondary" onclick="goToMatcherStep(1)" style="font-weight: 700;">
+            &larr; Back
+          </button>
+          <button type="button" class="btn btn-primary" onclick="goToMatcherStep(3)" style="font-weight: 800; padding: 0.75rem 1.75rem;">
+            Set Location & Preferences &rarr;
+          </button>
+        </div>
+
+      </div>
+
+      <!-- STEP 3: LOCATION & SCHEDULE -->
+      <div id="matcherStep3" class="matcher-step-panel" style="display: none;">
+        
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem;">
+            Your City / Locality:
+          </label>
+          <input type="text" name="city" id="matcherInputCity" class="form-control" value="Bengaluru" placeholder="e.g. Indiranagar, Bengaluru" style="height: 48px; border-radius: var(--border-radius); font-weight: 600; width: 100%;">
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.6rem;">
+            Tutor Preference:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected">Any Verified Faculty</div>
+            <div class="matcher-pill-option">Female Tutor Preferred</div>
+            <div class="matcher-pill-option">Senior School Teacher (7+ Yrs)</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.75rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.6rem;">
+            Preferred Frequency:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;">
+            <div class="matcher-pill-option selected">3 Days / Week (Alternate)</div>
+            <div class="matcher-pill-option">5 Days / Week (Daily)</div>
+            <div class="matcher-pill-option">Weekend Intensive</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 0.75rem; padding: 0.85rem 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.65rem;">
+          <i data-lucide="check-circle" style="width: 20px; height: 20px; color: #10b981; flex-shrink: 0;"></i>
+          <span style="font-size: 0.825rem; color: #065f46; font-weight: 700;">
+            Includes 1 complimentary 1-on-1 Free Demo Session with zero commitment!
+          </span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" onclick="goToMatcherStep(2)" style="font-weight: 700;">
+            &larr; Back
+          </button>
+          <div class="flex gap-2">
+            <button type="submit" class="btn btn-primary" style="font-weight: 800; padding: 0.75rem 1.6rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+              <i data-lucide="search" style="width: 16px; height: 16px;"></i> Find Verified Matches
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL 2: INTERACTIVE TESTIMONIAL VIDEO PLAYER MODAL
+═══════════════════════════════════════════════════════════════════════════ -->
+<div id="testimonialVideoModal" class="modal-overlay-custom" onclick="handleVideoBackdropClick(event)">
+  <div class="modal-card-custom" style="max-width: 720px; padding: 0; overflow: hidden; background: #0b1329; color: #ffffff;">
+    
+    <!-- Close Button -->
+    <button type="button" class="modal-close-btn" onclick="closeVideoModal()" aria-label="Close video" style="background: rgba(255, 255, 255, 0.15); color: #ffffff; border: none;">
+      <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+    </button>
+
+    <!-- Simulated Video Canvas / Player -->
+    <div style="position: relative; width: 100%; height: 380px; background: radial-gradient(circle at center, #1e1b4b 0%, #030712 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+      <div style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 35px rgba(79, 70, 229, 0.6); margin-bottom: 1.25rem;">
+        <i data-lucide="play" style="width: 32px; height: 32px; fill: white; transform: translateX(2px);"></i>
+      </div>
+      <div id="videoModalSubjectBadge" class="badge badge-primary" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+        Class 10 CBSE Math
+      </div>
+      <h3 id="videoModalTitle" style="font-size: 1.35rem; font-weight: 900; text-align: center; margin: 0 0 0.5rem; max-width: 520px; line-height: 1.3;">
+        "Aarav jumped from 68% to 96% in board exams!"
+      </h3>
+      <div style="font-size: 0.85rem; color: #94a3b8; display: flex; align-items: center; gap: 0.5rem;">
+        <span id="videoModalDurationTag">▶ 1:45 min</span>
+        <span>•</span>
+        <span style="color: #10b981; font-weight: 700;">1080p HD Verified Video Testimonial</span>
+      </div>
+
+      <!-- Player Controls Simulator Bar -->
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem;">
+        <i data-lucide="play" style="width: 18px; height: 18px; color: white;"></i>
+        <div style="flex: 1; height: 4px; background: rgba(255, 255, 255, 0.25); border-radius: 9999px; overflow: hidden;">
+          <div style="width: 45%; height: 100%; background: var(--secondary);"></div>
+        </div>
+        <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: 700;">0:45 / 1:45</span>
+        <i data-lucide="volume-2" style="width: 18px; height: 18px; color: white;"></i>
+        <i data-lucide="maximize" style="width: 18px; height: 18px; color: white;"></i>
+      </div>
+    </div>
+
+    <!-- Video Story Summary & Actions -->
+    <div style="padding: 1.75rem 2rem; background: var(--surface); color: var(--text);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h4 id="videoModalParentName" style="font-size: 1.15rem; font-weight: 900; margin: 0 0 0.25rem;">
+            Kavita Sharma
+          </h4>
+          <p id="videoModalQuote" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin: 0; max-width: 420px;">
+            "EduTutor Pro matched us with Dr. Rajesh within 3 hours. The free trial demo gave us total confidence."
+          </p>
+        </div>
+        <a href="{% url 'tutors:directory' %}" class="btn btn-primary" style="font-weight: 800;">
+          Find Similar Tutors &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  function setHeroMode(btn, mode) {
-    document.querySelectorAll('.mode-switch-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const input = document.getElementById('hero-teaching-mode-input');
-    if (input) input.value = mode;
-  }
+  // ── 1. Dynamic Typing Effect for Subjects in Hero ──
+  (function initHeroTyping() {
+    const typingElement = document.getElementById('heroTypingText');
+    const heroInput = document.getElementById('heroSubjectInput');
+    if (!typingElement) return;
 
-  function switchJourney(type) {
-    const studentsBlock = document.getElementById('journey-students-block');
-    const tutorsBlock = document.getElementById('journey-tutors-block');
-    const btnStudents = document.getElementById('btn-journey-students');
-    const btnTutors = document.getElementById('btn-journey-tutors');
+    const subjects = [
+      'Mathematics (Class 10 CBSE)',
+      'NEET Biology & AIIMS Prep',
+      'IIT-JEE Advanced Physics',
+      'Python & Coding for Kids',
+      'Class 12 Chemistry',
+      'Spoken English & Communication',
+      'Commerce, Accounts & Economics'
+    ];
 
-    if (type === 'students') {
-      if (studentsBlock) studentsBlock.style.display = 'block';
-      if (tutorsBlock) tutorsBlock.style.display = 'none';
-      if (btnStudents) { btnStudents.className = 'btn btn-primary btn-sm'; }
-      if (btnTutors) { btnTutors.className = 'btn btn-secondary btn-sm'; }
-    } else {
-      if (studentsBlock) studentsBlock.style.display = 'none';
-      if (tutorsBlock) tutorsBlock.style.display = 'block';
-      if (btnStudents) { btnStudents.className = 'btn btn-secondary btn-sm'; }
-      if (btnTutors) { btnTutors.className = 'btn btn-primary btn-sm'; }
+    let wordIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let typingSpeed = 80;
+
+    function typeLoop() {
+      const currentWord = subjects[wordIdx];
+
+      if (isDeleting) {
+        typingElement.textContent = currentWord.substring(0, charIdx - 1);
+        charIdx--;
+        typingSpeed = 40;
+      } else {
+        typingElement.textContent = currentWord.substring(0, charIdx + 1);
+        charIdx++;
+        typingSpeed = 80;
+      }
+
+      if (!isDeleting && charIdx === currentWord.length) {
+        typingSpeed = 1800; // Pause at end of word
+        isDeleting = true;
+      } else if (isDeleting && charIdx === 0) {
+        isDeleting = false;
+        wordIdx = (wordIdx + 1) % subjects.length;
+        typingSpeed = 350; // Pause before typing new word
+      }
+
+      setTimeout(typeLoop, typingSpeed);
     }
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    typeLoop();
+  })();
+
+  // ── 2. Hero Tuition Mode Pill Selector ──
+  function setTuitionMode(modeValue, btnElement) {
+    document.querySelectorAll('.hero-mode-pill').forEach(pill => pill.classList.remove('active'));
+    if (btnElement) {
+      btnElement.classList.add('active');
+    }
+    const modeInput = document.getElementById('heroFormTeachingMode');
+    if (modeInput) modeInput.value = modeValue;
+
+    const matcherInput = document.getElementById('matcherInputMode');
+    if (matcherInput) matcherInput.value = modeValue;
   }
 
+  // ── 3. 3-Step Guided Matcher Modal Controls ──
+  function openSmartMatcherModal() {
+    const modal = document.getElementById('smartMatcherModal');
+    if (modal) {
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      goToMatcherStep(1);
+    }
+  }
+
+  function closeSmartMatcherModal() {
+    const modal = document.getElementById('smartMatcherModal');
+    if (modal) {
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function handleMatcherBackdropClick(e) {
+    if (e.target.id === 'smartMatcherModal') {
+      closeSmartMatcherModal();
+    }
+  }
+
+  function goToMatcherStep(stepNumber) {
+    const step1 = document.getElementById('matcherStep1');
+    const step2 = document.getElementById('matcherStep2');
+    const step3 = document.getElementById('matcherStep3');
+    const progressFill = document.getElementById('matcherProgressFill');
+    const stepText = document.getElementById('matcherStepIndicatorText');
+    const heading = document.getElementById('matcherHeading');
+    const subhead = document.getElementById('matcherSubhead');
+
+    if (step1) step1.style.display = 'none';
+    if (step2) step2.style.display = 'none';
+    if (step3) step3.style.display = 'none';
+
+    if (stepNumber === 1) {
+      if (step1) step1.style.display = 'block';
+      if (progressFill) progressFill.style.width = '33.3%';
+      if (stepText) stepText.textContent = 'Step 1 of 3';
+      if (heading) heading.textContent = 'What tuition format and grade level do you need?';
+      if (subhead) subhead.textContent = 'Choose whether you want an educator at your doorstep, live online, or flexible hybrid.';
+    } else if (stepNumber === 2) {
+      if (step2) step2.style.display = 'block';
+      if (progressFill) progressFill.style.width = '66.6%';
+      if (stepText) stepText.textContent = 'Step 2 of 3';
+      if (heading) heading.textContent = 'Which subject and learning goal are you targeting?';
+      if (subhead) subhead.textContent = 'Select the academic discipline and the key milestone for your child.';
+    } else if (stepNumber === 3) {
+      if (step3) step3.style.display = 'block';
+      if (progressFill) progressFill.style.width = '100%';
+      if (stepText) stepText.textContent = 'Step 3 of 3';
+      if (heading) heading.textContent = 'Specify your locality & preferred schedule';
+      if (subhead) subhead.textContent = 'Almost done! We match you with top-rated specialists in your exact neighborhood.';
+    }
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+
+  function selectMatcherPill(element, fieldName) {
+    const parentContainer = element.parentElement;
+    parentContainer.querySelectorAll('.matcher-pill-option').forEach(pill => pill.classList.remove('selected'));
+    element.classList.add('selected');
+
+    const value = element.getAttribute('data-val');
+    if (fieldName === 'teaching_mode') {
+      const inp = document.getElementById('matcherInputMode');
+      if (inp) inp.value = value;
+    } else if (fieldName === 'student_class') {
+      const inp = document.getElementById('matcherInputClass');
+      if (inp) inp.value = value;
+    } else if (fieldName === 'subject') {
+      const inp = document.getElementById('matcherInputSubject');
+      if (inp) inp.value = value;
+    }
+  }
+
+  // ── 4. Interactive How It Works Toggle Switch ──
+  function switchHowItWorks(audience) {
+    const btnParents = document.getElementById('btnToggleParents');
+    const btnTutors = document.getElementById('btnToggleTutors');
+    const slider = document.getElementById('howToggleSlider');
+    const timelineParents = document.getElementById('timelineParents');
+    const timelineTutors = document.getElementById('timelineTutors');
+
+    if (audience === 'parents') {
+      btnParents.classList.add('active');
+      btnTutors.classList.remove('active');
+      slider.classList.remove('shift-right');
+      if (timelineParents) timelineParents.style.display = 'block';
+      if (timelineTutors) timelineTutors.style.display = 'none';
+    } else {
+      btnParents.classList.remove('active');
+      btnTutors.classList.add('active');
+      slider.classList.add('shift-right');
+      if (timelineParents) timelineParents.style.display = 'none';
+      if (timelineTutors) timelineTutors.style.display = 'block';
+    }
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+
+  // ── 5. Video Carousel Scroll & Modal Player ──
+  function scrollVideoCarousel(direction) {
+    const carousel = document.getElementById('videoCarouselScroll');
+    if (carousel) {
+      const scrollAmount = 360 * direction;
+      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  function openVideoModal(parentName, subject, quote, duration) {
+    const modal = document.getElementById('testimonialVideoModal');
+    if (!modal) return;
+
+    const nameEl = document.getElementById('videoModalParentName');
+    const badgeEl = document.getElementById('videoModalSubjectBadge');
+    const quoteEl = document.getElementById('videoModalQuote');
+    const durationEl = document.getElementById('videoModalDurationTag');
+
+    if (nameEl) nameEl.textContent = parentName;
+    if (badgeEl) badgeEl.textContent = subject;
+    if (quoteEl) quoteEl.textContent = `"${quote}"`;
+    if (durationEl) durationEl.textContent = `▶ ${duration} min`;
+
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  }
+
+  function closeVideoModal() {
+    const modal = document.getElementById('testimonialVideoModal');
+    if (modal) {
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function handleVideoBackdropClick(e) {
+    if (e.target.id === 'testimonialVideoModal') {
+      closeVideoModal();
+    }
+  }
+
+  // Keyboard accessibility: ESC key closes modals
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeSmartMatcherModal();
+      closeVideoModal();
+    }
+  });
+
+  // Directory Hub Switcher
   function switchDirectoryExplorer(type) {
     const tutorsPanel = document.getElementById('dir-panel-tutors');
     const tuitionsPanel = document.getElementById('dir-panel-tuitions');
@@ -1539,7 +2887,16 @@
       if (btnTutors) { btnTutors.className = 'btn btn-sm btn-secondary'; btnTutors.style.border = 'none'; }
       if (btnTuitions) { btnTuitions.className = 'btn btn-sm btn-primary'; }
     }
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
   }
+
+  // Initialize Lucide icons on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  });
 </script>
 {% endblock %}

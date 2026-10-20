@@ -21,6 +21,7 @@ urlpatterns = [
     path('unlocked-leads/', views.unlocked_leads_view, name='unlocked_leads'),
     path('applications/', views.applications_view, name='applications'),
     path('demos/', views.demos_view, name='demos'),
+    path('pipeline/update/', views.pipeline_update_view, name='pipeline_update'),
     path('engagements/', views.engagements_view, name='engagements'),
     path('billing/', views.billing_view, name='billing'),
 ]

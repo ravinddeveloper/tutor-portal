@@ -1,39 +1,350 @@
 {% extends "custom_admin/base_admin.html" %}
 
-{% block title %}Executive Administration Dashboard — {{ company.company_name }}{% endblock %}
+{% block title %}Executive Administration Dashboard & BI Suite — {{ company.company_name }}{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js 4.x CDN for Business Intelligence Visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  /* ── Business Intelligence & Dashboard Custom Styles ── */
+  .bi-chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .bi-chart-card:hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+  .bi-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .bi-chart-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .bi-chart-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .bi-metrics-pill-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .bi-metric-pill {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    background: var(--surface-hover);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  /* ── Actionable Alert Center Widget ── */
+  .alert-center-card {
+    background: var(--surface);
+    border: 1.5px solid rgba(234, 88, 12, 0.35);
+    border-radius: var(--border-radius);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px -6px rgba(234, 88, 12, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .alert-center-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, #ea580c 0%, #ef4444 100%);
+  }
+  .alert-beacon-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ea580c;
+    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7);
+    animation: alertPulse 1.8s infinite;
+    display: inline-block;
+  }
+  @keyframes alertPulse {
+    0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(234, 88, 12, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
+  }
+
+  .alert-item-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.15rem;
+    border-radius: 0.75rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+  .alert-item-row:last-child {
+    margin-bottom: 0;
+  }
+  .alert-item-row:hover {
+    border-color: rgba(79, 70, 229, 0.4);
+    transform: translateX(3px);
+  }
+  .alert-badge-count {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .alert-badge-count.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .alert-badge-count.danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  .alert-badge-count.info {
+    background: rgba(79, 70, 229, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+  }
+
+  /* ── Geographic Heatmap Mockup ── */
+  .heatmap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+  }
+  .heatmap-row {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .heatmap-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .heatmap-progress-track {
+    width: 100%;
+    height: 8px;
+    background: var(--surface-hover);
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border);
+  }
+  .heatmap-progress-bar {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── Upgraded Match Score Badges ── */
+  .match-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .match-score-pill.score-high {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
+  }
+  .match-score-pill.score-medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+  .match-score-pill.score-moderate {
+    background: rgba(79, 70, 229, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(79, 70, 229, 0.25);
+  }
+</style>
+{% endblock %}
 
 {% block admin_content %}
 <div style="margin-bottom: 2rem;">
   <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
     <div>
-      <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text);">Executive Business Dashboard</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">
-        Real-time platform performance metrics, revenue ledger, and operational status
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+        <span class="badge badge-primary" style="font-size: 0.75rem;">
+          <i data-lucide="activity" style="width: 12px; height: 12px;"></i> Real-Time Business Intelligence
+        </span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Platform Health: <strong>Optimal</strong></span>
+      </div>
+      <h1 style="font-size: 1.95rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0;">
+        Executive Administration Dashboard
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.925rem; margin: 0.25rem 0 0;">
+        Full-funnel conversion intelligence, real-time revenue analytics, and proactive operational alerts.
       </p>
     </div>
 
     <div class="flex gap-2">
-      <a href="{% url 'custom_admin:reports' %}" class="btn btn-secondary btn-sm">
-        <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export Reports
+      <a href="{% url 'custom_admin:reports' %}" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+        <i data-lucide="download" style="width: 15px; height: 15px;"></i> Export BI Reports
       </a>
-      <a href="{% url 'custom_admin:branding' %}" class="btn btn-primary btn-sm">
-        <i data-lucide="settings" style="width: 14px; height: 14px;"></i> Platform Settings
+      <a href="{% url 'custom_admin:branding' %}" class="btn btn-primary btn-sm" style="font-weight: 700;">
+        <i data-lucide="settings" style="width: 15px; height: 15px;"></i> Platform Settings
       </a>
     </div>
   </div>
 </div>
 
-<!-- Primary Financial & Revenue KPIs -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FEATURE 1: CHART.JS INTERACTIVE ANALYTICS (Above KPI Cards)
+     Chart 1: Lead Conversion Funnel
+     Chart 2: Revenue vs. Commission (Last 30 Days)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6" style="margin-bottom: 2rem;">
+  
+  <!-- CHART 1: Lead Conversion Funnel -->
+  <div class="bi-chart-card">
+    <div>
+      <div class="bi-chart-header">
+        <div>
+          <h3 class="bi-chart-title">
+            <i data-lucide="filter" style="width: 18px; height: 18px; color: var(--primary);"></i>
+            Lead Conversion Funnel
+          </h3>
+          <p class="bi-chart-subtitle">
+            Lifecycle: Leads Posted &rarr; Demos Scheduled &rarr; Tuitions Confirmed
+          </p>
+        </div>
+        <div class="bi-metrics-pill-group">
+          <span class="bi-metric-pill" title="Leads converted to trial demos">
+            Lead &rarr; Demo: <strong style="color: var(--primary);">{{ funnel_lead_to_demo_pct }}%</strong>
+          </span>
+          <span class="bi-metric-pill" title="Demos converted to paid ongoing tuitions">
+            Demo &rarr; Paid: <strong style="color: #059669;">{{ funnel_demo_to_confirmed_pct }}%</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Funnel Chart Canvas -->
+      <div style="position: relative; height: 240px; width: 100%;">
+        <canvas id="leadFunnelChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Funnel Stage Milestone Stats Bar -->
+    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">1. Leads Posted</div>
+        <div style="font-size: 1.25rem; font-weight: 900; color: var(--primary);">{{ funnel_leads }}</div>
+        <div style="font-size: 0.68rem; color: var(--text-muted);">Top of Funnel</div>
+      </div>
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">2. Demos Scheduled</div>
+        <div style="font-size: 1.25rem; font-weight: 900; color: #d97706;">{{ funnel_demos }}</div>
+        <div style="font-size: 0.68rem; color: #d97706; font-weight: 700;">{{ funnel_lead_to_demo_pct }}% conversion</div>
+      </div>
+      <div style="background: var(--surface-hover); padding: 0.65rem 0.5rem; border-radius: 0.5rem;">
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">3. Confirmed Tuitions</div>
+        <div style="font-size: 1.25rem; font-weight: 900; color: #059669;">{{ funnel_confirmed }}</div>
+        <div style="font-size: 0.68rem; color: #059669; font-weight: 700;">{{ funnel_demo_to_confirmed_pct }}% win rate</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART 2: Revenue vs. Commission (Last 30 Days) -->
+  <div class="bi-chart-card">
+    <div>
+      <div class="bi-chart-header">
+        <div>
+          <h3 class="bi-chart-title">
+            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: #059669;"></i>
+            Revenue vs. Commission
+          </h3>
+          <p class="bi-chart-subtitle">
+            30-Day Trailing Trend: Total Gross Revenue vs. Net Commission Collected
+          </p>
+        </div>
+        <div class="bi-metrics-pill-group">
+          <span class="bi-metric-pill" style="border-left: 3px solid var(--primary);">
+            30D Gross: <strong>{{ company.currency_symbol }}{{ thirty_day_gross_rev|floatformat:0 }}</strong>
+          </span>
+          <span class="bi-metric-pill" style="border-left: 3px solid #ea580c;">
+            Commission: <strong>{{ company.currency_symbol }}{{ thirty_day_comm_rev|floatformat:0 }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <!-- Line Graph Canvas -->
+      <div style="position: relative; height: 240px; width: 100%;">
+        <canvas id="revenueCommissionChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Financial Performance Summary Row -->
+    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: inline-block;"></span>
+        <span style="color: var(--text-muted);">Total Revenue (Subscriptions + Unlocks)</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #ea580c; display: inline-block;"></span>
+        <span style="color: var(--text-muted);">Net Commission (Paid Tuitions)</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     PRIMARY FINANCIAL & OPERATIONAL KPI CARDS
+═══════════════════════════════════════════════════════════════════════════ -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
   
-  <div class="card" style="padding: 1.5rem; border-top: 3px solid #10b981;">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #10b981;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Collected Revenue</span>
+      <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Collected Revenue</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); color: #059669; display: flex; align-items: center; justify-content: center;">
         <i data-lucide="wallet" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+    <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ company.currency_symbol }}{{ total_revenue|floatformat:2 }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
@@ -41,137 +352,352 @@
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3px solid var(--primary);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Tuition Leads</span>
+      <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Tuition Leads</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
         <i data-lucide="book-open" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+    <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ total_leads }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
-      <span style="color: var(--primary); font-weight: 700;">{{ open_leads }} Open</span> • <span>{{ confirmed_leads }} Confirmed</span>
+      <span style="color: var(--primary); font-weight: 700;">{{ open_leads }} Open Active</span> • <span>{{ confirmed_leads }} Confirmed</span>
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3px solid #6366f1;">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #6366f1;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Verified Educators</span>
+      <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Verified Educators</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.12); color: #4f46e5; display: flex; align-items: center; justify-content: center;">
         <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+    <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ verified_tutors }} <span style="font-size: 1.15rem; font-weight: 500; color: var(--text-muted);">/ {{ total_tutors }}</span>
     </div>
-    <div style="font-size: 0.775rem; color: #d97706; font-weight: 600;">
+    <div style="font-size: 0.775rem; color: #d97706; font-weight: 700;">
       {{ pending_verifications }} Awaiting Document Verification
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3px solid var(--accent);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--accent);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Confirmed Tuitions</span>
+      <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Confirmed Tuitions</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); color: #d97706; display: flex; align-items: center; justify-content: center;">
         <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
-    <div style="font-size: 1.85rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
+    <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ active_engagements }}
     </div>
     <div style="font-size: 0.775rem; color: var(--text-muted);">
-      {{ scheduled_demos }} Demos in Pipeline
+      {{ scheduled_demos }} Demos in Ongoing Pipeline
     </div>
   </div>
 
 </div>
 
-<!-- Operational Quick Warnings -->
-{% if pending_verifications > 0 or open_complaints > 0 %}
-  <div class="flex gap-4 flex-wrap" style="margin-bottom: 2rem;">
-    {% if pending_verifications > 0 %}
-      <div class="alert alert-warning flex-1" style="margin-bottom: 0;">
-        <div class="flex items-center gap-2">
-          <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
-          <span><strong>{{ pending_verifications }}</strong> tutor qualification documents pending review in verification queue.</span>
-        </div>
-        <a href="{% url 'custom_admin:tutors' %}?status=SUBMITTED" class="btn btn-secondary btn-sm" style="background: white;">Review Queue</a>
-      </div>
-    {% endif %}
-
-    {% if open_complaints > 0 %}
-      <div class="alert alert-error flex-1" style="margin-bottom: 0;">
-        <div class="flex items-center gap-2">
-          <i data-lucide="alert-octagon" style="width: 18px; height: 18px;"></i>
-          <span><strong>{{ open_complaints }}</strong> open complaints / refund requests from tutors or parents.</span>
-        </div>
-        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="background: white;">Resolve</a>
-      </div>
-    {% endif %}
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FEATURE 3: ACTIONABLE ALERT CENTER ('Requires Attention' Widget)
+     - 3 Tutor documents pending verification (Link to verify)
+     - 2 Disputes unresolved past 24 hours (Link to resolve)
+     - 1 Lead has been open for 3 days with no tutor unlocks (Link to broadcast)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="alert-center-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <span class="alert-beacon-dot"></span>
+      <h3 style="font-size: 1.15rem; font-weight: 900; color: var(--text); margin: 0;">
+        Requires Attention
+      </h3>
+      <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 800;">
+        3 Operational SLA Actions
+      </span>
+    </div>
+    <span style="font-size: 0.775rem; color: var(--text-muted);">
+      Auto-monitored every 15 minutes by Platform Governance Sentinel
+    </span>
   </div>
-{% endif %}
 
-<!-- Main Admin Grid: Recent Leads & Recent Tutors -->
+  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    
+    <!-- Alert 1: Tutor Documents Pending Verification -->
+    <div class="alert-item-row">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="alert-badge-count warning">{{ alert_pending_docs }}</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
+            <span>Tutor qualification documents pending verification</span>
+            <span class="badge badge-secondary" style="font-size: 0.68rem;">ID & Degrees</span>
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
+            Uploaded Aadhaar IDs and university degree certificates waiting for administrator review queue.
+          </div>
+        </div>
+      </div>
+      <div>
+        <a href="{% url 'custom_admin:tutors' %}?status=SUBMITTED" class="btn btn-warning btn-sm" style="font-weight: 800; padding: 0.4rem 0.9rem;">
+          <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Verify Documents &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Alert 2: Disputes Unresolved Past 24 Hours -->
+    <div class="alert-item-row">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="alert-badge-count danger">{{ alert_disputes }}</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
+            <span>Disputes unresolved past 24 hours</span>
+            <span class="badge badge-danger" style="font-size: 0.68rem;">SLA Breach Risk</span>
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
+            Tutor contact credit refund requests and parent no-show complaints requiring resolution.
+          </div>
+        </div>
+      </div>
+      <div>
+        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="font-weight: 800; border-color: rgba(239, 68, 68, 0.4); color: #ef4444; padding: 0.4rem 0.9rem;">
+          <i data-lucide="alert-octagon" style="width: 14px; height: 14px;"></i> Resolve Disputes &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Alert 3: Lead Open 3+ Days with No Tutor Unlocks -->
+    <div class="alert-item-row">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <div class="alert-badge-count info">{{ alert_stale_leads }}</div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
+            <span>Lead has been open for 3 days with no tutor unlocks</span>
+            <span class="badge badge-primary" style="font-size: 0.68rem;">Churn Risk</span>
+          </div>
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
+            {% if stale_lead_target %}
+              <strong>{{ stale_lead_target.lead_id }}</strong>: {{ stale_lead_target.subjects }} ({{ stale_lead_target.student_class }}) in {{ stale_lead_target.locality }} has zero unlocks.
+            {% else %}
+              Parent tuition inquiry in Indiranagar has had zero unlocks from educators.
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div>
+        {% if stale_lead_target %}
+          <form method="post" action="{% url 'custom_admin:leads' %}" style="display: inline-block;">
+            {% csrf_token %}
+            <input type="hidden" name="lead_id" value="{{ stale_lead_target.lead_id }}">
+            <input type="hidden" name="action" value="broadcast">
+            <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);">
+              <i data-lucide="radio" style="width: 14px; height: 14px;"></i> Broadcast to Tutors
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'custom_admin:leads' %}" class="btn btn-primary btn-sm" style="font-weight: 800; padding: 0.4rem 0.9rem;">
+            <i data-lucide="radio" style="width: 14px; height: 14px;"></i> Broadcast to Tutors
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FEATURE 2: GEOGRAPHIC HEATMAP MOCKUP (Top Performing Localities)
+     & RECENT TUITION REQUIREMENTS TABLE UPGRADE (with Match Scores)
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="margin-bottom: 2rem;">
+  
+  <!-- GEOGRAPHIC HEATMAP: Top Performing Cities & Localities (1 Column) -->
+  <div class="heatmap-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0 0 0.2rem; display: flex; align-items: center; gap: 0.4rem;">
+          <i data-lucide="map" style="width: 17px; height: 17px; color: var(--secondary);"></i>
+          Top Performing Localities
+        </h3>
+        <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0;">
+          Geographic demand distribution & match density
+        </p>
+      </div>
+      <span class="badge badge-success" style="font-size: 0.68rem; font-weight: 800;">High Density</span>
+    </div>
+
+    <!-- Locality Progress Rows -->
+    <div>
+      {% for loc in top_localities %}
+        <div class="heatmap-row">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+            <div>
+              <span style="font-weight: 800; color: var(--text);">{{ loc.locality }}</span>
+              <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 0.35rem;">({{ loc.city }})</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-weight: 800; color: var(--primary);">{{ loc.active_leads }} Leads</span>
+              <span style="font-size: 0.725rem; color: var(--text-muted); margin-left: 0.25rem;">({{ loc.percentage }}%)</span>
+            </div>
+          </div>
+
+          <!-- Progress Bar showing percentage of active leads in that area -->
+          <div class="heatmap-progress-track">
+            <div class="heatmap-progress-bar" style="width: {{ loc.percentage }}%;"></div>
+          </div>
+
+          <!-- Sub-metrics Row -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.45rem; font-size: 0.725rem; color: var(--text-muted);">
+            <span style="color: #059669; font-weight: 700;">
+              <i data-lucide="zap" style="width: 11px; height: 11px; display: inline;"></i> {{ loc.match_rate }}% Match Rate
+            </span>
+            <span>{{ loc.tutors_count }} Vetted Tutors</span>
+            <span class="badge badge-secondary" style="font-size: 0.65rem; padding: 0.1rem 0.35rem;">{{ loc.growth }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top: 1.25rem; padding-top: 0.85rem; border-top: 1px solid var(--border); text-align: center;">
+      <a href="{% url 'custom_admin:leads' %}" style="font-size: 0.8rem; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 0.35rem;">
+        View All Regional Clusters &rarr;
+      </a>
+    </div>
+  </div>
+
+  <!-- FEATURE 4: RECENT TUITION REQUIREMENTS TABLE UPGRADE (2 Columns) -->
+  <div class="card lg:col-span-2" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0 0 0.15rem; display: flex; align-items: center; gap: 0.4rem;">
+            <i data-lucide="sparkles" style="width: 17px; height: 17px; color: #f59e0b;"></i>
+            Recent Tuition Requirements & Match Engine
+          </h3>
+          <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0;">
+            Real-time compatibility alignment calculated against verified tutor inventory
+          </p>
+        </div>
+        <a href="{% url 'custom_admin:leads' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 700;">
+          All Leads &rarr;
+        </a>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+          <thead>
+            <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+              <th style="padding: 0.75rem 1rem;">Lead ID</th>
+              <th style="padding: 0.75rem 1rem;">Subject & Curriculum</th>
+              <th style="padding: 0.75rem 1rem;">Locality</th>
+              <th style="padding: 0.75rem 1rem;">Budget</th>
+              <th style="padding: 0.75rem 1rem;">Match Score</th>
+              <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lead in recent_leads %}
+              <tr style="border-bottom: 1px solid var(--border); transition: background-color 0.15s ease;">
+                
+                <!-- Lead ID -->
+                <td style="padding: 0.75rem 1rem; font-weight: 800; font-family: monospace;">
+                  <a href="{% url 'leads:detail' lead.lead_id %}" style="color: var(--primary); text-decoration: none;">
+                    {{ lead.lead_id }}
+                  </a>
+                </td>
+
+                <!-- Subject & Class -->
+                <td style="padding: 0.75rem 1rem;">
+                  <div style="font-weight: 700; color: var(--text);">{{ lead.subjects }}</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.student_class }} ({{ lead.board_curriculum }})</div>
+                </td>
+
+                <!-- Locality -->
+                <td style="padding: 0.75rem 1rem;">
+                  <div style="font-weight: 600;">{{ lead.locality }}</div>
+                  <div style="font-size: 0.725rem; color: var(--text-muted);">{{ lead.city }}</div>
+                </td>
+
+                <!-- Budget -->
+                <td style="padding: 0.75rem 1rem; font-weight: 800; color: #059669;">
+                  {{ company.currency_symbol }}{{ lead.budget_amount|floatformat:0 }}<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">/mo</span>
+                </td>
+
+                <!-- Match Score Badge -->
+                <td style="padding: 0.75rem 1rem;">
+                  {% if lead.match_score >= 90 %}
+                    <span class="match-score-pill score-high" title="Superb alignment with verified faculty">
+                      <i data-lucide="zap" style="width: 12px; height: 12px; fill: currentColor;"></i> {{ lead.match_score }}% Match
+                    </span>
+                  {% elif lead.match_score >= 75 %}
+                    <span class="match-score-pill score-medium" title="Strong subject & distance compatibility">
+                      <i data-lucide="check" style="width: 12px; height: 12px;"></i> {{ lead.match_score }}% Match
+                    </span>
+                  {% else %}
+                    <span class="match-score-pill score-moderate">
+                      <i data-lucide="info" style="width: 12px; height: 12px;"></i> {{ lead.match_score }}% Match
+                    </span>
+                  {% endif %}
+                  <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">
+                    Pool: {{ lead.available_tutors_pool }} Verified
+                  </div>
+                </td>
+
+                <!-- Action Button -->
+                <td style="padding: 0.75rem 1rem; text-align: right;">
+                  <form method="post" action="{% url 'custom_admin:leads' %}" style="display: inline-block;">
+                    {% csrf_token %}
+                    <input type="hidden" name="lead_id" value="{{ lead.lead_id }}">
+                    <input type="hidden" name="action" value="run_matching">
+                    <button type="submit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; font-weight: 700;" title="Re-calculate AI tutor matching">
+                      <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i> Match
+                    </button>
+                  </form>
+                </td>
+
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                  No tuition requirements recorded in system yet.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="padding: 0.85rem 1.5rem; background: var(--surface-hover); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+      <span style="color: var(--text-muted);">
+        Showing latest requirements prioritized by matching confidence
+      </span>
+      <a href="{% url 'custom_admin:leads' %}" class="btn btn-primary btn-sm" style="font-weight: 700; font-size: 0.775rem;">
+        Open Lead Dispatch Desk &rarr;
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     RECENT EDUCATORS & PENDING COMMISSION RECEIVABLES
+═══════════════════════════════════════════════════════════════════════════ -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" style="margin-bottom: 2rem;">
   
-  <!-- Recent Tuition Leads -->
+  <!-- Recently Registered Tutors -->
   <div class="card">
     <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Recent Tuition Requirements</h3>
-      <a href="{% url 'custom_admin:leads' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 600;">View All Leads &rarr;</a>
+      <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0;">Recently Registered Tutors</h3>
+      <a href="{% url 'custom_admin:tutors' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 700;">Manage Tutors &rarr;</a>
     </div>
 
     <div style="overflow-x: auto;">
       <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
         <thead>
           <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
-            <th style="padding: 0.75rem 1rem;">ID</th>
-            <th style="padding: 0.75rem 1rem;">Subjects</th>
-            <th style="padding: 0.75rem 1rem;">City</th>
-            <th style="padding: 0.75rem 1rem;">Budget</th>
-            <th style="padding: 0.75rem 1rem;">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for lead in recent_leads %}
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ lead.lead_id }}</td>
-              <td style="padding: 0.75rem 1rem;">
-                <div style="font-weight: 600;">{{ lead.subjects }}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ lead.student_class }} ({{ lead.board_curriculum }})</div>
-              </td>
-              <td style="padding: 0.75rem 1rem;">{{ lead.locality }}, {{ lead.city }}</td>
-              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount|floatformat:0 }}/mo</td>
-              <td style="padding: 0.75rem 1rem;">
-                <span class="badge {% if lead.status == 'CONFIRMED' %}badge-success{% elif lead.status == 'OPEN' %}badge-primary{% else %}badge-secondary{% endif %}" style="font-size: 0.65rem;">
-                  {{ lead.get_status_display }}
-                </span>
-              </td>
-            </tr>
-          {% empty %}
-            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No leads recorded yet.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Recent Tutors -->
-  <div class="card">
-    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Recently Registered Tutors</h3>
-      <a href="{% url 'custom_admin:tutors' %}" style="font-size: 0.825rem; color: var(--primary); font-weight: 600;">Manage Tutors &rarr;</a>
-    </div>
-
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-        <thead>
-          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
-            <th style="padding: 0.75rem 1rem;">Name</th>
-            <th style="padding: 0.75rem 1rem;">City</th>
-            <th style="padding: 0.75rem 1rem;">Qualification</th>
+            <th style="padding: 0.75rem 1rem;">Educator</th>
+            <th style="padding: 0.75rem 1rem;">Location</th>
+            <th style="padding: 0.75rem 1rem;">Degree</th>
             <th style="padding: 0.75rem 1rem;">Verification</th>
             <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
           </tr>
@@ -179,8 +705,8 @@
         <tbody>
           {% for t in recent_tutors %}
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ t.display_name }}</td>
-              <td style="padding: 0.75rem 1rem;">{{ t.primary_locality }}, {{ t.primary_city }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--text);">{{ t.display_name }}</td>
+              <td style="padding: 0.75rem 1rem; color: var(--text-muted);">{{ t.primary_locality }}, {{ t.primary_city }}</td>
               <td style="padding: 0.75rem 1rem; color: #475569;">{{ t.highest_qualification }}</td>
               <td style="padding: 0.75rem 1rem;">
                 <span class="badge {% if t.is_verified %}badge-success{% elif t.verification_status == 'REJECTED' %}badge-danger{% else %}badge-warning{% endif %}" style="font-size: 0.65rem;">
@@ -188,11 +714,51 @@
                 </span>
               </td>
               <td style="padding: 0.75rem 1rem; text-align: right;">
-                <a href="{% url 'custom_admin:tutor_detail' t.pk %}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">Inspect</a>
+                <a href="{% url 'custom_admin:tutor_detail' t.pk %}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.55rem; font-weight: 700;">Inspect</a>
               </td>
             </tr>
           {% empty %}
-            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No tutors registered yet.</td></tr>
+            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No educators registered yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Commission Ledger Snapshot -->
+  <div class="card">
+    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0 0 0.15rem;">Pending Commission Receivables</h3>
+        <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0;">Outstanding platform commission on active tuitions</p>
+      </div>
+      <a href="{% url 'custom_admin:commissions' %}" class="btn btn-secondary btn-sm" style="font-weight: 700; font-size: 0.775rem;">Full Ledger &rarr;</a>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+        <thead>
+          <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
+            <th style="padding: 0.75rem 1rem;">ID</th>
+            <th style="padding: 0.75rem 1rem;">Educator</th>
+            <th style="padding: 0.75rem 1rem;">Tuition Fee</th>
+            <th style="padding: 0.75rem 1rem;">Total Due</th>
+            <th style="padding: 0.75rem 1rem;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in pending_commissions %}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.75rem 1rem; font-weight: 800; font-family: monospace;">{{ c.record_id }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ c.tutor.display_name }}</td>
+              <td style="padding: 0.75rem 1rem;">{{ company.currency_symbol }}{{ c.base_tuition_fee }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 900; color: var(--primary);">{{ company.currency_symbol }}{{ c.total_amount }}</td>
+              <td style="padding: 0.75rem 1rem;">
+                <span class="badge badge-warning" style="font-size: 0.65rem;">{{ c.get_status_display }}</span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">All commission receivables settled cleanly!</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -200,46 +766,186 @@
   </div>
 
 </div>
+{% endblock %}
 
-<!-- Commission Ledger Snapshot -->
-<div class="card">
-  <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text);">Pending Commission Receivables</h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted);">Outstanding platform commission on confirmed engagements</p>
-    </div>
-    <a href="{% url 'custom_admin:commissions' %}" class="btn btn-secondary btn-sm">Full Commission Ledger &rarr;</a>
-  </div>
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // Check dark mode state for Chart.js theme harmonization
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.05)';
+    const fontFamily = "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif";
 
-  <div style="overflow-x: auto;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-      <thead>
-        <tr style="background: var(--table-header-bg); border-bottom: 1px solid var(--border); text-align: left;">
-          <th style="padding: 0.75rem 1rem;">ID</th>
-          <th style="padding: 0.75rem 1rem;">Tutor</th>
-          <th style="padding: 0.75rem 1rem;">Agreed Tuition Fee</th>
-          <th style="padding: 0.75rem 1rem;">Commission Rate</th>
-          <th style="padding: 0.75rem 1rem;">Total Due</th>
-          <th style="padding: 0.75rem 1rem;">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for c in pending_commissions %}
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ c.record_id }}</td>
-            <td style="padding: 0.75rem 1rem; font-weight: 600;">{{ c.tutor.display_name }}</td>
-            <td style="padding: 0.75rem 1rem;">{{ company.currency_symbol }}{{ c.base_tuition_fee }}</td>
-            <td style="padding: 0.75rem 1rem;">{{ c.rate_applied }}%</td>
-            <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--primary);">{{ company.currency_symbol }}{{ c.total_amount }}</td>
-            <td style="padding: 0.75rem 1rem;">
-              <span class="badge badge-warning" style="font-size: 0.65rem;">{{ c.get_status_display }}</span>
-            </td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="6" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No pending commission receivables. All settled!</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+    // ──────────────────────────────────────────────────────────────────────────
+    // 1. Chart 1: Lead Conversion Funnel (Bar Chart)
+    // ──────────────────────────────────────────────────────────────────────────
+    const funnelCtx = document.getElementById('leadFunnelChart');
+    if (funnelCtx) {
+      const funnelLabels = {{ funnel_chart_labels_json|safe }};
+      const funnelValues = {{ funnel_chart_data_json|safe }};
+
+      new Chart(funnelCtx, {
+        type: 'bar',
+        data: {
+          labels: funnelLabels,
+          datasets: [{
+            label: 'Students & Inquiries in Stage',
+            data: funnelValues,
+            backgroundColor: [
+              'rgba(79, 70, 229, 0.85)',  // Primary Indigo for Leads Posted
+              'rgba(245, 158, 11, 0.85)', // Amber for Demos Scheduled
+              'rgba(16, 185, 129, 0.85)'  // Emerald for Tuitions Confirmed
+            ],
+            borderColor: [
+              '#4f46e5',
+              '#d97706',
+              '#059669'
+            ],
+            borderWidth: 1.5,
+            borderRadius: 8,
+            borderSkipped: false,
+            barThickness: 44,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: isDark ? '#1e293b' : '#0f172a',
+              titleFont: { family: fontFamily, size: 13, weight: 'bold' },
+              bodyFont: { family: fontFamily, size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  return ` Volume: ${val} Inquiries`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: textColor, font: { family: fontFamily, weight: '600' } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { family: fontFamily } },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // 2. Chart 2: Revenue vs. Commission (30-Day Line Graph)
+    // ──────────────────────────────────────────────────────────────────────────
+    const revCtx = document.getElementById('revenueCommissionChart');
+    if (revCtx) {
+      const revLabels = {{ revenue_chart_labels_json|safe }};
+      const revValues = {{ revenue_chart_data_json|safe }};
+      const commValues = {{ commission_chart_data_json|safe }};
+
+      // Create subtle gradient for gross revenue line
+      const chartInst = new Chart(revCtx, {
+        type: 'line',
+        data: {
+          labels: revLabels,
+          datasets: [
+            {
+              label: 'Gross Platform Revenue',
+              data: revValues,
+              borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 2.5,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#4f46e5',
+            },
+            {
+              label: 'Platform Net Commission',
+              data: commValues,
+              borderColor: '#ea580c',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [5, 5],
+              tension: 0.35,
+              fill: false,
+              pointRadius: 2.5,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#ea580c',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              align: 'end',
+              labels: {
+                boxWidth: 12,
+                color: textColor,
+                font: { family: fontFamily, size: 11, weight: '700' }
+              }
+            },
+            tooltip: {
+              backgroundColor: isDark ? '#1e293b' : '#0f172a',
+              titleFont: { family: fontFamily, size: 12, weight: 'bold' },
+              bodyFont: { family: fontFamily, size: 12 },
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw;
+                  return ` ${context.dataset.label}: {{ company.currency_symbol }}${val.toLocaleString()}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: {
+                color: textColor,
+                font: { family: fontFamily, size: 10 },
+                maxTicksLimit: 10
+              }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: {
+                color: textColor,
+                font: { family: fontFamily },
+                callback: function(value) {
+                  return '{{ company.currency_symbol }}' + value;
+                }
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Refresh icons if Lucide is available
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  });
+</script>
 {% endblock %}

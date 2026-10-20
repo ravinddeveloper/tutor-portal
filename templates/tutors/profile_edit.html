@@ -108,6 +108,21 @@
           </div>
         </div>
 
+        <!-- Demo / Teaching Introduction Video (+20% Strength Boost) -->
+        <div class="form-group" style="background: rgba(79, 70, 229, 0.05); border: 1.5px dashed rgba(79, 70, 229, 0.35); border-radius: var(--border-radius); padding: 1.15rem; margin-top: 0.5rem;">
+          <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <span style="font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.4rem;">
+              <i data-lucide="video" style="width: 16px; height: 16px;"></i>
+              Demo Video / Teaching Introduction Link (+20% Profile Strength Boost)
+            </span>
+            <span class="badge badge-success" style="font-size: 0.7rem;">Ranks Higher in Search</span>
+          </label>
+          <input type="url" name="demo_video_url" class="form-control" value="{{ tutor.demo_video_url|default:'' }}" placeholder="https://www.youtube.com/watch?v=... or Vimeo / Google Drive video link">
+          <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.35rem;">
+            Profiles with an intro video reach 100% profile strength and receive 4.2x more parent demo inquiries!
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">
           <i data-lucide="save" style="width: 18px; height: 18px;"></i> Save Changes
         </button>

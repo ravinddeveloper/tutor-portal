@@ -78,7 +78,7 @@
               <td style="padding: 0.75rem 1rem; font-weight: 700;">{{ pay.payment_id }}</td>
               <td style="padding: 0.75rem 1rem;">{{ pay.user.display_name }}</td>
               <td style="padding: 0.75rem 1rem; font-size: 0.75rem;">{{ pay.get_method_display }}</td>
-              <td style="padding: 0.75rem 1rem; font-weight: 700; color: #10b981;">{{ company.currency_symbol }}{{ pay.amount }}</td>
+              <td style="padding: 0.75rem 1rem; font-weight: 700; color: var(--success);">{{ company.currency_symbol }}{{ pay.amount }}</td>
               <td style="padding: 0.75rem 1rem;">
                 <span class="badge {% if pay.status == 'SUCCESSFUL' %}badge-success{% elif pay.status == 'REFUNDED' %}badge-secondary{% else %}badge-danger{% endif %}" style="font-size: 0.65rem;">
                   {{ pay.get_status_display }}

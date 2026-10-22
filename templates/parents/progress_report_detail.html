@@ -46,7 +46,7 @@
       <button onclick="window.print()" class="btn btn-secondary btn-sm" style="font-weight: 700;">
         <i data-lucide="printer" style="width: 15px; height: 15px;"></i> Print Report
       </button>
-      <a href="https://wa.me/{{ tutor.user.phone_number|default:'919876543210' }}?text=Hi%20{{ tutor.display_name }},%20I%20have%20reviewed%20the%20progress%20report%20for%20{{ student.student_name }}." target="_blank" class="btn btn-primary btn-sm" style="font-weight: 700; background: #059669; border-color: #059669;">
+      <a href="https://wa.me/{{ tutor.user.phone_number|default:'919876543210' }}?text=Hi%20{{ tutor.display_name }},%20I%20have%20reviewed%20the%20progress%20report%20for%20{{ student.student_name }}." target="_blank" class="btn btn-primary btn-sm" style="font-weight: 700; background: var(--success); border-color: var(--success);">
         <i data-lucide="message-circle" style="width: 15px; height: 15px;"></i> Discuss with Tutor
       </a>
     </div>
@@ -56,14 +56,14 @@
   <div class="card" style="border: 2px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.06); border-radius: 1rem; overflow: hidden; background: var(--surface);">
     
     <!-- Report Header Banner -->
-    <div class="report-banner-padding" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: #ffffff; padding: 2rem 2.25rem;">
+    <div class="report-banner-padding" style="background: linear-gradient(135deg, var(--primary-active) 0%, #312e81 50%, var(--primary-active) 100%); color: #ffffff; padding: 2rem 2.25rem;">
       <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
           <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
             <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff; font-weight: 800; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.3);">
               {{ engagement.engagement_id }}
             </span>
-            <span class="badge" style="background: #10b981; color: #ffffff; font-weight: 800; font-size: 0.75rem;">
+            <span class="badge" style="background: var(--success); color: #ffffff; font-weight: 800; font-size: 0.75rem;">
               Verified Evaluation
             </span>
           </div>
@@ -78,7 +78,7 @@
         {% if report.test_score_or_grade %}
           <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 0.75rem; padding: 0.85rem 1.25rem; text-align: center; min-width: 140px;">
             <div style="font-size: 0.725rem; font-weight: 700; text-transform: uppercase; color: #a5b4fc; letter-spacing: 0.05em;">Assessment Result</div>
-            <div style="font-size: 1.75rem; font-weight: 900; color: #34d399; line-height: 1.2; margin-top: 0.2rem;">
+            <div style="font-size: 1.75rem; font-weight: 900; color: var(--success); line-height: 1.2; margin-top: 0.2rem;">
               {{ report.test_score_or_grade }}
             </div>
           </div>
@@ -101,7 +101,7 @@
         <div style="font-size: 0.725rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.35rem;">Assigned Educator</div>
         <div style="font-weight: 800; font-size: 1.05rem; color: var(--text);">{{ tutor.display_name }}</div>
         <div style="font-size: 0.825rem; color: var(--text-muted);">{{ tutor.highest_qualification }}</div>
-        <div style="font-size: 0.8rem; color: #059669; font-weight: 700;">★ {{ tutor.average_rating }} Verified Rating</div>
+        <div style="font-size: 0.8rem; color: var(--success); font-weight: 700;">★ {{ tutor.average_rating }} Verified Rating</div>
       </div>
 
       <div>
@@ -118,7 +118,7 @@
       <!-- Section 1: Topics Completed -->
       <div>
         <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
-          <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(79, 70, 229, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center;">
             <i data-lucide="book-check" style="width: 16px; height: 16px;"></i>
           </div>
           <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">
@@ -133,14 +133,14 @@
       <!-- Section 2: Observed Strengths -->
       <div>
         <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
-          <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #059669; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center;">
             <i data-lucide="award" style="width: 16px; height: 16px;"></i>
           </div>
           <h3 style="font-size: 1.15rem; font-weight: 800; color: #065f46; margin: 0;">
             Key Academic Strengths Observed
           </h3>
         </div>
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #10b981; border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #14532d; line-height: 1.6;">
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--success); border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #14532d; line-height: 1.6;">
           {{ report.student_strengths|linebreaks }}
         </div>
       </div>
@@ -148,14 +148,14 @@
       <!-- Section 3: Target Areas for Improvement -->
       <div>
         <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
-          <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(245, 158, 11, 0.15); color: #d97706; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--accent-border); color: var(--accent-hover); display: flex; align-items: center; justify-content: center;">
             <i data-lucide="target" style="width: 16px; height: 16px;"></i>
           </div>
           <h3 style="font-size: 1.15rem; font-weight: 800; color: #92400e; margin: 0;">
             Target Areas for Conceptual Growth & Practice
           </h3>
         </div>
-        <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #78350f; line-height: 1.6;">
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid var(--accent); border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #78350f; line-height: 1.6;">
           {{ report.areas_for_improvement|linebreaks }}
         </div>
       </div>
@@ -163,14 +163,14 @@
       <!-- Section 4: Tutor Recommendations -->
       <div>
         <div class="flex items-center gap-2" style="margin-bottom: 0.75rem;">
-          <div style="width: 28px; height: 28px; border-radius: 6px; background: rgba(99, 102, 241, 0.15); color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+          <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--primary-border); color: var(--primary); display: flex; align-items: center; justify-content: center;">
             <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
           </div>
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: #3730a3; margin: 0;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-active); margin: 0;">
             Educator's Strategic Recommendations & Next Milestone
           </h3>
         </div>
-        <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-left: 4px solid #6366f1; border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #312e81; line-height: 1.6;">
+        <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-left: 4px solid var(--primary); border-radius: 0 0.75rem 0.75rem 0; padding: 1.1rem 1.25rem; font-size: 0.9rem; color: #312e81; line-height: 1.6;">
           {{ report.recommendations|linebreaks }}
         </div>
       </div>

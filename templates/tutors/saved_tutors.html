@@ -3,7 +3,7 @@
 {% block title %}My Saved & Shortlisted Tutors — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<section style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2rem; border-bottom: 1px solid var(--border);">
+<section style="background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2rem; border-bottom: 1px solid var(--border);">
   <div class="container">
     <div class="flex items-center gap-2" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
       <a href="{% url 'tutors:directory' %}" style="color: var(--text-muted); font-weight: 600;">← Tutor Directory</a>
@@ -35,7 +35,7 @@
       <div style="font-weight: 800; font-size: 1rem; color: var(--text);">
         {{ total_saved }} Saved Educator{{ total_saved|pluralize }}
       </div>
-      <div id="compareBar" style="display: none; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--primary); padding: 0.5rem 1rem; border-radius: 9999px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);">
+      <div id="compareBar" style="display: none; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--primary); padding: 0.5rem 1rem; border-radius: 9999px; box-shadow: 0 4px 12px var(--primary-border);">
         <span style="font-size: 0.825rem; font-weight: 700; color: var(--text);" id="compareCountText">0 selected</span>
         <button type="button" class="btn btn-primary btn-sm" onclick="goToComparison()" style="font-size: 0.75rem; padding: 0.25rem 0.75rem;">
           Compare Selected &rarr;
@@ -80,7 +80,7 @@
                 </div>
 
                 <!-- Unsave button -->
-                <a href="{% url 'tutors:toggle_save' tutor.id %}" title="Remove from shortlist" style="color: #ef4444; background: rgba(239, 68, 68, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: background 0.15s ease;">
+                <a href="{% url 'tutors:toggle_save' tutor.id %}" title="Remove from shortlist" style="color: var(--danger); background: rgba(239, 68, 68, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: background 0.15s ease;">
                   <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
                 </a>
               </div>
@@ -141,7 +141,7 @@
 
   {% else %}
     <div class="card" style="padding: 4.5rem 2rem; text-align: center; max-width: 580px; margin: 0 auto;">
-      <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+      <div style="width: 68px; height: 68px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: var(--danger); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
         <i data-lucide="heart" style="width: 32px; height: 32px;"></i>
       </div>
       <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">Your Shortlist is Empty</h2>

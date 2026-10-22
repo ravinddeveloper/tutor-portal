@@ -45,8 +45,8 @@
     transition: all 0.2s ease;
   }
   .app-timeline-node.completed {
-    background: #10b981;
-    border-color: #10b981;
+    background: var(--success);
+    border-color: var(--success);
     color: #ffffff;
   }
   .app-timeline-node.active {
@@ -62,7 +62,7 @@
     margin-top: 0.4rem;
   }
   .app-timeline-label.completed {
-    color: #059669;
+    color: var(--success);
   }
   .app-timeline-label.active {
     color: var(--primary);
@@ -130,7 +130,7 @@
 
           <div class="app-proposal-badge-box" style="text-align: right; flex-shrink: 0;">
             <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Your Proposal</div>
-            <div style="font-size: 1.35rem; font-weight: 900; color: #059669;">
+            <div style="font-size: 1.35rem; font-weight: 900; color: var(--success);">
               {{ company.currency_symbol }}{{ app.proposed_fee }}<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/mo</span>
             </div>
             <span class="badge {% if app.status == 'ACCEPTED' %}badge-success{% elif app.status == 'REJECTED' %}badge-danger{% elif app.status == 'DEMO_REQUESTED' %}badge-primary{% else %}badge-warning{% endif %}" style="margin-top: 0.35rem; display: inline-block;">
@@ -225,7 +225,7 @@
                 <i data-lucide="calendar" style="width: 14px; height: 14px;"></i> Manage Demo Class &rarr;
               </a>
             {% elif app.status == 'ACCEPTED' %}
-              <a href="{% url 'tutors:engagements' %}" class="btn btn-primary btn-sm" style="font-weight: 700; background: #10b981;">
+              <a href="{% url 'tutors:engagements' %}" class="btn btn-primary btn-sm" style="font-weight: 700; background: var(--success);">
                 <i data-lucide="book-open" style="width: 14px; height: 14px;"></i> Open Class Lessons &rarr;
               </a>
             {% endif %}

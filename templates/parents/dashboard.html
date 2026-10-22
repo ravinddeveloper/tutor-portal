@@ -343,16 +343,16 @@
       <div class="flex items-center justify-between">
         <div>
           <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Active Tuitions</div>
-          <div class="parent-stat-num" style="color: #10b981;">
+          <div class="parent-stat-num" style="color: var(--success);">
             {{ engagements.count }}
           </div>
         </div>
-        <div class="parent-stat-icon" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+        <div class="parent-stat-icon" style="background: var(--success-soft); color: var(--success);">
           <i data-lucide="check-circle" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
       <div style="margin-top: 0.65rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:tuitions' %}" style="text-decoration: underline; color: #10b981; font-weight: 600;">Lessons & Progress &rarr;</a>
+        <a href="{% url 'parents:tuitions' %}" style="text-decoration: underline; color: var(--success); font-weight: 600;">Lessons & Progress &rarr;</a>
       </div>
     </div>
 
@@ -364,12 +364,12 @@
             {{ students.count }}
           </div>
         </div>
-        <div class="parent-stat-icon" style="background: #fef3c7; color: #d97706;">
+        <div class="parent-stat-icon" style="background: #fef3c7; color: var(--accent-hover);">
           <i data-lucide="users" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
       <div style="margin-top: 0.65rem; font-size: 0.75rem;">
-        <a href="{% url 'parents:students' %}" style="text-decoration: underline; color: #d97706; font-weight: 600;">Manage Children &rarr;</a>
+        <a href="{% url 'parents:students' %}" style="text-decoration: underline; color: var(--accent-hover); font-weight: 600;">Manage Children &rarr;</a>
       </div>
     </div>
   </div>
@@ -439,7 +439,7 @@
                     <span class="badge badge-success" style="font-size: 0.7rem;">On Track</span>
                   </div>
                   <div class="flex items-center gap-3" style="margin-bottom: 0.75rem;">
-                    <div style="font-size: 2.15rem; font-weight: 900; color: #10b981; line-height: 1;">
+                    <div style="font-size: 2.15rem; font-weight: 900; color: var(--success); line-height: 1;">
                       {{ tracker.attendance_pct }}%
                     </div>
                     <div style="font-size: 0.785rem; color: var(--text-muted); line-height: 1.35;">
@@ -449,7 +449,7 @@
                   </div>
                   <!-- Progress Bar -->
                   <div style="width: 100%; height: 8px; background: var(--surface-hover); border-radius: 9999px; overflow: hidden; margin-bottom: 0.5rem; border: 1px solid var(--border);">
-                    <div style="width: {{ tracker.attendance_pct }}%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 9999px;"></div>
+                    <div style="width: {{ tracker.attendance_pct }}%; height: 100%; background: linear-gradient(90deg, var(--success), var(--success)); border-radius: 9999px;"></div>
                   </div>
                 </div>
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; word-break: break-word;">

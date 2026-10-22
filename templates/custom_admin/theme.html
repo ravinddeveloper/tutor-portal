@@ -33,26 +33,26 @@
           <span>Instant Design Presets (Click to Load):</span>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button type="button" class="btn btn-secondary btn-sm" style="border-color: #1e40af; font-weight: 700;" onclick="setPreset('Academic Trust', '#1e40af', '#ea580c', '#f59e0b', '#f8fafc', '#ffffff', '#0f172a', '#0f172a', '0.75rem', false)">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#1e40af; margin-right:4px;"></span> Academic Trust (Tutoring Standard)
+          <button type="button" class="btn btn-secondary btn-sm" style="border-color: var(--primary); font-weight: 700;" onclick="setPreset('Academic Trust', 'var(--primary)', 'var(--accent-hover)', 'var(--accent)', '#f8fafc', '#ffffff', '#0f172a', '#0f172a', '0.75rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--primary); margin-right:4px;"></span> Academic Trust (Tutoring Standard)
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Modern Indigo', '#4f46e5', '#06b6d4', '#f59e0b', '#f8fafc', '#ffffff', '#0f172a', '#1e293b', '0.75rem', false)">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#4f46e5; margin-right:4px;"></span> Modern Indigo
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Modern Indigo', 'var(--primary)', 'var(--secondary)', 'var(--accent)', '#f8fafc', '#ffffff', '#0f172a', '#1e293b', '0.75rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--primary); margin-right:4px;"></span> Modern Indigo
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Emerald Education', '#059669', '#0284c7', '#d97706', '#f0fdf4', '#ffffff', '#064e3b', '#065f46', '0.5rem', false)">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#059669; margin-right:4px;"></span> Emerald Education
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Emerald Education', 'var(--success)', '#0284c7', 'var(--accent-hover)', '#f0fdf4', '#ffffff', '#064e3b', '#065f46', '0.5rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--success); margin-right:4px;"></span> Emerald Education
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Royal Sapphire', '#2563eb', '#8b5cf6', '#f97316', '#f0f9ff', '#ffffff', '#0f172a', '#1e3a8a', '1rem', false)">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Royal Sapphire', '#2563eb', '#8b5cf6', '#f97316', '#f0f9ff', '#ffffff', '#0f172a', 'var(--primary-active)', '1rem', false)">
             <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#2563eb; margin-right:4px;"></span> Royal Sapphire
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Violet Elite', '#7c3aed', '#ec4899', '#eab308', '#faf5ff', '#ffffff', '#1e1b4b', '#2e1065', '0.75rem', false)">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Violet Elite', '#7c3aed', '#ec4899', '#eab308', '#faf5ff', '#ffffff', 'var(--primary-active)', '#2e1065', '0.75rem', false)">
             <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#7c3aed; margin-right:4px;"></span> Violet Elite
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Sunset Amber', '#ea580c', '#0284c7', '#10b981', '#fff7ed', '#ffffff', '#431407', '#7c2d12', '0.65rem', false)">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#ea580c; margin-right:4px;"></span> Sunset Amber
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Sunset Amber', 'var(--accent-hover)', '#0284c7', 'var(--success)', '#fff7ed', '#ffffff', '#431407', '#7c2d12', '0.65rem', false)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--accent-hover); margin-right:4px;"></span> Sunset Amber
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Cyber Slate Dark', '#6366f1', '#14b8a6', '#f43f5e', '#0b0f19', '#111827', '#f3f4f6', '#0f172a', '0.75rem', true)">
-            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#6366f1; margin-right:4px;"></span> Cyber Slate (Dark)
+          <button type="button" class="btn btn-secondary btn-sm" onclick="setPreset('Cyber Slate Dark', 'var(--primary)', '#14b8a6', '#f43f5e', '#0b0f19', '#111827', '#f3f4f6', '#0f172a', '0.75rem', true)">
+            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--primary); margin-right:4px;"></span> Cyber Slate (Dark)
           </button>
         </div>
       </div>
@@ -167,7 +167,7 @@
       <!-- Sample Preview Container -->
       <div id="sample-box" style="border: 1px solid var(--border); border-radius: {{ theme.border_radius }}; padding: 1.25rem; background: {{ theme.surface_color|default:'#ffffff' }}; box-shadow: var(--card-shadow); margin-bottom: 1.25rem; transition: all 0.2s ease;">
         <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
-          <span id="sample-badge" class="badge" style="background: rgba(79, 70, 229, 0.12); color: {{ theme.primary_color }};">
+          <span id="sample-badge" class="badge" style="background: var(--primary-soft); color: {{ theme.primary_color }};">
             Verified Tutor
           </span>
           <span id="sample-star" style="font-size: 0.8rem; font-weight: 700; color: {{ theme.accent_color }};">

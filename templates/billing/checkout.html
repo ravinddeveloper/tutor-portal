@@ -135,7 +135,7 @@
     background: var(--primary) !important;
     color: #ffffff !important;
     border-color: var(--primary) !important;
-    box-shadow: 0 2px 10px rgba(79, 70, 229, 0.35);
+    box-shadow: 0 2px 10px var(--primary-ring);
   }
 
   /* UPI Action Button */
@@ -149,10 +149,10 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
     color: #ffffff !important;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    box-shadow: 0 4px 14px var(--primary-ring);
     text-align: center;
     line-height: 1.35;
     border: none;
@@ -163,7 +163,7 @@
 
   .upi-app-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+    box-shadow: 0 6px 18px var(--primary-ring);
   }
 
   /* QR Frame */
@@ -186,14 +186,14 @@
   /* Coupon Applied Green Flash Animation */
   @keyframes priceFlashGreen {
     0% {
-      color: #10b981;
+      color: var(--success);
       transform: scale(1.1);
-      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      text-shadow: 0 0 10px var(--success);
     }
     50% {
-      color: #10b981;
+      color: var(--success);
       transform: scale(1.05);
-      text-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+      text-shadow: 0 0 6px var(--success);
     }
     100% {
       color: var(--primary);
@@ -219,12 +219,12 @@
 
   /* Virtual Card Display */
   .virtual-card-preview {
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+    background: linear-gradient(135deg, var(--primary-active) 0%, #312e81 50%, var(--primary-active) 100%);
     color: #ffffff;
     border-radius: 1.15rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 12px 30px -5px rgba(67, 56, 202, 0.35);
+    box-shadow: 0 12px 30px -5px var(--primary-ring);
     position: relative;
     overflow: hidden;
   }
@@ -243,7 +243,7 @@
   .card-chip {
     width: 44px;
     height: 32px;
-    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    background: linear-gradient(135deg, #fbbf24 0%, var(--accent-hover) 100%);
     border-radius: 6px;
     position: relative;
     box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
@@ -371,7 +371,7 @@
     </div>
 
     <div class="flex items-center gap-3" style="flex-wrap: wrap;">
-      <div class="flex items-center gap-1.5" style="font-size: 0.8rem; color: #10b981; font-weight: 700;">
+      <div class="flex items-center gap-1.5" style="font-size: 0.8rem; color: var(--success); font-weight: 700;">
         <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i>
         <span>256-Bit SSL Secured</span>
       </div>
@@ -407,7 +407,7 @@
       <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.825rem; color: var(--text); padding: 0; margin-bottom: 1rem;">
         {% for f in features %}
           <li class="flex items-center gap-2">
-            <i data-lucide="check" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
+            <i data-lucide="check" style="width: 14px; height: 14px; color: var(--success); flex-shrink: 0;"></i>
             <span>{{ f }}</span>
           </li>
         {% endfor %}
@@ -481,7 +481,7 @@
           <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem 1.25rem; text-align: center; margin-bottom: 1.5rem;">
             
             <div style="margin-bottom: 1.25rem;">
-              <div style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <div style="background: var(--success-soft); color: var(--success); border: 1px solid var(--success); border-radius: 9999px; padding: 0.35rem 0.85rem; font-size: 0.775rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
                 <i data-lucide="zap" style="width: 13px; height: 13px;"></i>
                 <span>0% Convenience Fee • Zero Extra Charges</span>
               </div>
@@ -537,7 +537,7 @@
             <!-- Expiry countdown persisting from session -->
             <div style="margin-top: 1rem; font-size: 0.775rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
               <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
-              <span>Payment session active for <strong id="upiCountdown" style="color: #ef4444;">14:59</strong></span>
+              <span>Payment session active for <strong id="upiCountdown" style="color: var(--danger);">14:59</strong></span>
             </div>
 
           </div>
@@ -553,7 +553,7 @@
                      class="form-control" style="flex: 1; font-family: monospace;">
               <button type="button" class="btn btn-secondary" onclick="validateUpiId()" style="font-weight: 700;">Verify</button>
             </div>
-            <span id="upiVerifyFeedback" style="font-size: 0.8rem; color: #10b981; display: block; margin-top: 0.4rem; font-weight: 700;">
+            <span id="upiVerifyFeedback" style="font-size: 0.8rem; color: var(--success); display: block; margin-top: 0.4rem; font-weight: 700;">
               ✓ Verified: Rajesh Kumar (Verified Educator Account)
             </span>
           </div>
@@ -630,27 +630,27 @@
           
           <div class="bank-grid">
             <div class="bank-choice-card selected" onclick="selectBank(this, 'HDFC Bank')">
-              <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a;">HDFC Bank</div>
-              <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">Fast</span>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary-active);">HDFC Bank</div>
+              <span style="font-size: 0.7rem; color: var(--success); font-weight: 700;">Fast</span>
             </div>
             <div class="bank-choice-card" onclick="selectBank(this, 'State Bank of India')">
               <div style="font-size: 0.85rem; font-weight: 800; color: #0369a1;">SBI</div>
-              <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">Fast</span>
+              <span style="font-size: 0.7rem; color: var(--success); font-weight: 700;">Fast</span>
             </div>
             <div class="bank-choice-card" onclick="selectBank(this, 'ICICI Bank')">
-              <div style="font-size: 0.85rem; font-weight: 800; color: #c2410c;">ICICI Bank</div>
-              <span style="font-size: 0.7rem; color: #10b981; font-weight: 700;">Fast</span>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--accent-active);">ICICI Bank</div>
+              <span style="font-size: 0.7rem; color: var(--success); font-weight: 700;">Fast</span>
             </div>
             <div class="bank-choice-card" onclick="selectBank(this, 'Axis Bank')">
               <div style="font-size: 0.85rem; font-weight: 800; color: #9f1239;">Axis Bank</div>
               <span style="font-size: 0.7rem; color: var(--text-muted);">Active</span>
             </div>
             <div class="bank-choice-card" onclick="selectBank(this, 'Kotak Mahindra Bank')">
-              <div style="font-size: 0.85rem; font-weight: 800; color: #b91c1c;">Kotak Bank</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--danger);">Kotak Bank</div>
               <span style="font-size: 0.7rem; color: var(--text-muted);">Active</span>
             </div>
             <div class="bank-choice-card" onclick="selectBank(this, 'Punjab National Bank')">
-              <div style="font-size: 0.85rem; font-weight: 800; color: #d97706;">PNB</div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--accent-hover);">PNB</div>
               <span style="font-size: 0.7rem; color: var(--text-muted);">Active</span>
             </div>
           </div>
@@ -726,14 +726,14 @@
               <i data-lucide="flask-conical" style="width: 15px; height: 15px; color: var(--primary);"></i>
               <span style="font-size: 0.8rem; font-weight: 700; color: var(--text);">Payment Gateway Simulation Mode</span>
             </div>
-            <span class="badge" style="font-size: 0.7rem; background: rgba(79, 70, 229, 0.1); color: var(--primary); font-weight: 700;">Sandbox Active</span>
+            <span class="badge" style="font-size: 0.7rem; background: var(--primary-soft); color: var(--primary); font-weight: 700;">Sandbox Active</span>
           </div>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0 0 0.75rem;">
             Select desired simulated bank authorization outcome to test transactional flows:
           </p>
           <div class="flex gap-2">
             <button type="button" id="btnSimSuccess" class="btn btn-sm" onclick="setSimulationOutcome('SUCCESS')"
-                    style="flex: 1; font-weight: 700; font-size: 0.75rem; background: #10b981; color: #ffffff;">
+                    style="flex: 1; font-weight: 700; font-size: 0.75rem; background: var(--success); color: #ffffff;">
               <i data-lucide="check" style="width: 13px; height: 13px;"></i> Simulate Success
             </button>
             <button type="button" id="btnSimFail" class="btn btn-sm" onclick="setSimulationOutcome('FAIL')"
@@ -745,7 +745,7 @@
 
         <!-- Primary Action Button with anti-double-click protection -->
         <button type="button" id="paySubmitBtn" class="btn btn-primary btn-lg" 
-                style="width: 100%; min-height: 50px; font-size: 1.05rem; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);"
+                style="width: 100%; min-height: 50px; font-size: 1.05rem; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px var(--primary-ring);"
                 onclick="triggerPaymentProcessing()">
           <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
           <span>Pay <span class="total-display">{{ company.currency_symbol }}{{ total_payable }}</span> & Complete Order</span>
@@ -784,7 +784,7 @@
         <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem; color: var(--text); margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border);">
           {% for f in features %}
             <li class="flex items-center gap-2">
-              <i data-lucide="check-circle-2" style="width: 16px; height: 16px; color: #10b981; flex-shrink: 0;"></i>
+              <i data-lucide="check-circle-2" style="width: 16px; height: 16px; color: var(--success); flex-shrink: 0;"></i>
               <span>{{ f }}</span>
             </li>
           {% endfor %}
@@ -804,8 +804,8 @@
           <div id="couponMessageArea" style="margin-top: 0.5rem; font-size: 0.8rem;">
             {% if coupon_code and discount_amount > 0 %}
               <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="color: #10b981; font-weight: 700;">✓ {{ coupon_desc }} applied (-{{ company.currency_symbol }}{{ discount_amount }})</span>
-                <button type="button" onclick="removeCoupon()" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Remove</button>
+                <span style="color: var(--success); font-weight: 700;">✓ {{ coupon_desc }} applied (-{{ company.currency_symbol }}{{ discount_amount }})</span>
+                <button type="button" onclick="removeCoupon()" style="background: none; border: none; color: var(--danger); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Remove</button>
               </div>
             {% endif %}
           </div>
@@ -826,7 +826,7 @@
             <span id="displayBasePrice" style="font-weight: 700; color: var(--text);">{{ company.currency_symbol }}{{ base_price }}</span>
           </div>
 
-          <div id="rowDiscount" style="display: {% if discount_amount > 0 %}flex{% else %}none{% endif %}; justify-content: space-between; color: #10b981;">
+          <div id="rowDiscount" style="display: {% if discount_amount > 0 %}flex{% else %}none{% endif %}; justify-content: space-between; color: var(--success);">
             <span>Coupon Discount:</span>
             <span id="displayDiscount" style="font-weight: 700;">-{{ company.currency_symbol }}{{ discount_amount }}</span>
           </div>
@@ -860,7 +860,7 @@
         <div style="display: flex; flex-direction: column; gap: 1rem;">
           
           <div class="flex items-center gap-3">
-            <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
               <i data-lucide="shield-check" style="width: 20px; height: 20px;"></i>
             </div>
             <div>
@@ -880,7 +880,7 @@
           </div>
 
           <div class="flex items-center gap-3">
-            <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(245, 158, 11, 0.12); color: #f59e0b; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: var(--accent-border); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
               <i data-lucide="headphones" style="width: 20px; height: 20px;"></i>
             </div>
             <div>
@@ -1011,10 +1011,10 @@
     const val = document.getElementById('upiVpaInput').value.trim();
     const feedback = document.getElementById('upiVerifyFeedback');
     if (val && val.includes('@')) {
-      feedback.style.color = '#10b981';
+      feedback.style.color = 'var(--success)';
       feedback.innerText = '✓ Verified UPI ID: ' + val;
     } else {
-      feedback.style.color = '#ef4444';
+      feedback.style.color = 'var(--danger)';
       feedback.innerText = '✕ Invalid UPI format. Use name@bank or mobile@upi';
     }
   }
@@ -1071,12 +1071,12 @@
     const btnFail = document.getElementById('btnSimFail');
 
     if (outcome === 'SUCCESS') {
-      btnSuccess.style.background = '#10b981';
+      btnSuccess.style.background = 'var(--success)';
       btnSuccess.style.color = '#ffffff';
       btnFail.style.background = 'var(--surface)';
       btnFail.style.color = 'var(--text-muted)';
     } else {
-      btnFail.style.background = '#ef4444';
+      btnFail.style.background = 'var(--danger)';
       btnFail.style.color = '#ffffff';
       btnSuccess.style.background = 'var(--surface)';
       btnSuccess.style.color = 'var(--text-muted)';
@@ -1090,7 +1090,7 @@
     const msgArea = document.getElementById('couponMessageArea');
 
     if (!code) {
-      msgArea.innerHTML = '<span style="color: #ef4444; font-weight: 600;">Please enter a coupon code.</span>';
+      msgArea.innerHTML = '<span style="color: var(--danger); font-weight: 600;">Please enter a coupon code.</span>';
       return;
     }
 
@@ -1113,8 +1113,8 @@
       if (data.valid) {
         msgArea.innerHTML = `
           <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="color: #10b981; font-weight: 700;">✓ ${data.message}</span>
-            <button type="button" onclick="removeCoupon()" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Remove</button>
+            <span style="color: var(--success); font-weight: 700;">✓ ${data.message}</span>
+            <button type="button" onclick="removeCoupon()" style="background: none; border: none; color: var(--danger); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Remove</button>
           </div>
         `;
         document.getElementById('formCouponCode').value = data.coupon_code;
@@ -1153,11 +1153,11 @@
           }
         }
       } else {
-        msgArea.innerHTML = `<span style="color: #ef4444; font-weight: 700;">✕ ${data.message}</span>`;
+        msgArea.innerHTML = `<span style="color: var(--danger); font-weight: 700;">✕ ${data.message}</span>`;
       }
     })
     .catch(err => {
-      msgArea.innerHTML = '<span style="color: #ef4444; font-weight: 600;">Error applying coupon. Please try again.</span>';
+      msgArea.innerHTML = '<span style="color: var(--danger); font-weight: 600;">Error applying coupon. Please try again.</span>';
     });
   }
 

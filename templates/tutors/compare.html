@@ -3,7 +3,7 @@
 {% block title %}Side-by-Side Tutor Comparison — {{ company.company_name }}{% endblock %}
 
 {% block content %}
-<section style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2rem; border-bottom: 1px solid var(--border);">
+<section style="background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2rem; border-bottom: 1px solid var(--border);">
   <div class="container">
     <div class="flex items-center gap-2" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
       <a href="{% url 'tutors:directory' %}" style="color: var(--text-muted); font-weight: 600;">← Back to Tutor Directory</a>
@@ -51,7 +51,7 @@
                       </div>
                     {% endif %}
                     {% if tutor.is_verified %}
-                      <span style="position: absolute; bottom: 0; right: 0; background: #10b981; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--surface);" title="Verified Educator">
+                      <span style="position: absolute; bottom: 0; right: 0; background: var(--success); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--surface);" title="Verified Educator">
                         <i data-lucide="check" style="width: 12px; height: 12px; stroke-width: 3;"></i>
                       </span>
                     {% endif %}
@@ -135,7 +135,7 @@
           <tr>
             <td style="padding: 1rem 1.25rem; font-weight: 700; color: var(--text); background: var(--surface-hover); border-bottom: 1px solid var(--border);">
               <div class="flex items-center gap-2">
-                <i data-lucide="map-pin" style="width: 16px; height: 16px; color: #10b981;"></i>
+                <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--success);"></i>
                 <span>Teaching Mode & Locality</span>
               </div>
             </td>

@@ -26,7 +26,7 @@
       <div style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin: 0.5rem 0;">
         {{ active_sub.plan.name|default:"Free Starter Plan" }}
       </div>
-      <div style="font-size: 0.8rem; color: #10b981; font-weight: 600;">
+      <div style="font-size: 0.8rem; color: var(--success); font-weight: 600;">
         {% if active_sub %}
           Active until {{ active_sub.end_date }}
         {% else %}
@@ -126,7 +126,7 @@
                       <span>Pay ({{ company.currency_symbol }}{{ comm.total_amount }}) &rarr;</span>
                     </a>
                   {% else %}
-                    <span style="font-size: 0.8rem; color: #10b981; font-weight: 600;">✓ Settled</span>
+                    <span style="font-size: 0.8rem; color: var(--success); font-weight: 600;">✓ Settled</span>
                   {% endif %}
                 </td>
               </tr>
@@ -163,7 +163,7 @@
               <td style="padding: 0.75rem 1rem; font-weight: 600;">
                 {{ tx.get_transaction_type_display }}
               </td>
-              <td style="padding: 0.75rem 1rem; font-weight: 800; {% if tx.amount > 0 %}color: #10b981;{% else %}color: #ef4444;{% endif %}">
+              <td style="padding: 0.75rem 1rem; font-weight: 800; {% if tx.amount > 0 %}color: var(--success);{% else %}color: var(--danger);{% endif %}">
                 {% if tx.amount > 0 %}+{{ tx.amount }}{% else %}{{ tx.amount }}{% endif %}
               </td>
               <td style="padding: 0.75rem 1rem; font-weight: 700;">

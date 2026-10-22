@@ -79,7 +79,7 @@
         <div style="background: var(--surface-hover); border-top: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">Monthly Budget</div>
-            <div style="font-size: 1.05rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
+            <div style="font-size: 1.05rem; font-weight: 800; color: var(--success);">{{ company.currency_symbol }}{{ lead.budget_amount }}/mo</div>
           </div>
           <a href="{% url 'leads:detail' lead.lead_id %}" class="btn btn-outline-primary btn-sm">
             View & Unlock &rarr;

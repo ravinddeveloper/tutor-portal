@@ -190,7 +190,7 @@
   <aside class="admin-sidebar" aria-label="Admin Navigation Sidebar">
     <div class="admin-sidebar-header">
       <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
-        <div style="background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%); color: #ffffff; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35); flex-shrink: 0;">
+        <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-active) 100%); color: #ffffff; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px var(--primary-ring); flex-shrink: 0;">
           <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
         </div>
         <div style="min-width: 0;">
@@ -198,8 +198,8 @@
           <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">{{ user.get_role_display }}</div>
         </div>
       </div>
-      <span style="font-size: 0.625rem; font-weight: 700; padding: 2px 7px; border-radius: 9999px; background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); display: inline-flex; align-items: center; gap: 0.25rem;">
-        <span style="width: 5px; height: 5px; border-radius: 50%; background: #10b981;"></span>
+      <span style="font-size: 0.625rem; font-weight: 700; padding: 2px 7px; border-radius: 9999px; background: var(--success-soft); color: var(--success); border: 1px solid var(--success); display: inline-flex; align-items: center; gap: 0.25rem;">
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: var(--success);"></span>
         Live
       </span>
     </div>

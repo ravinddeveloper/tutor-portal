@@ -124,11 +124,11 @@
 
 .text-muted { color: var(--text-muted) !important; }
 
-.text-success { color: #059669 !important; }
+.text-success { color: var(--success) !important; }
 
-.text-danger { color: #ef4444 !important; }
+.text-danger { color: var(--danger) !important; }
 
-.text-warning { color: #d97706 !important; }
+.text-warning { color: var(--accent-hover) !important; }
 
 .text-white { color: #ffffff !important; }
 
@@ -185,20 +185,32 @@
 .h-full { height: 100% !important; }
 
 /* ── Top Announcement Bar ── */
+/* Kept in sync with the design system: a solid, high-contrast bar reads far
+   more professionally than a brand gradient and preserves link contrast. */
 
 .top-announcement-bar {
 
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  background: var(--surface-inverse);
 
-  color: #ffffff;
+  color: var(--text-inverse);
 
   padding: 0.45rem 1rem;
 
-  font-size: 0.825rem;
+  font-size: 0.8125rem;
 
   font-weight: 600;
 
   text-align: center;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
 
 }
 
@@ -206,9 +218,11 @@
 
   text-decoration: underline;
 
-  margin-left: 0.5rem;
+  text-underline-offset: 3px;
 
-  color: #fef08a;
+  margin-left: 0.25rem;
+
+  color: currentColor;
 
   font-weight: 700;
 
@@ -246,7 +260,7 @@
 
 .icon-badge.has-unread {
 
-  background: #ef4444 !important;
+  background: var(--danger) !important;
 
   color: #ffffff !important;
 

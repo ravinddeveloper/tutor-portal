@@ -86,7 +86,7 @@
       <span class="badge {% if requirement.status == 'OPEN' %}badge-success{% else %}badge-warning{% endif %}">
         {{ requirement.get_status_display }}
       </span>
-      <span class="badge" style="background: rgba(79, 70, 229, 0.1); color: var(--primary); font-weight: 700;">
+      <span class="badge" style="background: var(--primary-soft); color: var(--primary); font-weight: 700;">
         <i data-lucide="map-pin" style="width: 12px; height: 12px; display: inline;"></i> {{ requirement.locality }}, {{ requirement.city }}
       </span>
     </div>
@@ -101,9 +101,9 @@
   <!-- Direct Tutor Proposals Received -->
   {% if applications %}
     <div class="card" style="margin-bottom: 2.5rem; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
-      <div style="padding: 1.25rem 1.5rem; background: rgba(16, 185, 129, 0.08); border-bottom: 1px solid rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: space-between;">
+      <div style="padding: 1.25rem 1.5rem; background: var(--success-soft); border-bottom: 1px solid var(--success-soft); display: flex; align-items: center; justify-content: space-between;">
         <div class="flex items-center gap-2">
-          <i data-lucide="inbox" style="width: 20px; height: 20px; color: #059669;"></i>
+          <i data-lucide="inbox" style="width: 20px; height: 20px; color: var(--success);"></i>
           <h2 style="font-size: 1.15rem; font-weight: 800; color: #065f46; margin: 0;">
             Direct Proposals Received from Tutors ({{ applications.count }})
           </h2>
@@ -155,13 +155,13 @@
             <div class="direct-proposal-side" style="display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; min-width: 190px;">
               <div style="text-align: right;">
                 <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Proposed Monthly Fee</div>
-                <div style="font-size: 1.4rem; font-weight: 900; color: #059669;">
+                <div style="font-size: 1.4rem; font-weight: 900; color: var(--success);">
                   {{ company.currency_symbol }}{{ app.proposed_fee }}<span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">/mo</span>
                 </div>
               </div>
 
               <div class="flex flex-col gap-2" style="width: 100%;">
-                <button type="button" class="btn btn-primary btn-sm" onclick="openInstantDemoModal({{ app.tutor.id }})" style="width: 100%; font-weight: 800; background: #059669; border-color: #059669; justify-content: center;">
+                <button type="button" class="btn btn-primary btn-sm" onclick="openInstantDemoModal({{ app.tutor.id }})" style="width: 100%; font-weight: 800; background: var(--success); border-color: var(--success); justify-content: center;">
                   <i data-lucide="zap" style="width: 14px; height: 14px;"></i> Instant Demo Request
                 </button>
                 <a href="{% url 'parents:confirm_tuition' requirement.lead_id %}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 700; justify-content: center;">
@@ -219,7 +219,7 @@
         <div class="card-body" style="padding-top: 1.5rem;">
           <!-- Tutor Header -->
           <div class="flex items-start gap-3" style="margin-bottom: 0.85rem; padding-right: 6rem;">
-            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 4px 10px var(--primary-border);">
               {{ match.tutor.display_name|slice:":1"|upper }}
             </div>
             <div>
@@ -245,7 +245,7 @@
               <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> {{ match.match_score }}% Match
             </span>
             {% if match.tutor.is_fast_responder %}
-              <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; font-size: 0.725rem; font-weight: 700;">
+              <span class="badge" style="background: var(--success-soft); color: var(--success); font-size: 0.725rem; font-weight: 700;">
                 <i data-lucide="zap" style="width: 11px; height: 11px;"></i> Fast Responder (&lt;{{ match.tutor.average_response_time_minutes }}m)
               </span>
             {% endif %}
@@ -259,7 +259,7 @@
           </p>
 
           <!-- Match Reasons snippet -->
-          <div style="background: rgba(79, 70, 229, 0.05); border-left: 3px solid var(--primary); padding: 0.55rem 0.75rem; font-size: 0.775rem; color: var(--text); border-radius: 0.25rem; margin-bottom: 0.85rem; line-height: 1.45;">
+          <div style="background: var(--primary-softer); border-left: 3px solid var(--primary); padding: 0.55rem 0.75rem; font-size: 0.775rem; color: var(--text); border-radius: 0.25rem; margin-bottom: 0.85rem; line-height: 1.45;">
             <strong style="color: var(--primary);">Compatibility Factors:</strong><br>
             {{ match.match_reasons|linebreaksbr }}
           </div>
@@ -291,7 +291,7 @@
           </div>
 
           <div class="tutor-match-footer-actions flex items-center gap-2 flex-wrap">
-            <button type="button" class="btn btn-primary btn-sm" onclick="openInstantDemoModal({{ match.tutor.id }})" style="font-weight: 800; background: #059669; border-color: #059669;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="openInstantDemoModal({{ match.tutor.id }})" style="font-weight: 800; background: var(--success); border-color: var(--success);">
               <i data-lucide="zap" style="width: 13px; height: 13px;"></i> Instant Demo
             </button>
 
@@ -371,7 +371,7 @@
     <!-- Modal Header -->
     <div style="padding: 1.25rem 1.5rem; background: var(--surface-hover); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
       <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(79, 70, 229, 0.15); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--primary-border); color: var(--primary); display: flex; align-items: center; justify-content: center;">
           <i data-lucide="columns-3" style="width: 18px; height: 18px;"></i>
         </div>
         <div>
@@ -415,7 +415,7 @@
   <div class="card" style="max-width: 620px; width: 100%; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-radius: 1rem; border: 1px solid var(--border);">
     
     <!-- Modal Header -->
-    <div style="padding: 1.25rem 1.5rem; background: linear-gradient(135deg, #065f46 0%, #059669 100%); color: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+    <div style="padding: 1.25rem 1.5rem; background: linear-gradient(135deg, #065f46 0%, var(--success) 100%); color: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
       <div class="flex items-center gap-2">
         <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
           <i data-lucide="zap" style="width: 18px; height: 18px; color: #ffffff;"></i>
@@ -457,12 +457,12 @@
           </div>
           <div style="text-align: right;">
             <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Rate</div>
-            <div id="demoTutorRate" style="font-size: 1rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}5,000/mo</div>
+            <div id="demoTutorRate" style="font-size: 1rem; font-weight: 800; color: var(--success);">{{ company.currency_symbol }}5,000/mo</div>
           </div>
         </div>
 
         <!-- Requirement Summary Box -->
-        <div style="background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.15); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.825rem;">
+        <div style="background: var(--primary-softer); border: 1px solid var(--primary-border); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.825rem;">
           <div class="flex items-center justify-between" style="margin-bottom: 0.25rem;">
             <strong>Requirement: {{ requirement.lead_id }}</strong>
             <span class="badge badge-primary">{{ requirement.student_class }}</span>
@@ -510,7 +510,7 @@
             <label class="form-label" style="font-weight: 700; font-size: 0.85rem; margin: 0;">
               Suggested Available Slots (from Tutor's Schedule)
             </label>
-            <span style="font-size: 0.725rem; color: #059669; font-weight: 700;">Click to select</span>
+            <span style="font-size: 0.725rem; color: var(--success); font-weight: 700;">Click to select</span>
           </div>
           
           <div id="suggestedSlotsContainer" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -524,7 +524,7 @@
         <!-- Scheduled Datetime Picker -->
         <div class="form-group" style="margin-bottom: 1.25rem;">
           <label class="form-label" style="font-weight: 700; font-size: 0.85rem;">
-            Selected Demo Date & Time <span style="color: #ef4444;">*</span>
+            Selected Demo Date & Time <span style="color: var(--danger);">*</span>
           </label>
           <input type="datetime-local" id="instantDemoDatetime" name="scheduled_datetime" class="form-control" required style="font-size: 0.9rem; font-weight: 600;">
         </div>
@@ -545,7 +545,7 @@
           <button type="button" onclick="closeInstantDemoModal()" class="btn btn-secondary btn-sm">
             Cancel
           </button>
-          <button type="submit" class="btn btn-primary" style="font-weight: 800; background: #059669; border-color: #059669; padding: 0.6rem 1.4rem;">
+          <button type="submit" class="btn btn-primary" style="font-weight: 800; background: var(--success); border-color: var(--success); padding: 0.6rem 1.4rem;">
             <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Confirm & Send Instant Demo Request
           </button>
         </div>
@@ -618,7 +618,7 @@
       const check = card.querySelector('.tutor-compare-check');
       if (check && check.checked) {
         card.style.borderColor = 'var(--primary)';
-        card.style.boxShadow = '0 0 0 2px rgba(79, 70, 229, 0.2)';
+        card.style.boxShadow = '0 0 0 2px var(--primary-border)';
       } else {
         card.style.borderColor = 'var(--border)';
         card.style.boxShadow = 'none';
@@ -687,7 +687,7 @@
         </div>
         ${selectedTutors.map(t => `
           <div style="border-top: 1px solid var(--border); padding: 0.75rem 0.5rem; text-align: center;">
-            <div style="font-size: 1.25rem; font-weight: 900; color: #059669;">
+            <div style="font-size: 1.25rem; font-weight: 900; color: var(--success);">
               {{ company.currency_symbol }}${t.monthly_fee}<span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">/mo</span>
             </div>
             <div style="font-size: 0.75rem; color: var(--text-muted);">
@@ -740,7 +740,7 @@
             <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">
               ★ ${t.rating} <span style="font-size: 0.775rem; color: var(--text-muted); font-weight: 600;">(${t.reviews_count} reviews)</span>
             </div>
-            <div style="font-size: 0.75rem; color: #059669; font-weight: 700; margin-top: 0.2rem;">
+            <div style="font-size: 0.75rem; color: var(--success); font-weight: 700; margin-top: 0.2rem;">
               ⚡ Response: ~${t.average_response_time_minutes}m
             </div>
           </div>
@@ -764,7 +764,7 @@
         </div>
         ${selectedTutors.map(t => `
           <div style="border-top: 2px solid var(--border); padding: 1rem 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <button type="button" onclick="closeComparisonModal(); openInstantDemoModal(${t.id});" class="btn btn-primary btn-sm" style="font-weight: 800; background: #059669; border-color: #059669; justify-content: center;">
+            <button type="button" onclick="closeComparisonModal(); openInstantDemoModal(${t.id});" class="btn btn-primary btn-sm" style="font-weight: 800; background: var(--success); border-color: var(--success); justify-content: center;">
               ⚡ Instant Demo
             </button>
             <a href="${t.profile_url}" target="_blank" class="btn btn-outline-primary btn-sm" style="justify-content: center; font-size: 0.75rem;">
@@ -816,8 +816,8 @@
             c.style.borderColor = 'var(--border)';
             c.style.color = 'var(--text)';
           });
-          btn.style.background = '#059669';
-          btn.style.borderColor = '#059669';
+          btn.style.background = 'var(--success)';
+          btn.style.borderColor = 'var(--success)';
           btn.style.color = '#ffffff';
 
           // Compute upcoming date for slot.day_num (0=Mon, 6=Sun)

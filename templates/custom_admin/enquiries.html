@@ -36,28 +36,28 @@
   </a>
 
   <a href="{% url 'custom_admin:enquiries' %}?status=NEW" style="text-decoration: none;">
-    <div class="card" style="padding: 1.25rem; border-left: 4px solid #ef4444; background: {% if status_filter == 'NEW' %}rgba(239, 68, 68, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid var(--danger); background: {% if status_filter == 'NEW' %}rgba(239, 68, 68, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #ef4444; letter-spacing: 0.05em;">New / Unread</span>
-        {% if count_new > 0 %}<span style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span>{% endif %}
+        <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--danger); letter-spacing: 0.05em;">New / Unread</span>
+        {% if count_new > 0 %}<span style="width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 6px var(--danger);"></span>{% endif %}
       </div>
-      <div style="font-size: 1.75rem; font-weight: 900; color: #ef4444; margin-top: 0.35rem;">{{ count_new }}</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: var(--danger); margin-top: 0.35rem;">{{ count_new }}</div>
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Requires initial triage</div>
     </div>
   </a>
 
   <a href="{% url 'custom_admin:enquiries' %}?status=IN_PROGRESS" style="text-decoration: none;">
-    <div class="card" style="padding: 1.25rem; border-left: 4px solid #f59e0b; background: {% if status_filter == 'IN_PROGRESS' %}rgba(245, 158, 11, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
-      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #f59e0b; letter-spacing: 0.05em;">In Progress</div>
-      <div style="font-size: 1.75rem; font-weight: 900; color: #f59e0b; margin-top: 0.35rem;">{{ count_in_progress }}</div>
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid var(--accent); background: {% if status_filter == 'IN_PROGRESS' %}var(--accent-soft){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--accent); letter-spacing: 0.05em;">In Progress</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: var(--accent); margin-top: 0.35rem;">{{ count_in_progress }}</div>
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Follow-up underway</div>
     </div>
   </a>
 
   <a href="{% url 'custom_admin:enquiries' %}?status=RESOLVED" style="text-decoration: none;">
-    <div class="card" style="padding: 1.25rem; border-left: 4px solid #10b981; background: {% if status_filter == 'RESOLVED' %}rgba(16, 185, 129, 0.05){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
-      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #10b981; letter-spacing: 0.05em;">Resolved / Closed</div>
-      <div style="font-size: 1.75rem; font-weight: 900; color: #10b981; margin-top: 0.35rem;">{{ count_resolved }}</div>
+    <div class="card" style="padding: 1.25rem; border-left: 4px solid var(--success); background: {% if status_filter == 'RESOLVED' %}var(--success-soft){% else %}var(--surface){% endif %}; transition: transform 0.15s ease; cursor: pointer;">
+      <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--success); letter-spacing: 0.05em;">Resolved / Closed</div>
+      <div style="font-size: 1.75rem; font-weight: 900; color: var(--success); margin-top: 0.35rem;">{{ count_resolved }}</div>
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Successfully addressed</div>
     </div>
   </a>
@@ -151,7 +151,7 @@
                     <i data-lucide="info" style="width: 11px; height: 11px; vertical-align: middle;"></i> About Page
                   </span>
                 {% elif eq.source_page == 'contact' %}
-                  <span class="badge" style="background: rgba(6, 182, 212, 0.12); color: #0891b2; border: 1px solid rgba(6, 182, 212, 0.2); font-size: 0.7rem; font-weight: 700;">
+                  <span class="badge" style="background: rgba(6, 182, 212, 0.12); color: var(--secondary-hover); border: 1px solid rgba(6, 182, 212, 0.2); font-size: 0.7rem; font-weight: 700;">
                     <i data-lucide="mail" style="width: 11px; height: 11px; vertical-align: middle;"></i> Contact Us
                   </span>
                 {% else %}
@@ -193,7 +193,7 @@
               </div>
 
               {% if eq.admin_notes %}
-                <div style="margin-top: 0.5rem; background: var(--surface-hover); border-left: 3px solid #10b981; padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.75rem; color: var(--text);">
+                <div style="margin-top: 0.5rem; background: var(--surface-hover); border-left: 3px solid var(--success); padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.75rem; color: var(--text);">
                   <strong>Admin Note:</strong> {{ eq.admin_notes }}
                 </div>
               {% endif %}

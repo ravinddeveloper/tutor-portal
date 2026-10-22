@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" class="h-full {% if theme.dark_mode_enabled %}dark{% endif %}">
+<html lang="en" class="h-full" data-theme-default="{% if theme.dark_mode_enabled %}dark{% else %}light{% endif %}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,795 +16,52 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide Icons (pinned) — with a no-JS-safe fallback so icons never collapse the layout -->
+  <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"
+          onerror="window.__lucideFailed=true"></script>
 
-  <!-- Theme Initialization: Defaults to clean Educational Light theme unless user opted into Dark -->
+  <!-- Theme Initialisation: runs before first paint so there is no flash of the wrong theme.
+       Resolution order: explicit visitor choice > platform default > OS preference. -->
   <script>
     (function() {
-      const storedTheme = localStorage.getItem('edututor_theme');
-      if (storedTheme === 'dark') {
-        document.documentElement.classList.add('dark');
+      var root = document.documentElement;
+      var stored = null;
+      try { stored = localStorage.getItem('edututor_theme'); } catch (e) {}
+      var platform = root.getAttribute('data-theme-default') || 'light';
+      var prefersDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      var resolved;
+      if (stored === 'dark' || stored === 'light') {
+        resolved = stored;
+      } else if (stored === 'auto') {
+        resolved = prefersDark ? 'dark' : 'light';
       } else {
-        document.documentElement.classList.remove('dark');
+        resolved = platform === 'dark' ? 'dark' : 'light';
       }
+      root.classList.toggle('dark', resolved === 'dark');
+      root.setAttribute('data-theme-resolved', resolved);
     })();
   </script>
 
-  <!-- Dynamic Theme CSS Variables from Database ThemeSettings -->
-  <style>
-    :root {
-      --primary: {{ theme.primary_color|default:"#1e40af" }};
-      --primary-hover: #1e3a8a;
-      --primary-light: rgba(30, 64, 175, 0.08);
-      --secondary: {{ theme.secondary_color|default:"#ea580c" }};
-      --secondary-hover: #c2410c;
-      --secondary-light: rgba(234, 88, 12, 0.08);
-      --accent: {{ theme.accent_color|default:"#f59e0b" }};
-      --background: {{ theme.background_color|default:"#f8fafc" }};
-      --surface: {{ theme.surface_color|default:"#ffffff" }};
-      --surface-hover: #f1f5f9;
-      --text: {{ theme.text_color|default:"#0f172a" }};
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --border-radius: {{ theme.border_radius|default:"0.75rem" }};
-      --sidebar-bg: {% if theme.dark_mode_enabled %}{{ theme.sidebar_color|default:"#090e21" }}{% else %}var(--surface){% endif %};
-      --header-bg: rgba(255, 255, 255, 0.96);
-      --table-header-bg: #f8fafc;
-      --table-header-color: #475569;
-      --table-row-hover: #f1f5f9;
-      --success: #059669;
-      --warning: #d97706;
-      --danger: #ef4444;
-      --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-      --card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-    }
+  <!-- Runtime theme palette, derived from the Theme Customizer (apps.core.theme).
+       Injected inline so admin-configured brand colours apply without a rebuild. -->
+  <style>{{ theme_css }}</style>
 
-    /* Dark Mode Overrides (Refined Educational Slate) */
-    html.dark {
-      --background: #0b1329;
-      --surface: #131c38;
-      --surface-hover: #1e294b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #223157;
-      --sidebar-bg: #090e21;
-      --header-bg: rgba(19, 28, 56, 0.96);
-      --table-header-bg: #1e294b;
-      --table-header-color: #94a3b8;
-      --table-row-hover: rgba(30, 41, 75, 0.6);
-      --primary-light: rgba(59, 130, 246, 0.16);
-      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
-      --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Universal Clean Scrollbars */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.35);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(100, 116, 139, 0.6);
-    }
-    html.dark ::-webkit-scrollbar-thumb {
-      background: rgba(148, 163, 184, 0.25);
-    }
-    html.dark ::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.45);
-    }
-
-    body {
-      font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* Layout Utilities */
-    .container {
-      width: 100%;
-      max-width: 1280px;
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: 1.25rem;
-      padding-right: 1.25rem;
-    }
-
-    .flex { display: flex; }
-    .flex-col { flex-direction: column; }
-    .items-center { align-items: center; }
-    .justify-between { justify-content: space-between; }
-    .justify-center { justify-content: center; }
-    .gap-1 { gap: 0.25rem; }
-    .gap-2 { gap: 0.5rem; }
-    .gap-3 { gap: 0.75rem; }
-    .gap-4 { gap: 1rem; }
-    .gap-6 { gap: 1.5rem; }
-    .gap-8 { gap: 2rem; }
-    .flex-wrap { flex-wrap: wrap; }
-    .flex-1 { flex: 1; }
-
-    .grid { display: grid; }
-    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-    .col-span-1 { grid-column: span 1 / span 1; }
-    .col-span-2 { grid-column: span 2 / span 2; }
-    .col-span-3 { grid-column: span 3 / span 3; }
-    .col-span-4 { grid-column: span 4 / span 4; }
-    .col-span-full { grid-column: 1 / -1; }
-
-    @media (min-width: 640px) {
-      .sm\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .sm\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .sm\:col-span-1 { grid-column: span 1 / span 1; }
-      .sm\:col-span-2 { grid-column: span 2 / span 2; }
-      .container { padding-left: 1.5rem; padding-right: 1.5rem; }
-    }
-    @media (min-width: 768px) {
-      .md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .md\:col-span-1 { grid-column: span 1 / span 1; }
-      .md\:col-span-2 { grid-column: span 2 / span 2; }
-      .md\:col-span-3 { grid-column: span 3 / span 3; }
-      .md\:flex-row { flex-direction: row; }
-    }
-    @media (min-width: 992px) {
-      .lg\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-      .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .lg\:col-span-1 { grid-column: span 1 / span 1; }
-      .lg\:col-span-2 { grid-column: span 2 / span 2; }
-      .lg\:col-span-3 { grid-column: span 3 / span 3; }
-      .lg\:col-span-4 { grid-column: span 4 / span 4; }
-    }
-
-    /* Cards & Components */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--border-radius);
-      box-shadow: var(--card-shadow);
-      transition: all 0.2s ease-in-out;
-    }
-    .card:hover {
-      box-shadow: var(--card-shadow-hover);
-    }
-    .card-body {
-      padding: 1.5rem;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1.25rem;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: 1px solid transparent;
-      line-height: 1.25;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .btn-sm {
-      padding: 0.45rem 0.85rem;
-      font-size: 0.8125rem;
-    }
-    .btn-lg {
-      padding: 0.875rem 1.75rem;
-      font-size: 1.0625rem;
-    }
-    .btn-primary {
-      background-color: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
-    }
-    .btn-primary:hover {
-      filter: brightness(0.92);
-      transform: translateY(-1px);
-    }
-    .btn-secondary {
-      background-color: var(--surface);
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .btn-secondary:hover {
-      background-color: var(--surface-hover);
-      border-color: #cbd5e1;
-    }
-    .btn-accent {
-      background-color: var(--accent);
-      color: #ffffff;
-    }
-    .btn-accent:hover {
-      filter: brightness(0.95);
-    }
-    .btn-outline-primary {
-      background: transparent;
-      color: var(--primary);
-      border-color: var(--primary);
-    }
-    .btn-outline-primary:hover {
-      background: var(--primary-light);
-    }
-    .btn-danger {
-      background-color: var(--danger);
-      color: #ffffff;
-    }
-    .btn-success {
-      background-color: var(--success);
-      color: #ffffff;
-    }
-
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.25rem 0.65rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .badge-primary { background: var(--primary-light); color: var(--primary); }
-    .badge-success { background: rgba(16, 185, 129, 0.12); color: #059669; }
-    .badge-warning { background: rgba(245, 158, 11, 0.12); color: #d97706; }
-    .badge-danger { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-    .badge-secondary { background: var(--surface-hover); color: var(--text-muted); }
-
-    /* Form Controls */
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-    .form-label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 0.375rem;
-    }
-    .form-control, .form-select {
-      width: 100%;
-      padding: 0.625rem 0.875rem;
-      font-size: 0.9375rem;
-      font-family: inherit;
-      color: var(--text);
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--border-radius);
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-light);
-    }
-    textarea.form-control {
-      resize: vertical;
-      min-height: 90px;
-    }
-
-    /* Alerts */
-    .alert {
-      padding: 0.875rem 1.25rem;
-      border-radius: var(--border-radius);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.9rem;
-    }
-    .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-    .alert-error, .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-    .alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
-    .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
-    html.dark .alert-success { background: #064e3b; border-color: #047857; color: #ecfdf5; }
-    html.dark .alert-error { background: #7f1d1d; border-color: #991b1b; color: #fef2f2; }
-    html.dark .alert-warning { background: #78350f; border-color: #92400e; color: #fffbeb; }
-    html.dark .alert-info { background: #1e3a8a; border-color: #1e40af; color: #eff6ff; }
-
-    /* ==========================================================================
-       THEME-AWARE TABLE SYSTEM (LIGHT & DARK THEMES)
-       ========================================================================== */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-      color: var(--text);
-    }
-    thead {
-      background-color: var(--table-header-bg);
-      border-bottom: 1px solid var(--border);
-    }
-    thead tr,
-    tr.table-header,
-    tr[style*="background: #f8fafc"],
-    tr[style*="background:#f8fafc"],
-    tr[style*="background: var(--table-header-bg)"] {
-      background-color: var(--table-header-bg) !important;
-      border-bottom: 1px solid var(--border) !important;
-      text-align: left;
-    }
-    th {
-      padding: 0.85rem 1rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--table-header-color) !important;
-      text-align: left;
-      white-space: nowrap;
-      background-color: transparent !important;
-    }
-    td {
-      padding: 0.85rem 1rem;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-      vertical-align: middle;
-    }
-    tbody tr {
-      transition: background-color 0.15s ease;
-    }
-    tbody tr:hover {
-      background-color: var(--table-row-hover);
-    }
-
-    /* Dark theme specific table overrides */
-    html.dark thead,
-    html.dark thead tr,
-    html.dark tr.table-header,
-    html.dark tr[style*="background: #f8fafc"],
-    html.dark tr[style*="background:#f8fafc"],
-    html.dark tr[style*="background: #f1f5f9"],
-    html.dark tr[style*="background:#f1f5f9"],
-    html.dark tr[style*="background: var(--table-header-bg)"] {
-      background-color: #1e293b !important;
-      border-bottom: 1px solid #334155 !important;
-    }
-    html.dark th,
-    html.dark thead th {
-      color: #94a3b8 !important;
-      background-color: #1e293b !important;
-    }
-    html.dark td {
-      border-bottom-color: #1f2937 !important;
-      color: #f1f5f9;
-    }
-    html.dark tbody tr:hover {
-      background-color: rgba(30, 41, 59, 0.7) !important;
-    }
-
-    /* Neutralize inline light backgrounds in dark mode */
-    html.dark [style*="background: #f8fafc"],
-    html.dark [style*="background:#f8fafc"] {
-      background-color: var(--surface-hover) !important;
-    }
-    html.dark [style*="border: 1px solid var(--border)"],
-    html.dark [style*="border-bottom: 1px solid var(--border)"],
-    html.dark [style*="border-top: 1px solid var(--border)"] {
-      border-color: #1f2937 !important;
-    }
-
-    /* ==========================================================================
-       MODERN HEADER & NAVBAR
-       ========================================================================== */
-    .site-header {
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: background 0.2s ease, border-color 0.2s ease;
-      width: 100%;
-    }
-
-    .admin-header-container {
-      max-width: 100% !important;
-      padding-left: 1.25rem !important;
-      padding-right: 1.5rem !important;
-    }
-
-    .header-inner {
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: -0.025em;
-      flex-shrink: 0;
-    }
-    .brand-icon-box {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
-      transition: transform 0.2s ease;
-    }
-    .brand-logo:hover .brand-icon-box {
-      transform: scale(1.04);
-    }
-
-    /* Desktop Navigation Links */
-    .desktop-nav {
-      display: none;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    @media (min-width: 992px) {
-      .desktop-nav {
-        display: flex;
-      }
-    }
-
-    .nav-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text);
-      opacity: 0.85;
-      padding: 0.5rem 0.85rem;
-      border-radius: var(--border-radius);
-      transition: all 0.15s ease;
-    }
-    .nav-pill:hover {
-      opacity: 1;
-      color: var(--primary);
-      background: var(--primary-light);
-    }
-    .nav-pill.active {
-      opacity: 1;
-      color: var(--primary);
-      background: var(--primary-light);
-      font-weight: 700;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      position: relative;
-      transition: all 0.15s ease;
-    }
-    .icon-btn:hover {
-      background: var(--surface-hover);
-      border-color: #cbd5e1;
-      color: var(--primary);
-      transform: translateY(-1px);
-    }
-    .icon-badge {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      background: var(--danger);
-      color: white;
-      border-radius: 9999px;
-      font-size: 0.65rem;
-      padding: 0.1rem 0.35rem;
-      font-weight: 800;
-      min-width: 17px;
-      height: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 2px var(--surface);
-    }
-
-    /* User Profile Dropdown */
-    .user-menu-wrapper {
-      position: relative;
-    }
-    .user-profile-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.3rem 0.65rem;
-      border-radius: 9999px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      color: var(--text);
-      font-size: 0.875rem;
-      font-weight: 700;
-      transition: all 0.15s ease;
-    }
-    .user-profile-btn:hover {
-      border-color: var(--primary);
-      background: var(--surface-hover);
-    }
-    .user-avatar-circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.8rem;
-    }
-
-    .user-dropdown-card {
-      position: absolute;
-      top: calc(100% + 10px);
-      right: 0;
-      width: 270px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--border-radius);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-      display: none;
-      flex-direction: column;
-      z-index: 200;
-      overflow: hidden;
-      animation: fadeInDown 0.18s ease-out;
-    }
-    .user-dropdown-card.show {
-      display: flex;
-    }
-
-    .dropdown-header {
-      padding: 1rem 1.15rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface-hover);
-    }
-    .dropdown-body {
-      padding: 0.4rem 0;
-    }
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.6rem 1.15rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
-      transition: all 0.15s ease;
-    }
-    .dropdown-item:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    .dropdown-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0.35rem 0;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Mobile Hamburger Trigger */
-    .mobile-hamburger-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: var(--border-radius);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    @media (min-width: 992px) {
-      .mobile-hamburger-btn {
-        display: none !important;
-      }
-    }
-    .mobile-hamburger-btn:hover {
-      background: var(--surface-hover);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Mobile Off-Canvas Drawer */
-    .mobile-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-    .mobile-backdrop.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .mobile-drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 320px;
-      max-width: 86vw;
-      background: var(--surface);
-      border-left: 1px solid var(--border);
-      z-index: 1000;
-      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
-      transform: translateX(100%);
-      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    .mobile-drawer.open {
-      transform: translateX(0);
-    }
-
-    .drawer-header {
-      padding: 1.15rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-    .drawer-body {
-      padding: 1.15rem;
-      flex: 1;
-      overflow-y: auto;
-    }
-    .drawer-section-title {
-      font-size: 0.72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      margin: 1.15rem 0 0.45rem;
-    }
-    .drawer-nav-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.7rem 0.85rem;
-      border-radius: var(--border-radius);
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-      transition: all 0.15s ease;
-      margin-bottom: 0.2rem;
-    }
-    .drawer-nav-item:hover, .drawer-nav-item.active {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-    .drawer-footer {
-      padding: 1.15rem;
-      border-top: 1px solid var(--border);
-      background: var(--surface-hover);
-    }
-
-    /* Dashboard Layout */
-    .dashboard-layout {
-      display: flex;
-      min-height: calc(100vh - 70px);
-    }
-    .dashboard-content {
-      flex: 1;
-      padding: 2rem;
-      background: var(--background);
-      overflow-y: auto;
-    }
-    @media (max-width: 900px) {
-      .dashboard-content {
-        padding: 1.25rem 1rem;
-      }
-    }
-
-    /* Footer */
-    .site-footer {
-      background: #0f172a;
-      color: #cbd5e1;
-      padding: 4rem 0 2rem;
-      margin-top: auto;
-      border-top: 1px solid #1e293b;
-    }
-    .footer-title {
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .footer-link {
-      color: #94a3b8;
-      font-size: 0.875rem;
-      display: block;
-      margin-bottom: 0.6rem;
-      transition: color 0.15s;
-    }
-    .footer-link:hover {
-      color: #ffffff;
-    }
-  </style>
-  <link rel="stylesheet" href="{% static 'css/base_utils.css' %}">
-  <link rel="stylesheet" href="{% static 'css/marketplace.css' %}">
+  <!-- Design system: tokens, components, accessibility primitives -->
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v={{ static_version }}">
+  <link rel="stylesheet" href="{% static 'css/base_utils.css' %}?v={{ static_version }}">
+  <link rel="stylesheet" href="{% static 'css/marketplace.css' %}?v={{ static_version }}">
   {% block extra_css %}{% endblock %}
   {% block extra_head %}{% endblock %}
 </head>
 <body>
 
+  <!-- Skip to content: WCAG 2.4.1 bypass block -->
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <!-- Top Announcement Bar: ONLY visible on public marketing pages -->
   {% if request.path == '/' or request.path == '/how-it-works/' or request.path == '/pricing/' or request.path == '/about/' or request.path == '/contact/' %}
   <div class="top-announcement-bar">
-    <span>⚡ Need a Verified Home or Online Tutor? Post your requirements in 60 seconds — No platform fees for parents!</span>
+    <span>Need a verified home or online tutor? Post your requirements in 60 seconds. There are no platform fees for parents.</span>
     <a href="{% url 'leads:post_requirement' %}" class="top-announcement-link">Post Requirement &rarr;</a>
   </div>
   {% endif %}
@@ -901,7 +158,7 @@
 
             <!-- User Menu Avatar Dropdown Trigger (Desktop) -->
             <div class="user-menu-wrapper">
-              <button type="button" class="user-profile-btn" id="user-menu-btn" onclick="toggleUserMenu(event)" aria-expanded="false" aria-haspopup="true">
+              <button type="button" class="user-profile-btn" id="user-menu-btn" aria-expanded="false" aria-haspopup="true">
                 <div class="user-avatar-circle">
                   {{ user.first_name|slice:":1"|default:user.username|slice:":1"|upper }}
                 </div>
@@ -988,7 +245,7 @@
           {% endif %}
 
           <!-- Mobile Hamburger Toggle Button (< 992px) -->
-          <button type="button" class="mobile-hamburger-btn" id="mobile-nav-toggle" onclick="toggleMobileDrawer()" aria-label="Toggle navigation menu" aria-expanded="false">
+          <button type="button" class="mobile-hamburger-btn" id="mobile-nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-drawer">
             <i data-lucide="menu" id="hamburger-icon" style="width: 22px; height: 22px;"></i>
           </button>
 
@@ -997,33 +254,10 @@
     </div>
   </header>
 
-  <!-- Responsive display rules for desktop menu -->
-  <style>
-    .desktop-guest-actions {
-      display: none !important;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .user-menu-wrapper {
-      display: none !important;
-    }
-    #desktop-become-tutor-btn {
-      display: none !important;
-    }
-    @media (min-width: 992px) {
-      .user-menu-wrapper { display: block !important; }
-      .desktop-guest-actions { display: inline-flex !important; }
-      .mobile-hamburger-btn { display: none !important; }
-    }
-    @media (min-width: 1100px) {
-      #desktop-become-tutor-btn { display: inline-flex !important; }
-    }
-  </style>
-
   <!-- ========================================================================
        MODERN MOBILE NAVIGATION DRAWER & BACKDROP
        ======================================================================== -->
-  <div class="mobile-backdrop" id="mobile-drawer-backdrop" onclick="closeMobileDrawer()"></div>
+  <div class="mobile-backdrop" id="mobile-drawer-backdrop" aria-hidden="true"></div>
 
   <aside class="mobile-drawer" id="mobile-drawer" aria-label="Mobile Navigation Menu" aria-hidden="true">
     
@@ -1162,14 +396,24 @@
         {% endif %}
       {% endif %}
 
-      <!-- Theme Switcher in Drawer -->
+      <!-- Theme Mode: explicit Light / Auto / Dark selection -->
       <div class="drawer-section-title">Preferences</div>
-      <div class="drawer-nav-item" style="cursor: pointer;" onclick="toggleThemeMode()">
-        <span class="flex items-center gap-2">
-          <i data-lucide="sun-moon" style="width: 17px; height: 17px; color: var(--accent);"></i>
-          <span>Theme Mode</span>
+      <div class="theme-switcher">
+        <span class="theme-switcher-label">
+          <i data-lucide="sun-moon" style="width: 16px; height: 16px;" aria-hidden="true"></i>
+          Colour theme
         </span>
-        <span class="badge badge-secondary theme-mode-label">Auto</span>
+        <div class="theme-switcher-options" role="radiogroup" aria-label="Colour theme">
+          <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-option="light">
+            <i data-lucide="sun" style="width: 13px; height: 13px;" aria-hidden="true"></i> Light
+          </button>
+          <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-option="auto">
+            <i data-lucide="monitor" style="width: 13px; height: 13px;" aria-hidden="true"></i> Auto
+          </button>
+          <button type="button" class="theme-option" role="radio" aria-checked="false" data-theme-option="dark">
+            <i data-lucide="moon" style="width: 13px; height: 13px;" aria-hidden="true"></i> Dark
+          </button>
+        </div>
       </div>
 
     </div>
@@ -1189,23 +433,27 @@
 
   </aside>
 
-  <!-- Global Flash Messages -->
+  <!-- Global Flash Messages: announced to assistive tech via a live region -->
   {% if messages %}
   <div class="container" style="margin-top: 1rem;">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:'info' }}">
-        <div class="flex items-center gap-2">
-          <i data-lucide="info" style="width: 18px; height: 18px;"></i>
-          <span>{{ message }}</span>
+    <div role="status" aria-live="polite" aria-atomic="true">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">
+          <div>
+            <i data-lucide="{% if message.tags == 'success' %}check-circle-2{% elif message.tags == 'error' %}alert-circle{% elif message.tags == 'warning' %}alert-triangle{% else %}info{% endif %}" style="width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px;" aria-hidden="true"></i>
+            <span>{{ message }}</span>
+          </div>
+          <button type="button" class="alert-close" onclick="this.closest('.alert').remove()" aria-label="Dismiss message">
+            <i data-lucide="x" style="width: 15px; height: 15px;" aria-hidden="true"></i>
+          </button>
         </div>
-        <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; color: inherit; font-size: 1.1rem;">&times;</button>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
   {% endif %}
 
   <!-- Main Content Block -->
-  <main style="flex: 1;">
+  <main id="main-content" style="flex: 1;">
     {% block content %}{% endblock %}
   </main>
 
@@ -1275,7 +523,7 @@
   <footer style="background: var(--surface); border-top: 1px solid var(--border); padding: 0.75rem 1.75rem; font-size: 0.775rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
     <div>&copy; {% now "Y" %} {{ company.company_name }} Executive Administration Console • Operating in {{ company.currency_code }} ({{ company.currency_symbol }})</div>
     <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></span>
       <span>System Status: <strong style="color: var(--text);">Operational</strong></span>
     </div>
   </footer>
@@ -1283,102 +531,307 @@
 
   <!-- Unified Navigation & Interactive Controller -->
   <script>
-    // 1. Mobile Drawer Navigation Controller
-    function toggleMobileDrawer() {
-      const drawer = document.getElementById('mobile-drawer');
-      const backdrop = document.getElementById('mobile-drawer-backdrop');
-      const toggleBtn = document.getElementById('mobile-nav-toggle');
-      const isOpen = drawer.classList.contains('open');
+  (function() {
+    'use strict';
 
-      if (isOpen) {
-        closeMobileDrawer();
-      } else {
-        drawer.classList.add('open');
-        backdrop.classList.add('open');
+    // ── Shared helpers ────────────────────────────────────────────────
+    var FOCUSABLE = [
+      'a[href]', 'button:not([disabled])', 'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])', 'textarea:not([disabled])', '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    function getFocusable(root) {
+      if (!root) return [];
+      return Array.prototype.filter.call(
+        root.querySelectorAll(FOCUSABLE),
+        function(el) {
+          return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+        }
+      );
+    }
+
+    function lockBodyScroll(locked) {
+      if (locked) {
+        var scrollbar = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
-        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
-        drawer.setAttribute('aria-hidden', 'false');
-      }
-    }
-
-    function closeMobileDrawer() {
-      const drawer = document.getElementById('mobile-drawer');
-      const backdrop = document.getElementById('mobile-drawer-backdrop');
-      const toggleBtn = document.getElementById('mobile-nav-toggle');
-
-      if (drawer && backdrop) {
-        drawer.classList.remove('open');
-        backdrop.classList.remove('open');
+        if (scrollbar > 0) document.body.style.paddingRight = scrollbar + 'px';
+      } else {
         document.body.style.overflow = '';
-        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-        drawer.setAttribute('aria-hidden', 'true');
+        document.body.style.paddingRight = '';
       }
     }
 
-    // 2. User Avatar Dropdown Controller
+    // ── 1. Mobile Drawer Navigation Controller ─────────────────────────
+    var drawer = document.getElementById('mobile-drawer');
+    var backdrop = document.getElementById('mobile-drawer-backdrop');
+    var drawerToggle = document.getElementById('mobile-nav-toggle');
+    var lastFocused = null;
+
+    function isDrawerOpen() {
+      return !!(drawer && drawer.classList.contains('open'));
+    }
+
+    function openDrawer() {
+      if (!drawer || !backdrop) return;
+      lastFocused = document.activeElement;
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      if (drawerToggle) drawerToggle.setAttribute('aria-expanded', 'true');
+      lockBodyScroll(true);
+
+      var focusables = getFocusable(drawer);
+      if (focusables.length) {
+        focusables[0].focus();
+      } else if (drawer) {
+        drawer.setAttribute('tabindex', '-1');
+        drawer.focus();
+      }
+    }
+
+    function closeDrawer() {
+      if (!drawer || !backdrop) return;
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      if (drawerToggle) drawerToggle.setAttribute('aria-expanded', 'false');
+      lockBodyScroll(false);
+      if (lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+      }
+      lastFocused = null;
+    }
+
+    function toggleMobileDrawer() {
+      if (isDrawerOpen()) { closeDrawer(); } else { openDrawer(); }
+    }
+
+    // Keep Tab focus inside the open drawer (focus trap).
+    document.addEventListener('keydown', function(e) {
+      if (!isDrawerOpen()) return;
+      if (e.key === 'Escape') {
+        closeDrawer();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      var focusables = getFocusable(drawer);
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // ── 2. User Avatar Dropdown Controller ─────────────────────────────
+    var userBtn = document.getElementById('user-menu-btn');
+    var userDropdown = document.getElementById('user-menu-dropdown');
+
+    function isUserMenuOpen() {
+      return !!(userDropdown && userDropdown.classList.contains('show'));
+    }
+
+    function setUserMenu(open) {
+      if (!userDropdown) return;
+      userDropdown.classList.toggle('show', open);
+      if (userBtn) userBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
     function toggleUserMenu(e) {
       if (e) e.stopPropagation();
-      const dropdown = document.getElementById('user-menu-dropdown');
-      const btn = document.getElementById('user-menu-btn');
-      if (dropdown) {
-        const isShown = dropdown.classList.contains('show');
-        dropdown.classList.toggle('show');
-        if (btn) btn.setAttribute('aria-expanded', !isShown);
+      setUserMenu(!isUserMenuOpen());
+    }
+
+    // Keyboard navigation inside the dropdown menu.
+    document.addEventListener('keydown', function(e) {
+      if (!isUserMenuOpen()) return;
+
+      if (e.key === 'Escape') {
+        setUserMenu(false);
+        if (userBtn) userBtn.focus();
+        return;
+      }
+
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+
+      var items = getFocusable(userDropdown);
+      if (!items.length) return;
+      e.preventDefault();
+
+      var index = items.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') {
+        items[(index + 1 + items.length) % items.length].focus();
+      } else {
+        items[(index - 1 + items.length) % items.length].focus();
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!isUserMenuOpen()) return;
+      if (userDropdown && userBtn &&
+          !userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+        setUserMenu(false);
+      }
+    });
+
+    // ── 3. Theme Controller: Light / Auto / Dark ───────────────────────
+    var THEME_KEY = 'edututor_theme';
+    var themePreference = 'auto';
+
+    function readStoredTheme() {
+      try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; }
+    }
+
+    function storeTheme(value) {
+      try { localStorage.setItem(THEME_KEY, value); } catch (e) {}
+    }
+
+    function prefersDark() {
+      return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+
+    function platformDefault() {
+      return document.documentElement.getAttribute('data-theme-default') || 'light';
+    }
+
+    function resolveTheme(preference) {
+      if (preference === 'dark' || preference === 'light') return preference;
+      if (preference === 'auto') return prefersDark() ? 'dark' : 'light';
+      return platformDefault() === 'dark' ? 'dark' : 'light';
+    }
+
+    function applyTheme(preference) {
+      themePreference = preference;
+      var resolved = resolveTheme(preference);
+      document.documentElement.classList.toggle('dark', resolved === 'dark');
+      document.documentElement.setAttribute('data-theme-resolved', resolved);
+      storeTheme(preference);
+      updateThemeIcons();
+      syncThemeControls();
+    }
+
+    function updateThemeIcons() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var darkIcons = document.querySelectorAll('.dark-icon');
+      var lightIcons = document.querySelectorAll('.light-icon');
+      var labels = document.querySelectorAll('.theme-mode-label');
+
+      darkIcons.forEach(function(icon) { icon.style.display = isDark ? 'inline-block' : 'none'; });
+      lightIcons.forEach(function(icon) { icon.style.display = isDark ? 'none' : 'inline-block'; });
+      labels.forEach(function(lbl) {
+        lbl.textContent = themePreference === 'auto'
+          ? (isDark ? 'Auto (Dark)' : 'Auto (Light)')
+          : (isDark ? 'Dark Theme' : 'Light Theme');
+      });
+    }
+
+    // Keep the segmented control and header button in sync with the active theme.
+    function syncThemeControls() {
+      document.querySelectorAll('[data-theme-option]').forEach(function(option) {
+        var active = option.getAttribute('data-theme-option') === themePreference;
+        option.setAttribute('aria-checked', active ? 'true' : 'false');
+        option.classList.toggle('is-active', active);
+        option.setAttribute('tabindex', active ? '0' : '-1');
+      });
+
+      var toggle = document.querySelector('.theme-toggle-btn');
+      if (toggle) {
+        var isDark = document.documentElement.classList.contains('dark');
+        toggle.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+        toggle.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
       }
     }
 
-    // Close user menu on clicking outside
-    document.addEventListener('click', function(e) {
-      const dropdown = document.getElementById('user-menu-dropdown');
-      const btn = document.getElementById('user-menu-btn');
-      if (dropdown && dropdown.classList.contains('show')) {
-        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
-          dropdown.classList.remove('show');
-          if (btn) btn.setAttribute('aria-expanded', 'false');
+    // Header button: fast two-way switch between light and dark.
+    function toggleThemeMode() {
+      var isDark = document.documentElement.classList.contains('dark');
+      applyTheme(isDark ? 'light' : 'dark');
+    }
+
+    // Drawer control: explicit three-way choice.
+    function setThemeMode(preference) {
+      applyTheme(preference);
+    }
+
+    // ── 4. Icon rendering (defensive: CDN may be blocked) ───────────────
+    function renderIcons() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        try { lucide.createIcons(); } catch (e) {}
+      }
+    }
+
+    // ── 5. Boot ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      var stored = readStoredTheme();
+      themePreference = (stored === 'dark' || stored === 'light' || stored === 'auto')
+        ? stored
+        : 'auto';
+
+      // Re-apply in case the OS preference changed since first paint.
+      var resolved = resolveTheme(themePreference);
+      document.documentElement.classList.toggle('dark', resolved === 'dark');
+      document.documentElement.setAttribute('data-theme-resolved', resolved);
+
+      updateThemeIcons();
+      syncThemeControls();
+      renderIcons();
+
+      if (drawerToggle) drawerToggle.addEventListener('click', toggleMobileDrawer);
+      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+      if (userBtn) userBtn.addEventListener('click', toggleUserMenu);
+
+      // Three-way theme selector in the mobile drawer.
+      document.querySelectorAll('[data-theme-option]').forEach(function(option) {
+        option.addEventListener('click', function() {
+          setThemeMode(option.getAttribute('data-theme-option'));
+        });
+      });
+
+      // Follow the OS when the visitor chose "Auto".
+      if (window.matchMedia) {
+        var colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        var onSchemeChange = function() {
+          if (themePreference === 'auto') {
+            var next = resolveTheme('auto');
+            document.documentElement.classList.toggle('dark', next === 'dark');
+            document.documentElement.setAttribute('data-theme-resolved', next);
+            updateThemeIcons();
+          }
+        };
+        if (colorSchemeQuery.addEventListener) {
+          colorSchemeQuery.addEventListener('change', onSchemeChange);
+        } else if (colorSchemeQuery.addListener) {
+          colorSchemeQuery.addListener(onSchemeChange);
         }
       }
+
+      // Close the drawer when the viewport grows to desktop.
+      var resizeTimer = null;
+      window.addEventListener('resize', function() {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+          if (window.innerWidth >= 992 && isDrawerOpen()) closeDrawer();
+        }, 150);
+      });
     });
 
-    // Close on Escape Key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeMobileDrawer();
-        const dropdown = document.getElementById('user-menu-dropdown');
-        if (dropdown) dropdown.classList.remove('show');
-      }
-    });
-
-    // 3. Theme Toggle Controller
-    function updateThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const darkIcons = document.querySelectorAll('.dark-icon');
-      const lightIcons = document.querySelectorAll('.light-icon');
-      const labels = document.querySelectorAll('.theme-mode-label');
-
-      darkIcons.forEach(icon => icon.style.display = isDark ? 'inline-block' : 'none');
-      lightIcons.forEach(icon => icon.style.display = isDark ? 'none' : 'inline-block');
-      labels.forEach(lbl => lbl.textContent = isDark ? 'Dark Theme' : 'Light Theme');
-    }
-
-    function toggleThemeMode() {
-      const html = document.documentElement;
-      const willBeDark = !html.classList.contains('dark');
-      if (willBeDark) {
-        html.classList.add('dark');
-        localStorage.setItem('edututor_theme', 'dark');
-      } else {
-        html.classList.remove('dark');
-        localStorage.setItem('edututor_theme', 'light');
-      }
-      updateThemeIcons();
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      updateThemeIcons();
-      lucide.createIcons();
-    });
+    // Expose the existing global API used by templates and inline handlers.
+    window.toggleMobileDrawer = toggleMobileDrawer;
+    window.closeMobileDrawer = closeDrawer;
+    window.toggleUserMenu = toggleUserMenu;
+    window.toggleThemeMode = toggleThemeMode;
+    window.setThemeMode = setThemeMode;
+    window.updateThemeIcons = updateThemeIcons;
+    window.renderIcons = renderIcons;
+  })();
   </script>
-  <script src="{% static 'js/marketplace.js' %}"></script>
+  <script src="{% static 'js/marketplace.js' %}?v={{ static_version }}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

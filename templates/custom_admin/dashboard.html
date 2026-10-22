@@ -62,11 +62,11 @@
   /* ── Actionable Alert Center Widget ── */
   .alert-center-card {
     background: var(--surface);
-    border: 1.5px solid rgba(234, 88, 12, 0.35);
+    border: 1.5px solid var(--accent);
     border-radius: var(--border-radius);
     padding: 1.5rem 1.75rem;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 24px -6px rgba(234, 88, 12, 0.08);
+    box-shadow: 0 8px 24px -6px var(--accent-soft);
     position: relative;
     overflow: hidden;
   }
@@ -77,21 +77,21 @@
     left: 0;
     width: 6px;
     height: 100%;
-    background: linear-gradient(180deg, #ea580c 0%, #ef4444 100%);
+    background: linear-gradient(180deg, var(--accent-hover) 0%, var(--danger) 100%);
   }
   .alert-beacon-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #ea580c;
-    box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7);
+    background: var(--accent-hover);
+    box-shadow: 0 0 0 0 var(--accent);
     animation: alertPulse 1.8s infinite;
     display: inline-block;
   }
   @keyframes alertPulse {
-    0% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.7); }
-    70% { box-shadow: 0 0 0 8px rgba(234, 88, 12, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0); }
+    0% { box-shadow: 0 0 0 0 var(--accent); }
+    70% { box-shadow: 0 0 0 8px var(--accent-soft); }
+    100% { box-shadow: 0 0 0 0 var(--accent-soft); }
   }
 
   @keyframes iconPulseUrgent {
@@ -124,16 +124,16 @@
     transform: translateX(4px);
   }
   .alert-item-row.alert-danger-border {
-    border: 2px solid #ef4444 !important;
+    border: 2px solid var(--danger) !important;
     background: rgba(239, 68, 68, 0.04) !important;
   }
   .alert-item-row.alert-warning-border {
-    border: 2px solid #f59e0b !important;
-    background: rgba(245, 158, 11, 0.04) !important;
+    border: 2px solid var(--accent) !important;
+    background: var(--accent-soft) !important;
   }
   .alert-item-row.alert-info-border {
     border: 2px solid var(--primary) !important;
-    background: rgba(79, 70, 229, 0.04) !important;
+    background: var(--primary-softer) !important;
   }
 
   .alert-badge-count {
@@ -148,17 +148,17 @@
     flex-shrink: 0;
   }
   .alert-badge-count.warning {
-    background: rgba(245, 158, 11, 0.18);
-    color: #d97706;
-    border: 1.5px solid #f59e0b;
+    background: var(--accent-border);
+    color: var(--accent-hover);
+    border: 1.5px solid var(--accent);
   }
   .alert-badge-count.danger {
     background: rgba(239, 68, 68, 0.18);
-    color: #ef4444;
-    border: 1.5px solid #ef4444;
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
   }
   .alert-badge-count.info {
-    background: rgba(79, 70, 229, 0.18);
+    background: var(--primary-border);
     color: var(--primary);
     border: 1.5px solid var(--primary);
   }
@@ -175,12 +175,12 @@
     margin-top: 0.45rem;
   }
   .kpi-trend-pill.positive {
-    background: rgba(16, 185, 129, 0.12);
-    color: #059669;
+    background: var(--success-soft);
+    color: var(--success);
   }
   html.dark .kpi-trend-pill.positive {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
+    background: var(--success-soft);
+    color: var(--success);
   }
 
   /* ── Recent Leads Table Row Hover ── */
@@ -206,33 +206,33 @@
     background: #dcfce7;
     color: #15803d;
     border: 1.5px solid #86efac;
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 2px 6px var(--success-soft);
   }
   html.dark .match-score-pill.score-high {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    border-color: rgba(16, 185, 129, 0.4);
+    background: var(--success-soft);
+    color: var(--success);
+    border-color: var(--success);
   }
   .match-score-pill.score-medium {
     background: #fef3c7;
     color: #b45309;
     border: 1.5px solid #fcd34d;
-    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.12);
+    box-shadow: 0 2px 6px var(--accent-border);
   }
   html.dark .match-score-pill.score-medium {
-    background: rgba(245, 158, 11, 0.2);
+    background: var(--accent-border);
     color: #fbbf24;
-    border-color: rgba(245, 158, 11, 0.4);
+    border-color: var(--accent);
   }
   .match-score-pill.score-moderate {
     background: #e0e7ff;
-    color: #3730a3;
+    color: var(--primary-active);
     border: 1.5px solid #c7d2fe;
   }
   html.dark .match-score-pill.score-moderate {
-    background: rgba(79, 70, 229, 0.2);
+    background: var(--primary-border);
     color: #a5b4fc;
-    border-color: rgba(79, 70, 229, 0.4);
+    border-color: var(--primary-ring);
   }
 
   /* ── Geographic Heatmap Mockup Card ── */
@@ -289,7 +289,7 @@
         <span style="font-size: 0.8rem; color: var(--text-muted);">Platform Health: <strong>Optimal</strong></span>
       </div>
       <h1 style="font-size: 1.95rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; margin: 0;">
-        Executive Administration Dashboard
+        Executive Business Dashboard
       </h1>
       <p style="color: var(--text-muted); font-size: 0.925rem; margin: 0.25rem 0 0;">
         Full-funnel conversion intelligence, real-time revenue analytics, and proactive operational alerts.
@@ -332,7 +332,7 @@
             Lead &rarr; Demo: <strong style="color: var(--primary);">{{ funnel_lead_to_demo_pct }}%</strong>
           </span>
           <span class="bi-metric-pill" title="Demos converted to paid ongoing tuitions">
-            Demo &rarr; Paid: <strong style="color: #059669;">{{ funnel_demo_to_confirmed_pct }}%</strong>
+            Demo &rarr; Paid: <strong style="color: var(--success);">{{ funnel_demo_to_confirmed_pct }}%</strong>
           </span>
         </div>
       </div>
@@ -352,13 +352,13 @@
       </div>
       <div style="background: var(--surface-hover); padding: 0.65rem 0.35rem; border-radius: 0.5rem; min-width: 0; overflow: hidden;">
         <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">2. Demos Scheduled</div>
-        <div style="font-size: 1.2rem; font-weight: 900; color: #d97706;">{{ funnel_demos }}</div>
-        <div style="font-size: 0.65rem; color: #d97706; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_lead_to_demo_pct }}% conv</div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: var(--accent-hover);">{{ funnel_demos }}</div>
+        <div style="font-size: 0.65rem; color: var(--accent-hover); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_lead_to_demo_pct }}% conv</div>
       </div>
       <div style="background: var(--surface-hover); padding: 0.65rem 0.35rem; border-radius: 0.5rem; min-width: 0; overflow: hidden;">
         <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">3. Confirmed Tuitions</div>
-        <div style="font-size: 1.2rem; font-weight: 900; color: #059669;">{{ funnel_confirmed }}</div>
-        <div style="font-size: 0.65rem; color: #059669; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_demo_to_confirmed_pct }}% win</div>
+        <div style="font-size: 1.2rem; font-weight: 900; color: var(--success);">{{ funnel_confirmed }}</div>
+        <div style="font-size: 0.65rem; color: var(--success); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ funnel_demo_to_confirmed_pct }}% win</div>
       </div>
     </div>
   </div>
@@ -369,7 +369,7 @@
       <div class="bi-chart-header">
         <div>
           <h3 class="bi-chart-title">
-            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: #059669;"></i>
+            <i data-lucide="trending-up" style="width: 18px; height: 18px; color: var(--success);"></i>
             Revenue vs. Commission
           </h3>
           <p class="bi-chart-subtitle">
@@ -380,7 +380,7 @@
           <span class="bi-metric-pill" style="border-left: 3px solid var(--primary);">
             30D Gross: <strong>{{ company.currency_symbol }}{{ thirty_day_gross_rev|floatformat:0 }}</strong>
           </span>
-          <span class="bi-metric-pill" style="border-left: 3px solid #ea580c;">
+          <span class="bi-metric-pill" style="border-left: 3px solid var(--accent-hover);">
             Commission: <strong>{{ company.currency_symbol }}{{ thirty_day_comm_rev|floatformat:0 }}</strong>
           </span>
         </div>
@@ -399,7 +399,7 @@
         <span style="color: var(--text-muted);">Total Revenue (Subscriptions + Unlocks)</span>
       </div>
       <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <span style="width: 10px; height: 10px; border-radius: 50%; background: #ea580c; display: inline-block;"></span>
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-hover); display: inline-block;"></span>
         <span style="color: var(--text-muted);">Net Commission (Paid Tuitions)</span>
       </div>
     </div>
@@ -412,10 +412,10 @@
 ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style="margin-bottom: 2rem;">
   
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #10b981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.01) 100%);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--success); background: linear-gradient(135deg, var(--success-soft) 0%, var(--success-soft) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Collected Revenue</span>
-      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); color: #059669; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center;">
         <i data-lucide="wallet" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
@@ -431,7 +431,7 @@
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary); background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0.01) 100%);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary); background: linear-gradient(135deg, var(--primary-soft) 0%, var(--primary-softer) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Total Tuition Leads</span>
       <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center;">
@@ -450,17 +450,17 @@
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid #6366f1; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.01) 100%);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--primary); background: linear-gradient(135deg, var(--primary-soft) 0%, var(--primary-softer) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Verified Educators</span>
-      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(99, 102, 241, 0.12); color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center;">
         <i data-lucide="graduation-cap" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
     <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-bottom: 0.35rem; font-variant-numeric: tabular-nums;">
       {{ verified_tutors }} <span style="font-size: 1.15rem; font-weight: 500; color: var(--text-muted);">/ {{ total_tutors }}</span>
     </div>
-    <div style="font-size: 0.775rem; color: #d97706; font-weight: 700;">
+    <div style="font-size: 0.775rem; color: var(--accent-hover); font-weight: 700;">
       {{ pending_verifications }} Awaiting Document Verification
     </div>
     <div class="kpi-trend-pill positive">
@@ -469,10 +469,10 @@
     </div>
   </div>
 
-  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--accent); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.01) 100%);">
+  <div class="card" style="padding: 1.5rem; border-top: 3.5px solid var(--accent); background: linear-gradient(135deg, var(--accent-soft) 0%, var(--accent-soft) 100%);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
       <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Confirmed Tuitions</span>
-      <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); color: #d97706; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--accent-border); color: var(--accent-hover); display: flex; align-items: center; justify-content: center;">
         <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
       </div>
     </div>
@@ -554,7 +554,7 @@
         </div>
       </div>
       <div>
-        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="font-weight: 800; border-color: rgba(239, 68, 68, 0.5); color: #ef4444; padding: 0.4rem 0.9rem;">
+        <a href="{% url 'custom_admin:complaints' %}" class="btn btn-secondary btn-sm" style="font-weight: 800; border-color: rgba(239, 68, 68, 0.5); color: var(--danger); padding: 0.4rem 0.9rem;">
           <i data-lucide="alert-octagon" style="width: 14px; height: 14px;"></i> Resolve Disputes &rarr;
         </a>
       </div>
@@ -586,7 +586,7 @@
             {% csrf_token %}
             <input type="hidden" name="lead_id" value="{{ stale_lead_target.lead_id }}">
             <input type="hidden" name="action" value="broadcast">
-            <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);">
+            <button type="submit" class="btn btn-primary btn-sm" style="font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px var(--primary-ring);">
               <i data-lucide="radio" style="width: 14px; height: 14px;"></i> Broadcast to Tutors
             </button>
           </form>
@@ -599,15 +599,15 @@
     </div>
 
     <!-- Alert 4: Customer Inquiries Pending Response -->
-    <div class="alert-item-row" style="border: 2px solid #06b6d4; background: rgba(6, 182, 212, 0.04);">
+    <div class="alert-item-row" style="border: 2px solid var(--secondary); background: rgba(6, 182, 212, 0.04);">
       <div style="display: flex; align-items: center; gap: 0.85rem;">
-        <div class="alert-badge-count pulse-urgent-icon" style="background: rgba(6, 182, 212, 0.15); color: #0891b2;">
+        <div class="alert-badge-count pulse-urgent-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary-hover);">
           <i data-lucide="inbox" style="width: 16px; height: 16px;"></i>
         </div>
         <div>
           <div style="font-weight: 800; font-size: 0.925rem; color: var(--text); display: flex; align-items: center; gap: 0.4rem;">
             <span>Customer inquiries pending response ({{ alert_pending_enquiries }})</span>
-            <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #0891b2; font-size: 0.68rem; font-weight: 700;">About & Contact</span>
+            <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary-hover); font-size: 0.68rem; font-weight: 700;">About & Contact</span>
           </div>
           <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.15rem;">
             Inquiries and tutor consultation queries received from the About and Contact forms awaiting advisor response.
@@ -615,7 +615,7 @@
         </div>
       </div>
       <div>
-        <a href="{% url 'custom_admin:enquiries' %}?status=NEW" class="btn btn-sm" style="background: #0891b2; color: #ffffff; font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px rgba(8, 145, 178, 0.3);">
+        <a href="{% url 'custom_admin:enquiries' %}?status=NEW" class="btn btn-sm" style="background: var(--secondary-hover); color: #ffffff; font-weight: 800; padding: 0.4rem 0.9rem; box-shadow: 0 2px 6px rgba(8, 145, 178, 0.3);">
           <i data-lucide="inbox" style="width: 14px; height: 14px;"></i> View Enquiries &rarr;
         </a>
       </div>
@@ -667,7 +667,7 @@
 
           <!-- Sub-metrics Row -->
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.45rem; font-size: 0.725rem; color: var(--text-muted);">
-            <span style="color: #059669; font-weight: 700;">
+            <span style="color: var(--success); font-weight: 700;">
               <i data-lucide="zap" style="width: 11px; height: 11px; display: inline;"></i> {{ loc.match_rate }}% Match Rate
             </span>
             <span>{{ loc.tutors_count }} Vetted Tutors</span>
@@ -690,7 +690,7 @@
       <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
         <div>
           <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin: 0 0 0.15rem; display: flex; align-items: center; gap: 0.4rem;">
-            <i data-lucide="sparkles" style="width: 17px; height: 17px; color: #f59e0b;"></i>
+            <i data-lucide="sparkles" style="width: 17px; height: 17px; color: var(--accent);"></i>
             Recent Tuition Requirements & Match Engine
           </h3>
           <p style="font-size: 0.775rem; color: var(--text-muted); margin: 0;">
@@ -738,7 +738,7 @@
                 </td>
 
                 <!-- Budget -->
-                <td style="padding: 0.75rem 1rem; font-weight: 800; color: #059669;">
+                <td style="padding: 0.75rem 1rem; font-weight: 800; color: var(--success);">
                   {{ company.currency_symbol }}{{ lead.budget_amount|floatformat:0 }}<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">/mo</span>
                 </td>
 
@@ -917,14 +917,14 @@
                 label: 'Students & Inquiries in Stage',
                 data: funnelValues,
                 backgroundColor: [
-                  'rgba(79, 70, 229, 0.85)',  // Primary Indigo for Leads Posted
-                  'rgba(245, 158, 11, 0.85)', // Amber for Demos Scheduled
-                  'rgba(16, 185, 129, 0.85)'  // Emerald for Tuitions Confirmed
+                  'var(--primary-ring)',  // Primary Indigo for Leads Posted
+                  'var(--accent)', // Amber for Demos Scheduled
+                  'var(--success)'  // Emerald for Tuitions Confirmed
                 ],
                 borderColor: [
-                  '#4f46e5',
-                  '#d97706',
-                  '#059669'
+                  'var(--primary)',
+                  'var(--accent-hover)',
+                  'var(--success)'
                 ],
                 borderWidth: 1.5,
                 borderRadius: 8,
@@ -983,27 +983,27 @@
                 {
                   label: 'Gross Platform Revenue',
                   data: revValues,
-                  borderColor: '#10b981',
-                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  borderColor: 'var(--success)',
+                  backgroundColor: 'var(--success-soft)',
                   borderWidth: 2.5,
                   tension: 0.35,
                   fill: true,
                   pointRadius: 2.5,
                   pointHoverRadius: 6,
-                  pointBackgroundColor: '#10b981',
+                  pointBackgroundColor: 'var(--success)',
                 },
                 {
                   label: 'Platform Net Commission',
                   data: commValues,
-                  borderColor: '#6366f1',
-                  backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                  borderColor: 'var(--primary)',
+                  backgroundColor: 'var(--primary-soft)',
                   borderWidth: 2,
                   borderDash: [5, 5],
                   tension: 0.35,
                   fill: false,
                   pointRadius: 2.5,
                   pointHoverRadius: 6,
-                  pointBackgroundColor: '#6366f1',
+                  pointBackgroundColor: 'var(--primary)',
                 }
               ]
             },

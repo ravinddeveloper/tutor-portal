@@ -127,16 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ── 5. Bookmark / Shortlist Favorite Micro-Interaction ──
-  document.querySelectorAll('.bookmark-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      this.classList.toggle('saved');
-      const isSaved = this.classList.contains('saved');
-      showQuickToast(isSaved ? 'Tutor saved to your shortlist!' : 'Removed from shortlist');
-    });
-  });
-
+  /* The shortlist ("bookmark") button is deliberately NOT handled here.
+   tutors/directory.html owns that control: it posts to the server and
+   renders the confirmed state plus a toast from the response. Handling it
+   here as well produced an optimistic flip that the server response then
+   undid (a double toggle) plus a duplicate, premature toast. */
   // ── 6. Toast Notification Helper ──
   function showQuickToast(msg) {
     let toast = document.getElementById('marketplace-toast');
@@ -168,14 +163,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2800);
   }
 
-  // ── 7. Automatic dismiss on flash messages after 6s ──
+  // ── 7. Auto-dismiss transient flash messages ──────────────────────
+  // Errors stay until dismissed manually; everything else fades out, but
+  // the timer pauses while the visitor is reading or focused on the alert.
   document.querySelectorAll('.alert').forEach(alert => {
-    setTimeout(() => {
-      alert.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      alert.style.opacity = '0';
-      alert.style.transform = 'translateY(-8px)';
-      setTimeout(() => alert.remove(), 400);
-    }, 6000);
+    const isError = alert.classList.contains('alert-error') || alert.classList.contains('alert-danger');
+    if (isError) return;
+
+    let timer = null;
+    let remaining = 8000;
+
+    const start = () => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        alert.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateY(-8px)';
+        setTimeout(() => alert.remove(), 400);
+      }, remaining);
+    };
+
+    const pause = () => {
+      if (!timer) return;
+      clearTimeout(timer);
+      timer = null;
+    };
+
+    alert.addEventListener('mouseenter', pause);
+    alert.addEventListener('mouseleave', start);
+    alert.addEventListener('focusin', pause);
+    alert.addEventListener('focusout', start);
+    start();
   });
 
   // ── 8. Lucide Icons Refresh ──

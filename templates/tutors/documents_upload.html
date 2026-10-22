@@ -69,7 +69,7 @@
                   Type: {{ doc.get_document_type_display }} • Uploaded: {{ doc.uploaded_at|date:"M d, Y" }}
                 </div>
                 {% if doc.rejection_reason %}
-                  <div style="font-size: 0.8rem; color: #dc2626; margin-top: 0.25rem;">
+                  <div style="font-size: 0.8rem; color: var(--danger); margin-top: 0.25rem;">
                     Reason: {{ doc.rejection_reason }}
                   </div>
                 {% endif %}

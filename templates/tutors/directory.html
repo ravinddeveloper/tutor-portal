@@ -17,7 +17,7 @@
   .tutor-card:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.12), 0 6px 14px -3px rgba(0, 0, 0, 0.06);
-    border-color: rgba(79, 70, 229, 0.4);
+    border-color: var(--primary-ring);
     z-index: 3;
   }
 
@@ -36,12 +36,12 @@
   }
   .bookmark-btn:hover {
     background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    color: var(--danger);
     border-color: #fecaca;
   }
   .bookmark-btn.saved {
     background: rgba(239, 68, 68, 0.12);
-    color: #ef4444;
+    color: var(--danger);
     border-color: rgba(239, 68, 68, 0.3);
   }
 
@@ -80,7 +80,7 @@
     border: 2px solid var(--primary);
     padding: 0.75rem 1.5rem;
     border-radius: 9999px;
-    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.28), 0 0 20px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.28), 0 0 20px var(--primary-border);
     z-index: 9999;
     align-items: center;
     gap: 1.5rem;
@@ -117,12 +117,12 @@
 
 {% block content %}
 <!-- Directory Header Hero -->
-<section style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--border);">
+<section style="background: linear-gradient(135deg, var(--primary-soft) 0%, rgba(6, 182, 212, 0.05) 100%); padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--border);">
   <div class="container">
     <div class="flex justify-between items-center flex-wrap gap-4">
       <div style="max-width: 720px;">
         <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-light); color: var(--primary); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.85rem;">
-          <i data-lucide="shield-check" style="width: 15px; height: 15px; color: #10b981;"></i>
+          <i data-lucide="shield-check" style="width: 15px; height: 15px; color: var(--success);"></i>
           Verified Educator Marketplace
         </div>
         <h1 style="font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 900; color: var(--text); letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 0.5rem;">
@@ -140,7 +140,7 @@
         </button>
         {% if user.is_authenticated %}
           <a href="{% url 'tutors:saved_tutors' %}" class="btn btn-secondary" style="font-weight: 800; font-size: 0.85rem;">
-            <i data-lucide="heart" style="width: 16px; height: 16px; color: #ef4444;"></i> My Shortlist ({{ saved_tutor_ids|length }})
+            <i data-lucide="heart" style="width: 16px; height: 16px; color: var(--danger);"></i> My Shortlist ({{ saved_tutor_ids|length }})
           </a>
         {% endif %}
       </div>
@@ -260,7 +260,7 @@
                 {% if tutor.user.avatar %}
                   <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--primary-light);">
                 {% else %}
-                  <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);">
+                  <div style="width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; flex-shrink: 0; box-shadow: 0 4px 10px var(--primary-border);">
                     {{ tutor.display_name|slice:":1"|upper }}
                   </div>
                 {% endif %}
@@ -271,12 +271,12 @@
                       {{ tutor.display_name }}
                     </h3>
                     {% if tutor.is_verified %}
-                      <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); font-size: 0.675rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                        <i data-lucide="check-circle" style="width: 12px; height: 12px; color: #10b981;"></i> Verified
+                      <span class="badge" style="background: var(--success-soft); color: var(--success); border: 1px solid var(--success); font-size: 0.675rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--success);"></i> Verified
                       </span>
                     {% endif %}
                     <span style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.7rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.25rem;">
-                      <i data-lucide="star" style="width: 12px; height: 12px; fill: #f59e0b; color: #f59e0b;"></i>
+                      <i data-lucide="star" style="width: 12px; height: 12px; fill: var(--accent); color: var(--accent);"></i>
                       <span>{{ tutor.average_rating }}</span>
                       <span style="font-weight: 600; opacity: 0.75;">({{ tutor.total_reviews }})</span>
                     </span>
@@ -289,20 +289,20 @@
                         onclick="toggleSaveTutor({{ tutor.id }}, this)" 
                         title="{% if tutor.id in saved_tutor_ids %}Remove from shortlist{% else %}Save to shortlist{% endif %}"
                         aria-label="Bookmark tutor">
-                  <i data-lucide="heart" style="width: 16px; height: 16px; {% if tutor.id in saved_tutor_ids %}fill: #ef4444; color: #ef4444;{% endif %}"></i>
+                  <i data-lucide="heart" style="width: 16px; height: 16px; {% if tutor.id in saved_tutor_ids %}fill: var(--danger); color: var(--danger);{% endif %}"></i>
                 </button>
               </div>
 
               <!-- Explainable Matching Reason Badges -->
               {% if tutor.match_reasons_list %}
-                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 0.45rem 0.75rem; margin-bottom: 0.85rem;">
-                  <div style="font-weight: 800; color: #10b981; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.2rem; letter-spacing: 0.03em;">
+                <div style="background: var(--success-soft); border: 1px solid var(--success-soft); border-radius: 8px; padding: 0.45rem 0.75rem; margin-bottom: 0.85rem;">
+                  <div style="font-weight: 800; color: var(--success); font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.2rem; letter-spacing: 0.03em;">
                     <i data-lucide="sparkles" style="width: 12px; height: 12px; display: inline;"></i> Match Criteria
                   </div>
                   <div class="flex flex-wrap gap-1.5" style="font-size: 0.775rem; color: var(--text); font-weight: 600;">
                     {% for reason in tutor.match_reasons_list %}
                       <span style="display: inline-flex; align-items: center; gap: 0.2rem;">
-                        <span style="color: #10b981;">✓</span> {{ reason }}
+                        <span style="color: var(--success);">✓</span> {{ reason }}
                       </span>
                     {% endfor %}
                   </div>
@@ -338,7 +338,7 @@
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <span style="display: flex; align-items: center; gap: 0.35rem;">
-                    <i data-lucide="clock" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
+                    <i data-lucide="clock" style="width: 14px; height: 14px; color: var(--success); flex-shrink: 0;"></i>
                     {{ tutor.experience_years }} Years Teaching Exp.
                   </span>
                   <span style="display: flex; align-items: center; gap: 0.35rem; color: var(--text); font-weight: 700;">
@@ -359,7 +359,7 @@
                 </div>
               </div>
               <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <a href="{% url 'tutors:detail' tutor.pk %}?action=book_demo" class="btn btn-primary btn-sm" style="background: var(--primary); color: #ffffff; font-weight: 800; font-size: 0.775rem; border: none; padding: 0.45rem 0.85rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25); display: inline-flex; align-items: center; gap: 0.35rem;">
+                <a href="{% url 'tutors:detail' tutor.pk %}?action=book_demo" class="btn btn-primary btn-sm" style="background: var(--primary); color: #ffffff; font-weight: 800; font-size: 0.775rem; border: none; padding: 0.45rem 0.85rem; box-shadow: 0 4px 12px var(--primary-border); display: inline-flex; align-items: center; gap: 0.35rem;">
                   <i data-lucide="calendar-check" style="width: 13px; height: 13px;"></i> Book Free Demo
                 </a>
                 <a href="{% url 'tutors:detail' tutor.pk %}?{{ search_query_string }}" class="btn btn-secondary btn-sm" style="font-size: 0.775rem; font-weight: 700; padding: 0.45rem 0.7rem;" title="View Full Profile">
@@ -542,8 +542,8 @@
         if (data.saved) {
           btn.classList.add('saved');
           if (icon) {
-            icon.style.fill = '#ef4444';
-            icon.style.color = '#ef4444';
+            icon.style.fill = 'var(--danger)';
+            icon.style.color = 'var(--danger)';
           }
           showDirectoryToast("Tutor saved to your shortlist!");
         } else {

@@ -74,21 +74,21 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
     color: #ffffff;
     font-size: 0.775rem;
     font-weight: 800;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
-    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+    box-shadow: 0 2px 6px var(--accent-border);
   }
   .badge-fast-speed {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: rgba(16, 185, 129, 0.12);
-    color: #059669;
-    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: var(--success-soft);
+    color: var(--success);
+    border: 1px solid var(--success);
     font-size: 0.775rem;
     font-weight: 800;
     padding: 0.25rem 0.75rem;
@@ -98,9 +98,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    background: rgba(79, 70, 229, 0.1);
+    background: var(--primary-soft);
     color: var(--primary);
-    border: 1px solid rgba(79, 70, 229, 0.3);
+    border: 1px solid var(--primary-ring);
     font-size: 0.775rem;
     font-weight: 800;
     padding: 0.25rem 0.75rem;
@@ -109,12 +109,12 @@
 
   /* ── Smart Lead Radar Feature ── */
   .radar-alert-card {
-    background: radial-gradient(circle at 15% 25%, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0.06) 55%, var(--surface) 100%);
-    border: 2px solid #10b981;
+    background: radial-gradient(circle at 15% 25%, var(--success-soft) 0%, var(--success-soft) 55%, var(--surface) 100%);
+    border: 2px solid var(--success);
     border-radius: var(--border-radius);
     padding: 1.5rem 1.75rem;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.25), 0 0 18px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 10px 30px -5px var(--success), 0 0 18px var(--success-soft);
     position: relative;
     overflow: hidden;
   }
@@ -136,8 +136,8 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: rgba(16, 185, 129, 0.15);
-    color: #059669;
+    background: var(--success-soft);
+    color: var(--success);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -148,7 +148,7 @@
     position: absolute;
     inset: -6px;
     border-radius: 50%;
-    border: 2px solid #10b981;
+    border: 2px solid var(--success);
     animation: radarPulse 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
   }
   @keyframes radarPulse {
@@ -159,11 +159,11 @@
   @keyframes pulseUnlockBtn {
     0%, 100% {
       transform: scale(1);
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      box-shadow: 0 4px 14px var(--success);
     }
     50% {
       transform: scale(1.03);
-      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.6);
+      box-shadow: 0 6px 22px var(--success);
     }
   }
   .btn-unlock-pulse {
@@ -187,10 +187,10 @@
     z-index: 9999;
     max-width: 420px;
     background: var(--surface);
-    border: 2px solid #10b981;
+    border: 2px solid var(--success);
     border-radius: 1rem;
     padding: 1rem 1.25rem;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25), 0 0 20px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25), 0 0 20px var(--success-soft);
     display: flex;
     align-items: flex-start;
     gap: 0.85rem;
@@ -243,7 +243,7 @@
   .strength-meter-bar {
     height: 100%;
     border-radius: 9999px;
-    background: linear-gradient(90deg, #4f46e5 0%, #10b981 100%);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
     transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .profile-checklist-item {
@@ -309,7 +309,7 @@
     background: var(--primary);
     border-color: var(--primary);
     color: #ffffff;
-    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 2px 6px var(--primary-ring);
   }
   .kanban-mobile-swipe-hint {
     display: none;
@@ -344,7 +344,7 @@
     transition: background 0.2s ease, border-color 0.2s ease;
   }
   .kanban-column.drag-over {
-    background: rgba(79, 70, 229, 0.06);
+    background: var(--primary-soft);
     border-color: var(--primary);
   }
   .kanban-column-title {
@@ -380,7 +380,7 @@
   .kanban-lead-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-    border-color: rgba(79, 70, 229, 0.4);
+    border-color: var(--primary-ring);
   }
   .kanban-lead-card.is-dragging {
     opacity: 0.4;
@@ -668,7 +668,7 @@
             {{ tutor.display_name|slice:":1"|upper }}
           </div>
         {% endif %}
-        <span style="position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; background: #10b981; border: 2px solid var(--surface);" title="Active Online"></span>
+        <span style="position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--success); border: 2px solid var(--surface);" title="Active Online"></span>
       </div>
 
       <div class="tutor-header-info">
@@ -734,7 +734,7 @@
               <span class="badge badge-success" style="font-size: 0.75rem; font-weight: 800;">
                 <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> SMART LEAD RADAR: {{ radar_alert.match_score }}%
               </span>
-              <span style="font-size: 0.75rem; color: #059669; font-weight: 700;">
+              <span style="font-size: 0.75rem; color: var(--success); font-weight: 700;">
                 <i data-lucide="map-pin" style="width: 12px; height: 12px; display: inline;"></i> In your area (&lt; 5 km)
               </span>
             </div>
@@ -762,7 +762,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="unlock">
             <input type="hidden" name="lead_id" value="{{ radar_alert.lead_id }}">
-            <button type="submit" class="btn btn-primary btn-unlock-pulse" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; font-weight: 800; padding: 0.65rem 1.4rem;">
+            <button type="submit" class="btn btn-primary btn-unlock-pulse" style="background: linear-gradient(135deg, var(--success) 0%, var(--success) 100%); border: none; font-weight: 800; padding: 0.65rem 1.4rem;">
               <i data-lucide="unlock" style="width: 16px; height: 16px;"></i> Unlock Lead Now (1 Credit)
             </button>
           </form>
@@ -773,11 +773,11 @@
 
     <!-- Interactive Push Notification Toast Widget -->
     <div id="radarMatchToast" class="radar-toast-container">
-      <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #059669; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+      <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <i data-lucide="bell-ring" style="width: 18px; height: 18px;"></i>
       </div>
       <div style="flex: 1; min-width: 0;">
-        <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem;">
+        <div style="font-size: 0.75rem; font-weight: 800; color: var(--success); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.15rem;">
           ⚡ Lead Radar Alert
         </div>
         <div style="font-size: 0.85rem; font-weight: 800; color: var(--text); line-height: 1.35; margin-bottom: 0.5rem; word-break: break-word;">
@@ -816,7 +816,7 @@
           <i data-lucide="coins" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
-      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: #10b981; font-weight: 600;">
+      <div style="margin-top: 0.65rem; font-size: 0.75rem; color: var(--success); font-weight: 600;">
         <a href="{% url 'tutors:billing' %}" style="text-decoration: underline;">Recharge Credits &rarr;</a>
       </div>
     </div>
@@ -825,11 +825,11 @@
       <div class="flex items-center justify-between">
         <div>
           <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Pipeline Leads</div>
-          <div class="tutor-stat-num" style="color: #10b981;">
+          <div class="tutor-stat-num" style="color: var(--success);">
             {{ total_pipeline_count }}
           </div>
         </div>
-        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="kanban" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
@@ -863,7 +863,7 @@
             {{ active_engagements.count }}
           </div>
         </div>
-        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <div class="stat-icon-wrap" style="width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: var(--accent-hover); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i data-lucide="book-open" style="width: 22px; height: 22px;"></i>
         </div>
       </div>
@@ -949,7 +949,7 @@
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
                 <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="font-size: 0.75rem; font-weight: 800; color: #059669;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <span style="font-size: 0.75rem; font-weight: 800; color: var(--success);">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
                   <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
                 </div>
               </div>
@@ -982,7 +982,7 @@
       <div class="kanban-column" id="kanban-col-DEMO_SCHEDULED" data-stage="DEMO_SCHEDULED" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_SCHEDULED')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
-            <i data-lucide="calendar" style="width: 14px; height: 14px; color: #0891b2;"></i> Demo Scheduled
+            <i data-lucide="calendar" style="width: 14px; height: 14px; color: var(--secondary-hover);"></i> Demo Scheduled
           </span>
           <span class="badge badge-secondary" id="count-DEMO_SCHEDULED" style="font-size: 0.7rem;">{{ pipeline_demo_scheduled|length }}</span>
         </div>
@@ -993,7 +993,7 @@
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
                 <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="font-size: 0.75rem; font-weight: 800; color: #0891b2;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <span style="font-size: 0.75rem; font-weight: 800; color: var(--secondary-hover);">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
                   <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
                 </div>
               </div>
@@ -1026,7 +1026,7 @@
       <div class="kanban-column" id="kanban-col-DEMO_COMPLETED" data-stage="DEMO_COMPLETED" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'DEMO_COMPLETED')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
-            <i data-lucide="check-square" style="width: 14px; height: 14px; color: #d97706;"></i> Demo Completed
+            <i data-lucide="check-square" style="width: 14px; height: 14px; color: var(--accent-hover);"></i> Demo Completed
           </span>
           <span class="badge badge-secondary" id="count-DEMO_COMPLETED" style="font-size: 0.7rem;">{{ pipeline_demo_completed|length }}</span>
         </div>
@@ -1037,7 +1037,7 @@
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-secondary" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
                 <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="font-size: 0.75rem; font-weight: 800; color: #d97706;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent-hover);">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
                   <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
                 </div>
               </div>
@@ -1070,18 +1070,18 @@
       <div class="kanban-column" id="kanban-col-WON" data-stage="WON" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'WON')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
-            <i data-lucide="trophy" style="width: 14px; height: 14px; color: #10b981;"></i> Won (Active)
+            <i data-lucide="trophy" style="width: 14px; height: 14px; color: var(--success);"></i> Won (Active)
           </span>
           <span class="badge badge-success" id="count-WON" style="font-size: 0.7rem;">{{ pipeline_won|length }}</span>
         </div>
 
         <div class="kanban-cards-container" id="kanban-container-WON">
           {% for card in pipeline_won %}
-            <div class="kanban-lead-card" style="border-left: 3px solid #10b981;" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
+            <div class="kanban-lead-card" style="border-left: 3px solid var(--success);" draggable="true" data-card-id="{{ card.id }}" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                 <span class="badge badge-success" style="font-size: 0.65rem; font-weight: 700;">{{ card.requirement.lead_id }}</span>
                 <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <span style="font-size: 0.75rem; font-weight: 800; color: #10b981;">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
+                  <span style="font-size: 0.75rem; font-weight: 800; color: var(--success);">{{ company.currency_symbol }}{{ card.estimated_monthly_value|floatformat:0 }}</span>
                   <i data-lucide="grip-vertical" style="width: 14px; height: 14px; color: var(--text-muted); opacity: 0.6; cursor: grab;" title="Drag card"></i>
                 </div>
               </div>
@@ -1114,7 +1114,7 @@
       <div class="kanban-column" id="kanban-col-LOST" data-stage="LOST" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event, 'LOST')">
         <div class="kanban-column-title">
           <span style="display: flex; align-items: center; gap: 0.35rem;">
-            <i data-lucide="x-circle" style="width: 14px; height: 14px; color: #ef4444;"></i> Lost
+            <i data-lucide="x-circle" style="width: 14px; height: 14px; color: var(--danger);"></i> Lost
           </span>
           <span class="badge badge-secondary" id="count-LOST" style="font-size: 0.7rem;">{{ pipeline_lost|length }}</span>
         </div>
@@ -1237,7 +1237,7 @@
                 Profile Strength
               </h4>
               {% if completeness.score == 100 or completeness.is_complete %}
-                <span class="badge" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; font-weight: 800; font-size: 0.725rem; padding: 0.2rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3); display: inline-flex; align-items: center; gap: 0.25rem;">
+                <span class="badge" style="background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); color: #ffffff; font-weight: 800; font-size: 0.725rem; padding: 0.2rem 0.55rem; border-radius: 9999px; box-shadow: 0 2px 6px var(--accent); display: inline-flex; align-items: center; gap: 0.25rem;">
                   <i data-lucide="crown" style="width: 12px; height: 12px;"></i> 100% Elite
                 </span>
               {% endif %}
@@ -1258,8 +1258,8 @@
 
         <!-- Dynamic Motivational Guidance -->
         {% if completeness.is_complete %}
-          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--border-radius); padding: 0.75rem; margin-bottom: 1.25rem;">
-            <div style="font-size: 0.825rem; font-weight: 800; color: #059669; display: flex; align-items: center; gap: 0.4rem;">
+          <div style="background: var(--success-soft); border: 1px solid var(--success); border-radius: var(--border-radius); padding: 0.75rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.825rem; font-weight: 800; color: var(--success); display: flex; align-items: center; gap: 0.4rem;">
               <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
               <span>100% Elite Profile Strength Reached!</span>
             </div>
@@ -1268,7 +1268,7 @@
             </div>
           </div>
         {% else %}
-          <div style="background: rgba(79, 70, 229, 0.08); border: 1px dashed rgba(79, 70, 229, 0.3); border-radius: var(--border-radius); padding: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="background: var(--primary-soft); border: 1px dashed var(--primary-ring); border-radius: var(--border-radius); padding: 0.75rem; margin-bottom: 1.25rem;">
             <div style="font-size: 0.825rem; font-weight: 800; color: var(--primary);">
               Your profile is {{ completeness.score }}% complete.
             </div>
@@ -1285,10 +1285,10 @@
         <!-- Actionable Checklist Items -->
         <div style="display: flex; flex-direction: column; gap: 0.65rem;">
           {% for item in completeness.checklist %}
-            <div class="profile-checklist-item" style="background: {% if item.completed %}rgba(16, 185, 129, 0.05){% else %}var(--surface-hover){% endif %}; border: 1px solid {% if item.completed %}rgba(16, 185, 129, 0.2){% else %}var(--border){% endif %};">
+            <div class="profile-checklist-item" style="background: {% if item.completed %}var(--success-soft){% else %}var(--surface-hover){% endif %}; border: 1px solid {% if item.completed %}var(--success-soft){% else %}var(--border){% endif %};">
               <div style="display: flex; align-items: center; gap: 0.45rem; min-width: 0; flex: 1;">
                 {% if item.completed %}
-                  <div style="width: 18px; height: 18px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <div style="width: 18px; height: 18px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                     <i data-lucide="check" style="width: 12px; height: 12px;"></i>
                   </div>
                   <span class="profile-checklist-label">
@@ -1315,7 +1315,7 @@
 
         <!-- Ranking Impact Info -->
         <div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.85rem; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-          <i data-lucide="award" style="width: 16px; height: 16px; color: #f59e0b; flex-shrink: 0;"></i>
+          <i data-lucide="award" style="width: 16px; height: 16px; color: var(--accent); flex-shrink: 0;"></i>
           <span>Profiles with 100% Strength receive <strong>4.2x more demo requests</strong>.</span>
         </div>
       </div>
@@ -1600,7 +1600,7 @@
       toast.style.borderRadius = '9999px';
     }
 
-    toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+    toast.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
     toast.style.color = '#ffffff';
     toast.textContent = message;
     toast.style.transform = 'translateY(0)';

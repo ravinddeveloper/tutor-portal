@@ -23,10 +23,10 @@
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.45);
+    box-shadow: 0 0 0 0 var(--primary-ring);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+    box-shadow: 0 0 0 10px var(--primary-softer);
   }
 }
 
@@ -102,7 +102,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #10b981;
+  background-color: var(--success);
   animation: pulseDot 1.8s infinite ease-in-out;
   margin-right: 6px;
   vertical-align: middle;
@@ -128,50 +128,41 @@
 .delay-400 { transition-delay: 400ms; }
 .delay-500 { transition-delay: 500ms; }
 
-/* ── Gradient Text ── */
+/* ── Accent text ──
+   A single solid brand colour reads far more premium than a gradient and
+   stays legible at every size and in both themes. */
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary);
   display: inline-block;
 }
 
-/* ── Glassmorphism Elements ── */
+/* ── Elevated panels ──
+   Opaque surfaces instead of glassmorphism: glass blur is expensive to
+   composite, drops text contrast over busy backgrounds and renders
+   inconsistently across browsers. */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--border-radius);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
-}
-
-html.dark .glass-panel {
-  background: rgba(17, 24, 39, 0.85);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 .floating-glass-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 1rem 1.25rem;
-  box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.15), 0 5px 15px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
 }
 
 html.dark .floating-glass-card {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--shadow-lg);
 }
 
 .floating-glass-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 35px -8px rgba(79, 70, 229, 0.22);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
 }
 
 /* ── Hero Mode Switcher Tabs ── */
@@ -243,8 +234,8 @@ html.dark .mode-tab-btn.active {
 
 .subject-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(79, 70, 229, 0.35);
-  box-shadow: 0 15px 30px -8px rgba(79, 70, 229, 0.15), 0 4px 10px rgba(0, 0, 0, 0.03);
+  border-color: var(--primary-border);
+  box-shadow: 0 15px 30px -8px var(--primary-border), 0 4px 10px rgba(0, 0, 0, 0.03);
 }
 
 .subject-card:hover::before {
@@ -282,8 +273,8 @@ html.dark .mode-tab-btn.active {
 
 .tutor-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(79, 70, 229, 0.3);
-  box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.14), 0 8px 16px -6px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary-border);
+  box-shadow: 0 20px 35px -10px var(--primary-soft), 0 8px 16px -6px rgba(0, 0, 0, 0.05);
 }
 
 .tutor-card .tutor-avatar {
@@ -310,13 +301,13 @@ html.dark .mode-tab-btn.active {
 
 .bookmark-btn:hover, .bookmark-btn.saved {
   background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  color: var(--danger);
   border-color: rgba(239, 68, 68, 0.3);
   transform: scale(1.1);
 }
 
 .bookmark-btn.saved i {
-  fill: #ef4444;
+  fill: var(--danger);
 }
 
 /* ── Value Cards Hover Effect ── */
@@ -344,8 +335,8 @@ html.dark .mode-tab-btn.active {
 
 .value-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(79, 70, 229, 0.3);
-  box-shadow: 0 15px 30px -8px rgba(79, 70, 229, 0.12);
+  border-color: var(--primary-border);
+  box-shadow: 0 15px 30px -8px var(--primary-soft);
 }
 
 .value-card:hover::after {
@@ -362,8 +353,8 @@ details.faq-item {
 }
 
 details.faq-item[open] {
-  border-color: rgba(79, 70, 229, 0.35);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.08);
+  border-color: var(--primary-border);
+  box-shadow: 0 4px 14px var(--primary-soft);
 }
 
 details.faq-item summary {
@@ -455,13 +446,15 @@ details.faq-item .faq-body {
   margin: 0 auto;
 }
 
+/* Soft radial wash that anchors the hero artwork.
+   A structural gradient instead of a blurred halo — no costly filter,
+   no muddy edges, and it survives dark mode. */
 .hero-glow-orb {
   position: absolute;
   width: 340px;
   height: 340px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(30, 64, 175, 0.12) 0%, rgba(234, 88, 12, 0.06) 45%, transparent 70%);
-  filter: blur(48px);
+  background: radial-gradient(circle, var(--primary-soft) 0%, var(--accent-soft) 45%, transparent 70%);
   z-index: 0;
   pointer-events: none;
   top: 50%;
@@ -486,7 +479,7 @@ html.dark .spotlight-card {
 
 .spotlight-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 30px 60px -15px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 30px 60px -15px var(--primary-border);
 }
 
 /* ── Step Cards for How It Works ── */
@@ -504,8 +497,8 @@ html.dark .spotlight-card {
 
 .step-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(79, 70, 229, 0.35);
-  box-shadow: 0 16px 32px -8px rgba(79, 70, 229, 0.12);
+  border-color: var(--primary-border);
+  box-shadow: 0 16px 32px -8px var(--primary-soft);
 }
 
 .step-number-badge {
@@ -520,8 +513,8 @@ html.dark .spotlight-card {
   align-items: center;
   justify-content: center;
   margin-bottom: 1.25rem;
-  border: 1px solid rgba(79, 70, 229, 0.18);
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.08);
+  border: 1px solid var(--primary-border);
+  box-shadow: 0 4px 10px var(--primary-soft);
 }
 
 /* ── Tabular Numbers for Smooth Counters ── */

@@ -45,7 +45,7 @@
           {% if tutor.user.avatar %}
             <img src="{{ tutor.user.avatar.url }}" alt="{{ tutor.display_name }}" style="width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
           {% else %}
-            <div style="width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25); flex-shrink: 0;">
+            <div style="width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; box-shadow: 0 4px 14px var(--primary-border); flex-shrink: 0;">
               {{ tutor.display_name|slice:":1"|upper }}
             </div>
           {% endif %}
@@ -68,7 +68,7 @@
               </div>
 
               <!-- Bookmark / Shortlist Action Button -->
-              <a href="{% url 'tutors:toggle_save' tutor.id %}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.8rem; {% if is_saved %}color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08);{% endif %}">
+              <a href="{% url 'tutors:toggle_save' tutor.id %}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.8rem; {% if is_saved %}color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.08);{% endif %}">
                 <i data-lucide="heart" style="width: 15px; height: 15px; {% if is_saved %}fill: currentColor;{% endif %}"></i>
                 <span>{% if is_saved %}Saved to Shortlist{% else %}Save Tutor{% endif %}</span>
               </a>
@@ -239,7 +239,7 @@
             {{ company.currency_symbol }}{{ tutor.monthly_rate_estimate }}
             <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">/mo</span>
           </div>
-          <div style="font-size: 0.825rem; color: #10b981; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+          <div style="font-size: 0.825rem; color: var(--success); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
             <i data-lucide="check-circle" style="width: 15px; height: 15px;"></i>
             Free 1-on-1 Trial Demo Session
           </div>
